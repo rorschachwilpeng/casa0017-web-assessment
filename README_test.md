@@ -1,2 +1,2 @@
-this is a branch merge test
+this is a branch merge test2
 
