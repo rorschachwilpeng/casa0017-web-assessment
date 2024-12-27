@@ -51,8 +51,21 @@ export const constantRoutes = [
       path: 'dashboard',
       name: 'Dashboard',
       component: () => import('@/views/dashboard/index'),
-      meta: { title: 'CASA0017_Group4', icon: 'dashboard' }
+      meta: { title: 'Dashboard', icon: 'dashboard' }
     }]
+  },
+
+  {
+    path: '/movies',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        name: 'Movies',
+        component: () => import('@/views/movies/index'),
+        meta: { title: 'Movie Management', icon: 'el-icon-film' }
+      }
+    ]
   },
 
   {
@@ -158,6 +171,13 @@ export const constantRoutes = [
         meta: { title: 'External Link', icon: 'link' }
       }
     ]
+  },
+
+  {
+    path: '/test',
+    component: () => import('@/views/test/index.vue'),
+    name: 'Test',
+    meta: { title: 'API connection test' }
   },
 
   // 404 page must be placed at the end !!!

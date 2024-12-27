@@ -1,6 +1,6 @@
 module.exports = {
 
-  title: 'CASA0017 Group4',
+  title: 'Vue Admin Template',
 
   /**
    * @type {boolean} true | false
