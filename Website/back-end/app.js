@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
 
 /**
  * 创建 Express 应用实例
@@ -15,6 +16,8 @@ app.use(cors());
 app.use(express.urlencoded({ extended: false }));
 // 解析 application/json 格式的请求体
 app.use(express.json());
+// 提供静态文件访问
+app.use('/posters', express.static(path.join(__dirname, 'public/posters')));
 
 /**
  * 注册路由模块

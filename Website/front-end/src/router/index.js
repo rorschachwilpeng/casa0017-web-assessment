@@ -180,6 +180,19 @@ export const constantRoutes = [
     meta: { title: 'API connection test' }
   },
 
+  {
+    path: '/movie-list',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        name: 'MovieList',
+        component: () => import('@/views/movie-list/index'),
+        meta: { title: 'Movie List', icon: 'el-icon-video-camera' }
+      }
+    ]
+  },
+
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
 ]

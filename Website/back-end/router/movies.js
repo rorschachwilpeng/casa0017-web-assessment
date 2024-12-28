@@ -7,12 +7,22 @@ const router = express.Router();
  * @route GET /api/movies
  */
 router.get('/movies', (req, res) => {
-  const sql = 'SELECT * FROM casa0017Moives';
-  db.query(sql, (err, results) => {
+  const category = req.query.category;
+  let sql = 'SELECT * FROM movies';
+  let params = [];
+
+  if (category && category !== 'All') {
+    sql += ' WHERE category = ?';
+    params.push(category);
+  }
+
+  sql += ' ORDER BY created_at DESC';
+
+  db.query(sql, params, (err, results) => {
     if (err) return res.status(500).json({ error: err.message });
     res.json({
       status: 0,
-      message: '获取电影列表成功',
+      message: 'Success',
       data: results
     });
   });
@@ -23,17 +33,16 @@ router.get('/movies', (req, res) => {
  * @route GET /api/movies/:id
  */
 router.get('/movies/:id', (req, res) => {
-  console.log('访问电影详情接口，ID:', req.params.id);
-  const sql = 'SELECT * FROM casa0017Moives WHERE movie_id = ?';
+  const sql = 'SELECT * FROM movies WHERE id = ?';
   db.query(sql, [req.params.id], (err, results) => {
     if (err) return res.status(500).json({ error: err.message });
     if (results.length === 0) return res.status(404).json({ 
       status: 1,
-      message: '电影不存在'
+      message: 'Movie not found'
     });
     res.json({
       status: 0,
-      message: '获取电影详情成功',
+      message: 'Success',
       data: results[0]
     });
   });
@@ -44,27 +53,17 @@ router.get('/movies/:id', (req, res) => {
  * @route POST /api/movies
  */
 router.post('/movies', (req, res) => {
-  // 添加调试日志
-  console.log('收到的请求体:', req.body);
+  const { name, category, description, rating, length, poster_url } = req.body;
   
-  // 获取客户端提交的电影数据
-  const { movie_name } = req.body;
-  
-  // 添加调试日志
-  console.log('解析的电影名称:', movie_name);
-  
-  // 判断数据是否合法
-  if (!movie_name) {
-    console.log('电影名称为空');  // 添加调试日志
+  if (!name || !category) {
     return res.status(400).json({
       status: 1,
-      message: '电影名称不能为空'
+      message: 'Name and category are required'
     });
   }
 
-  // 插入新电影
-  const sql = 'INSERT INTO casa0017Moives (movie_name) VALUES (?)';
-  db.query(sql, [movie_name], (err, result) => {
+  const sql = 'INSERT INTO movies (name, category, description, rating, length, poster_url) VALUES (?, ?, ?, ?, ?, ?)';
+  db.query(sql, [name, category, description, rating, length, poster_url], (err, result) => {
     if (err) return res.status(500).json({ 
       status: 1,
       message: err.message 
@@ -72,10 +71,15 @@ router.post('/movies', (req, res) => {
     
     res.status(201).json({
       status: 0,
-      message: '添加电影成功',
+      message: 'Movie added successfully',
       data: {
         id: result.insertId,
-        movie_name
+        name,
+        category,
+        description,
+        rating,
+        length,
+        poster_url
       }
     });
   });
@@ -86,26 +90,18 @@ router.post('/movies', (req, res) => {
  * @route PUT /api/movies/:id
  */
 router.put('/movies/:id', (req, res) => {
-  console.log('收到更新请求:', {
-    id: req.params.id,
-    body: req.body
-  });
-  
-  // 获取电影 ID 和新的电影名称
   const id = req.params.id;
-  const { movie_name } = req.body;
+  const { name, category, description, rating, length, poster_url } = req.body;
   
-  // 判断数据是否合法
-  if (!movie_name) {
+  if (!name || !category) {
     return res.status(400).json({
       status: 1,
-      message: '电影名称不能为空'
+      message: 'Name and category are required'
     });
   }
 
-  // 更新电影信息
-  const sql = 'UPDATE casa0017Moives SET movie_name = ? WHERE movie_id = ?';
-  db.query(sql, [movie_name, id], (err, result) => {
+  const sql = 'UPDATE movies SET name = ?, category = ?, description = ?, rating = ?, length = ?, poster_url = ? WHERE id = ?';
+  db.query(sql, [name, category, description, rating, length, poster_url, id], (err, result) => {
     if (err) return res.status(500).json({ 
       status: 1,
       message: err.message 
@@ -114,16 +110,21 @@ router.put('/movies/:id', (req, res) => {
     if (result.affectedRows === 0) {
       return res.status(404).json({
         status: 1,
-        message: '要更新的电影不存在'
+        message: 'Movie not found'
       });
     }
     
     res.json({
       status: 0,
-      message: '更新电影成功',
+      message: 'Movie updated successfully',
       data: {
         id,
-        movie_name
+        name,
+        category,
+        description,
+        rating,
+        length,
+        poster_url
       }
     });
   });
@@ -134,13 +135,8 @@ router.put('/movies/:id', (req, res) => {
  * @route DELETE /api/movies/:id
  */
 router.delete('/movies/:id', (req, res) => {
-  console.log('收到删除请求，ID:', req.params.id);
-  
-  const id = req.params.id;
-  
-  // 删除电影
-  const sql = 'DELETE FROM casa0017Moives WHERE movie_id = ?';
-  db.query(sql, [id], (err, result) => {
+  const sql = 'DELETE FROM movies WHERE id = ?';
+  db.query(sql, [req.params.id], (err, result) => {
     if (err) return res.status(500).json({ 
       status: 1,
       message: err.message 
@@ -149,13 +145,13 @@ router.delete('/movies/:id', (req, res) => {
     if (result.affectedRows === 0) {
       return res.status(404).json({
         status: 1,
-        message: '要删除的电影不存在'
+        message: 'Movie not found'
       });
     }
     
     res.json({
       status: 0,
-      message: '删除电影成功'
+      message: 'Movie deleted successfully'
     });
   });
 });
