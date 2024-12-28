@@ -1,8 +1,12 @@
 import axios from 'axios'
 
+// 创建axios实例
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API,
-  timeout: 15000
+  timeout: 15000,
+  headers: {
+    'Content-Type': 'application/json'
+  }
 })
 
 // 请求拦截器
@@ -13,12 +17,13 @@ service.interceptors.request.use(
       url: config.url,
       method: config.method,
       data: config.data,
-      baseURL: config.baseURL
+      baseURL: config.baseURL,
+      headers: config.headers
     })
     return config
   },
   error => {
-    console.log(error)
+    console.error('Request Error:', error)
     return Promise.reject(error)
   }
 )
@@ -32,7 +37,7 @@ service.interceptors.response.use(
   },
   error => {
     // 增加更详细的错误日志
-    console.log('Response Error:', {
+    console.error('Response Error:', {
       message: error.message,
       response: error.response?.data,
       status: error.response?.status,

@@ -18,8 +18,22 @@ router.get('/movies', (req, res) => {
 
   sql += ' ORDER BY created_at DESC';
 
+  // 添加调试日志
+  console.log('Executing SQL:', sql, 'with params:', params);
+
   db.query(sql, params, (err, results) => {
-    if (err) return res.status(500).json({ error: err.message });
+    if (err) {
+      console.error('Database error:', err);
+      return res.status(500).json({ 
+        status: 1,
+        message: 'Database error',
+        error: err.message 
+      });
+    }
+
+    // 添加调试日志
+    console.log('Query results:', results);
+
     res.json({
       status: 0,
       message: 'Success',
@@ -53,21 +67,33 @@ router.get('/movies/:id', (req, res) => {
  * @route POST /api/movies
  */
 router.post('/movies', (req, res) => {
-  const { name, category, description, rating, length, poster_url } = req.body;
+  const { name, category, description, rating, length, poster_url, director, cast, plot_summary } = req.body;
+  
+  console.log('Received POST request with data:', req.body);
   
   if (!name || !category) {
+    console.log('Validation failed: missing name or category');
     return res.status(400).json({
       status: 1,
       message: 'Name and category are required'
     });
   }
 
-  const sql = 'INSERT INTO movies (name, category, description, rating, length, poster_url) VALUES (?, ?, ?, ?, ?, ?)';
-  db.query(sql, [name, category, description, rating, length, poster_url], (err, result) => {
-    if (err) return res.status(500).json({ 
-      status: 1,
-      message: err.message 
-    });
+  const sql = 'INSERT INTO movies (name, category, description, rating, length, poster_url, director, cast, plot_summary) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+  const params = [name, category, description, rating, length, poster_url, director, cast, plot_summary];
+  
+  console.log('Executing SQL:', sql, 'with params:', params);
+
+  db.query(sql, params, (err, result) => {
+    if (err) {
+      console.error('Database error:', err);
+      return res.status(500).json({ 
+        status: 1,
+        message: err.message 
+      });
+    }
+    
+    console.log('Insert result:', result);
     
     res.status(201).json({
       status: 0,
@@ -79,7 +105,10 @@ router.post('/movies', (req, res) => {
         description,
         rating,
         length,
-        poster_url
+        poster_url,
+        director,
+        cast,
+        plot_summary
       }
     });
   });
@@ -91,21 +120,33 @@ router.post('/movies', (req, res) => {
  */
 router.put('/movies/:id', (req, res) => {
   const id = req.params.id;
-  const { name, category, description, rating, length, poster_url } = req.body;
+  const { name, category, description, rating, length, poster_url, director, cast, plot_summary } = req.body;
+  
+  console.log('Received PUT request for id:', id, 'with data:', req.body);
   
   if (!name || !category) {
+    console.log('Validation failed: missing name or category');
     return res.status(400).json({
       status: 1,
       message: 'Name and category are required'
     });
   }
 
-  const sql = 'UPDATE movies SET name = ?, category = ?, description = ?, rating = ?, length = ?, poster_url = ? WHERE id = ?';
-  db.query(sql, [name, category, description, rating, length, poster_url, id], (err, result) => {
-    if (err) return res.status(500).json({ 
-      status: 1,
-      message: err.message 
-    });
+  const sql = 'UPDATE movies SET name = ?, category = ?, description = ?, rating = ?, length = ?, poster_url = ?, director = ?, cast = ?, plot_summary = ? WHERE id = ?';
+  const params = [name, category, description, rating, length, poster_url, director, cast, plot_summary, id];
+  
+  console.log('Executing SQL:', sql, 'with params:', params);
+
+  db.query(sql, params, (err, result) => {
+    if (err) {
+      console.error('Database error:', err);
+      return res.status(500).json({ 
+        status: 1,
+        message: err.message 
+      });
+    }
+    
+    console.log('Update result:', result);
     
     if (result.affectedRows === 0) {
       return res.status(404).json({
@@ -124,7 +165,10 @@ router.put('/movies/:id', (req, res) => {
         description,
         rating,
         length,
-        poster_url
+        poster_url,
+        director,
+        cast,
+        plot_summary
       }
     });
   });

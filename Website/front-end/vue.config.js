@@ -37,11 +37,11 @@ module.exports = {
       errors: true
     },
     proxy: {
-      [process.env.VUE_APP_BASE_API]: {
+      '/dev-api': {
         target: 'http://localhost:3007',
         changeOrigin: true,
         pathRewrite: {
-          ['^' + process.env.VUE_APP_BASE_API]: ''
+          '^/dev-api': ''
         }
       }
     },

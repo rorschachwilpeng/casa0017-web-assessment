@@ -12,10 +12,22 @@ const app = express();
  */
 // 允许跨域请求
 app.use(cors());
-// 解析 application/x-www-form-urlencoded 格式的请求体
-app.use(express.urlencoded({ extended: false }));
+
 // 解析 application/json 格式的请求体
 app.use(express.json());
+
+// 解析 application/x-www-form-urlencoded 格式的请求体
+app.use(express.urlencoded({ extended: false }));
+
+// 请求日志中间件
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+  if (req.method !== 'GET') {
+    console.log('Request Body:', req.body);
+  }
+  next();
+});
+
 // 提供静态文件访问
 app.use('/posters', express.static(path.join(__dirname, 'public/posters')));
 
@@ -27,6 +39,16 @@ const moviesRouter = require('./router/movies');
 
 app.use("/api", userRouter);
 app.use('/api', moviesRouter);
+
+// 错误处理中间件
+app.use((err, req, res, next) => {
+  console.error('Server Error:', err);
+  res.status(500).json({
+    status: 1,
+    message: 'Internal Server Error',
+    error: err.message
+  });
+});
 
 /**
  * 启动服务器

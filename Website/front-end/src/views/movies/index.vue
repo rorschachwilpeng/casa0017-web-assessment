@@ -17,13 +17,37 @@
     >
       <el-table-column align="center" label="ID" width="95">
         <template slot-scope="scope">
-          {{ scope.row.movie_id }}
+          {{ scope.row.id }}
         </template>
       </el-table-column>
       
       <el-table-column label="Movie Name">
         <template slot-scope="scope">
-          {{ scope.row.movie_name }}
+          {{ scope.row.name }}
+        </template>
+      </el-table-column>
+
+      <el-table-column label="Category" width="120">
+        <template slot-scope="scope">
+          {{ scope.row.category }}
+        </template>
+      </el-table-column>
+
+      <el-table-column label="Director" width="150">
+        <template slot-scope="scope">
+          {{ scope.row.director }}
+        </template>
+      </el-table-column>
+
+      <el-table-column label="Rating" width="100">
+        <template slot-scope="scope">
+          {{ scope.row.rating }}%
+        </template>
+      </el-table-column>
+
+      <el-table-column label="Length" width="100">
+        <template slot-scope="scope">
+          {{ scope.row.length }}
         </template>
       </el-table-column>
 
@@ -41,9 +65,48 @@
 
     <!-- Add/Edit Dialog -->
     <el-dialog :title="dialogTitle" :visible.sync="dialogVisible">
-      <el-form ref="movieForm" :model="movieForm" :rules="rules" label-width="100px">
-        <el-form-item label="Movie Name" prop="movie_name">
-          <el-input v-model="movieForm.movie_name" placeholder="Please enter movie name" />
+      <el-form ref="movieForm" :model="movieForm" :rules="rules" label-width="120px">
+        <el-form-item label="Movie Name" prop="name">
+          <el-input v-model="movieForm.name" placeholder="Please enter movie name" />
+        </el-form-item>
+
+        <el-form-item label="Category" prop="category">
+          <el-select v-model="movieForm.category" placeholder="Select category">
+            <el-option
+              v-for="item in categories"
+              :key="item"
+              :label="item"
+              :value="item"
+            />
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="Director" prop="director">
+          <el-input v-model="movieForm.director" placeholder="Please enter director name" />
+        </el-form-item>
+
+        <el-form-item label="Cast" prop="cast">
+          <el-input type="textarea" v-model="movieForm.cast" placeholder="Please enter cast members" />
+        </el-form-item>
+
+        <el-form-item label="Description" prop="description">
+          <el-input type="textarea" v-model="movieForm.description" placeholder="Please enter short description" />
+        </el-form-item>
+
+        <el-form-item label="Plot Summary" prop="plot_summary">
+          <el-input type="textarea" v-model="movieForm.plot_summary" placeholder="Please enter detailed plot summary" />
+        </el-form-item>
+
+        <el-form-item label="Rating" prop="rating">
+          <el-input-number v-model="movieForm.rating" :min="0" :max="100" />
+        </el-form-item>
+
+        <el-form-item label="Length" prop="length">
+          <el-input v-model="movieForm.length" placeholder="e.g. 2h 30m" />
+        </el-form-item>
+
+        <el-form-item label="Poster URL" prop="poster_url">
+          <el-input v-model="movieForm.poster_url" placeholder="Please enter poster URL" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -65,13 +128,25 @@ export default {
       listLoading: true,
       dialogVisible: false,
       dialogTitle: '',
+      categories: ['Drama', 'Comedy', 'Action', 'Horror', 'Romance'],
       movieForm: {
-        movie_id: undefined,
-        movie_name: ''
+        id: undefined,
+        name: '',
+        category: '',
+        director: '',
+        cast: '',
+        description: '',
+        plot_summary: '',
+        rating: 0,
+        length: '',
+        poster_url: ''
       },
       rules: {
-        movie_name: [
+        name: [
           { required: true, message: 'Please enter movie name', trigger: 'blur' }
+        ],
+        category: [
+          { required: true, message: 'Please select category', trigger: 'change' }
         ]
       }
     }
@@ -80,7 +155,6 @@ export default {
     this.fetchData()
   },
   methods: {
-    // Get movie list
     async fetchData() {
       this.listLoading = true
       try {
@@ -88,32 +162,62 @@ export default {
           url: '/api/movies',
           method: 'get'
         })
-        this.moviesList = response.data
-        this.listLoading = false
+        console.log('API Response:', response)
+        if (response && response.data) {
+          this.moviesList = response.data
+        } else {
+          this.moviesList = []
+          this.$message.warning('No movies data received')
+        }
       } catch (error) {
         console.error('Failed to get movie list:', error)
+        this.$message.error('Failed to load movies')
+        this.moviesList = []
+      } finally {
         this.listLoading = false
       }
     },
 
-    // Handle create button click
     handleCreate() {
       this.dialogTitle = 'Add Movie'
       this.movieForm = {
-        movie_id: undefined,
-        movie_name: ''
+        id: undefined,
+        name: '',
+        category: '',
+        director: '',
+        cast: '',
+        description: '',
+        plot_summary: '',
+        rating: 0,
+        length: '',
+        poster_url: '/posters/default.jpg'
       }
+      this.$nextTick(() => {
+        this.$refs.movieForm.clearValidate()
+      })
       this.dialogVisible = true
     },
 
-    // Handle edit button click
     handleEdit(row) {
       this.dialogTitle = 'Edit Movie'
-      this.movieForm = Object.assign({}, row)
+      this.movieForm = JSON.parse(JSON.stringify({
+        id: row.id,
+        name: row.name,
+        category: row.category,
+        director: row.director || '',
+        cast: row.cast || '',
+        description: row.description || '',
+        plot_summary: row.plot_summary || '',
+        rating: row.rating || 0,
+        length: row.length || '',
+        poster_url: row.poster_url || '/posters/default.jpg'
+      }))
+      this.$nextTick(() => {
+        this.$refs.movieForm.clearValidate()
+      })
       this.dialogVisible = true
     },
 
-    // Handle delete button click
     async handleDelete(row) {
       try {
         await this.$confirm('Are you sure you want to delete this movie?', 'Warning', {
@@ -122,77 +226,85 @@ export default {
           type: 'warning'
         })
         
-        await request({
-          url: `/api/movies/${row.movie_id}`,
+        const response = await request({
+          url: `/api/movies/${row.id}`,
           method: 'delete'
         })
-        
-        this.$message({
-          type: 'success',
-          message: 'Delete successful!'
-        })
-        
-        this.fetchData()
+
+        if (response.status === 0) {
+          this.$message({
+            type: 'success',
+            message: 'Delete successful!'
+          })
+          await this.fetchData()
+        } else {
+          throw new Error(response.message)
+        }
       } catch (error) {
         console.error('Delete failed:', error)
+        this.$message({
+          type: 'error',
+          message: error.message || 'Delete failed'
+        })
       }
     },
 
-    // Submit form
     async submitForm() {
       this.$refs.movieForm.validate(async (valid) => {
         if (valid) {
           try {
-            const isEdit = !!this.movieForm.movie_id
-            console.log('Submitting form:', {
-              isEdit,
-              movieId: this.movieForm.movie_id,
-              movieName: this.movieForm.movie_name
-            })
+            const isEdit = !!this.movieForm.id
+            const submitData = {
+              ...this.movieForm,
+              rating: Number(this.movieForm.rating)
+            }
+
+            console.log('Submitting form data:', submitData)
+            
+            // 直接使用完整的URL
+            const baseURL = 'http://localhost:3007'
+            const url = isEdit ? `/api/movies/${this.movieForm.id}` : '/api/movies'
+            
+            console.log('Full Request URL:', baseURL + url)
+            console.log('Request Method:', isEdit ? 'put' : 'post')
 
             const response = await request({
-              url: isEdit ? 
-                `http://localhost:3007/api/movies/${this.movieForm.movie_id}` : 
-                'http://localhost:3007/api/movies',
+              url,
               method: isEdit ? 'put' : 'post',
-              data: {
-                movie_name: this.movieForm.movie_name
-              },
+              data: submitData,
+              baseURL,
               headers: {
                 'Content-Type': 'application/json'
-              },
-              timeout: 30000 // 增加超时时间到30秒
+              }
             })
 
-            console.log('Submit response:', response)
+            console.log('Server response:', response)
 
-            this.$message({
-              type: 'success',
-              message: isEdit ? 'Update successful!' : 'Add successful!'
-            })
-
-            this.dialogVisible = false
-            this.fetchData()
+            if (response && response.status === 0) {
+              this.$message({
+                type: 'success',
+                message: isEdit ? 'Update successful!' : 'Add successful!'
+              })
+              this.dialogVisible = false
+              await this.fetchData()
+            } else {
+              throw new Error(response ? response.message : 'Operation failed')
+            }
           } catch (error) {
-            console.error('Submit failed:', {
-              error: error.message,
-              response: error.response?.data,
-              status: error.response?.status,
+            console.error('Submit failed:', error)
+            console.error('Error details:', {
+              message: error.message,
+              response: error.response,
               config: error.config
             })
-            
-            let errorMessage = 'Operation failed'
-            if (error.message.includes('timeout')) {
-              errorMessage = 'Request timeout. Please check if the backend server is running.'
-            } else if (error.response?.data?.message) {
-              errorMessage = error.response.data.message
-            }
-            
             this.$message({
               type: 'error',
-              message: errorMessage
+              message: error.response?.data?.message || error.message || 'Operation failed'
             })
           }
+        } else {
+          console.log('Form validation failed')
+          return false
         }
       })
     }
