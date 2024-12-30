@@ -36,9 +36,11 @@ app.use('/posters', express.static(path.join(__dirname, 'public/posters')));
  */
 const userRouter = require("./router/user");
 const moviesRouter = require('./router/movies');
+const cinemasRouter = require('./router/cinemas');
 
 app.use("/api", userRouter);
 app.use('/api', moviesRouter);
+app.use('/api', cinemasRouter);
 
 // 错误处理中间件
 app.use((err, req, res, next) => {
