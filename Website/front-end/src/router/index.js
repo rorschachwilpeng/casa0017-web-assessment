@@ -206,6 +206,19 @@ export const constantRoutes = [
     ]
   },
 
+  {
+    path: '/crime-data',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        name: 'CrimeData',
+        component: () => import('@/views/crime-data/index'),
+        meta: { title: 'Crime Statistics', icon: 'el-icon-data-analysis' }
+      }
+    ]
+  },
+
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
 ]

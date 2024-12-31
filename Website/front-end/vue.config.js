@@ -37,7 +37,7 @@ module.exports = {
       errors: true
     },
     proxy: {
-      '/dev-api': {
+      '/api': {
         target: 'http://localhost:3007',
         changeOrigin: true,
         pathRewrite: {
