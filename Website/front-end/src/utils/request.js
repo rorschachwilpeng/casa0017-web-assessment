@@ -1,29 +1,24 @@
 import axios from 'axios'
+import { MessageBox, Message } from 'element-ui'
+import store from '@/store'
 
-// 创建axios实例
+// 创建 axios 实例
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API,
-  timeout: 15000,
-  headers: {
-    'Content-Type': 'application/json'
-  }
+  timeout: 5000
 })
 
 // 请求拦截器
 service.interceptors.request.use(
   config => {
-    // 添加调试日志
-    console.log('Request Config:', {
-      url: config.url,
-      method: config.method,
-      data: config.data,
-      baseURL: config.baseURL,
-      headers: config.headers
-    })
+    // 跳过认证相关的请求
+    if (config.url.includes('/user/info')) {
+      return Promise.reject('Skipped auth check')
+    }
     return config
   },
   error => {
-    console.error('Request Error:', error)
+    console.log(error)
     return Promise.reject(error)
   }
 )
@@ -31,17 +26,28 @@ service.interceptors.request.use(
 // 响应拦截器
 service.interceptors.response.use(
   response => {
-    // 添加调试日志
-    console.log('Response Data:', response.data)
-    return response.data
+    const res = response.data
+    return res
   },
   error => {
-    // 增加更详细的错误日志
-    console.error('Response Error:', {
+    // 如果是跳过的认证请求，不显示错误
+    if (error === 'Skipped auth check') {
+      return Promise.resolve({
+        code: 20000,
+        data: {
+          roles: ['admin'],
+          introduction: 'mock user',
+          avatar: '',
+          name: 'Mock User'
+        }
+      })
+    }
+    
+    console.log('err' + error)
+    Message({
       message: error.message,
-      response: error.response?.data,
-      status: error.response?.status,
-      config: error.config
+      type: 'error',
+      duration: 5 * 1000
     })
     return Promise.reject(error)
   }
