@@ -1,113 +1,118 @@
 <template>
-  <div class="crime-data-container">
-    <!-- 顶部统计信息面板 -->
-    <div class="statistics-panel">
-      <el-row :gutter="20">
-        <el-col :span="6">
-          <el-card>
-            <div class="stat-item">
-              <h3>Total Crimes</h3>
-              <div class="stat-value">{{ totalCrimes }}</div>
-            </div>
-          </el-card>
-        </el-col>
-        <el-col :span="6">
-          <el-card>
-            <div class="stat-item">
-              <h3>Highest Crime Area</h3>
-              <div class="stat-value">{{ highestCrimeArea }}</div>
-            </div>
-          </el-card>
-        </el-col>
-        <el-col :span="6">
-          <el-card>
-            <div class="stat-item">
-              <h3>Average Crime Rate</h3>
-              <div class="stat-value">{{ averageCrimes }}</div>
-            </div>
-          </el-card>
-        </el-col>
-        <el-col :span="6">
-          <el-card>
-            <div class="stat-item">
-              <h3>Last Updated</h3>
-              <div class="stat-value">{{ lastUpdate }}</div>
-            </div>
-          </el-card>
-        </el-col>
-      </el-row>
+  <div class="app-container">
+    <!-- 顶部过滤器 -->
+    <div class="filter-section">
+      <el-form :inline="true" class="filter-form">
+        <el-form-item label="Time Range">
+          <el-date-picker
+            v-model="dateRange"
+            type="daterange"
+            range-separator="to"
+            start-placeholder="Start Date"
+            end-placeholder="End Date"
+            @change="handleDateChange"
+          />
+        </el-form-item>
+        <el-form-item label="Crime Type">
+          <el-select v-model="selectedCrimeType" placeholder="Select Crime Type" @change="handleCrimeTypeChange">
+            <el-option
+              v-for="type in crimeTypes"
+              :key="type"
+              :label="type"
+              :value="type"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="applyFilters">Apply Filters</el-button>
+        </el-form-item>
+      </el-form>
     </div>
 
-    <!-- 主要内容区 -->
+    <!-- 主要内容区域 -->
     <div class="main-content">
-      <!-- 侧边栏筛选面板 -->
-      <div class="filter-panel">
-        <el-card>
-          <div slot="header">
-            <span>Data Filters</span>
-          </div>
-          <el-form>
-            <el-form-item label="Area Search">
-              <el-input v-model="searchQuery" placeholder="Search area"></el-input>
-            </el-form-item>
-            <el-form-item>
-              <span class="crime-range-label">Crime Rate Range</span>
-              <div class="range-indicators">
-                <span>Current Level: {{ currentRangeLevel }}</span>
-              </div>
-              <el-slider
-                v-model="crimeRateRange"
-                range
-                :min="0"
-                :max="maxCrimeRate"
-                :marks="sliderMarks"
-                style="margin-top: 5px"
-              ></el-slider>
-              <div class="range-values">
-                <span>{{ getCrimeRateLevel(crimeRateRange[0]) }}: {{ crimeRateRange[0] }}</span>
-                <span>{{ getCrimeRateLevel(crimeRateRange[1]) }}: {{ crimeRateRange[1] }}</span>
-              </div>
-            </el-form-item>
-            <el-form-item label="Sort By">
-              <el-select v-model="sortBy" placeholder="Select sorting method">
-                <el-option label="Crime Rate (High to Low)" value="crimeRate-desc"></el-option>
-                <el-option label="Crime Rate (Low to High)" value="crimeRate-asc"></el-option>
-                <el-option label="Area Name" value="name"></el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item>
-              <el-button type="primary" @click="applyFilters" icon="el-icon-refresh">
-                Apply Filters
-              </el-button>
-            </el-form-item>
-          </el-form>
-        </el-card>
+      <!-- 左侧统计信息 -->
+      <div class="stats-panel">
+        <h3>Crime Statistics</h3>
+        <div class="stats-cards">
+          <el-card class="stats-card">
+            <div class="stats-value">{{ totalCrimes }}</div>
+            <div class="stats-label">Total Crimes</div>
+          </el-card>
+          <el-card class="stats-card">
+            <div class="stats-value">{{ avgCrimesPerDay }}</div>
+            <div class="stats-label">Average per Day</div>
+          </el-card>
+          <el-card class="stats-card">
+            <div class="stats-value">{{ highestCrimeArea }}</div>
+            <div class="stats-label">Highest Crime Area</div>
+          </el-card>
+        </div>
+
+        <!-- 犯罪类型分布图表 -->
+        <div class="crime-chart">
+          <h4>Crime Type Distribution</h4>
+          <div id="crimeTypeChart" style="height: 300px;"></div>
+        </div>
+
+        <!-- 时间趋势图表 -->
+        <div class="trend-chart">
+          <h4>Crime Trend</h4>
+          <div id="crimeTrendChart" style="height: 300px;"></div>
+        </div>
       </div>
 
-      <!-- 地图容器 -->
-      <div class="map-container" ref="mapContainer"></div>
-
-      <!-- 区域详情面板 -->
-      <el-drawer
-        title="Area Details"
-        :visible.sync="drawerVisible"
-        direction="rtl"
-        size="30%"
-      >
-        <div v-if="selectedArea" class="area-details">
-          <h2>{{ selectedArea.name }}</h2>
-          <div class="detail-item">
-            <label>Crime Count:</label>
-            <span>{{ selectedArea.crimeCount }}</span>
-          </div>
-          <div class="detail-item">
-            <label>Compared to Average:</label>
-            <span :class="{'above-average': selectedArea.aboveAverage}">
-              {{ selectedArea.comparisonText }}
-            </span>
-          </div>
+      <!-- 右侧地图 -->
+      <div class="map-container">
+        <div id="crimeMap"></div>
+        <div class="map-controls">
+          <el-button-group>
+            <el-button size="small" @click="toggleHeatmap">Toggle Heatmap</el-button>
+            <el-button size="small" @click="toggleClusters">Toggle Clusters</el-button>
+          </el-button-group>
         </div>
-      </el-drawer>
+      </div>
+    </div>
+
+    <!-- 底部数据表格 -->
+    <div class="data-table">
+      <h3>Detailed Crime Data</h3>
+      <el-table
+        :data="crimeData"
+        style="width: 100%"
+        height="400"
+        border
+      >
+        <el-table-column
+          prop="date"
+          label="Date"
+          width="180"
+        />
+        <el-table-column
+          prop="type"
+          label="Type"
+          width="180"
+        />
+        <el-table-column
+          prop="location"
+          label="Location"
+        />
+        <el-table-column
+          prop="description"
+          label="Description"
+        />
+        <el-table-column
+          prop="severity"
+          label="Severity"
+          width="100"
+        >
+          <template slot-scope="scope">
+            <el-tag :type="getSeverityType(scope.row.severity)">
+              {{ scope.row.severity }}
+            </el-tag>
+          </template>
+        </el-table-column>
+      </el-table>
     </div>
   </div>
 </template>
@@ -115,366 +120,328 @@
 <script>
 import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
-import axios from 'axios'
+import * as echarts from 'echarts'
+import request from '@/utils/request'
+
+// 修复 Leaflet 图标路径问题
+delete L.Icon.Default.prototype._getIconUrl
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
+  iconUrl: require('leaflet/dist/images/marker-icon.png'),
+  shadowUrl: require('leaflet/dist/images/marker-shadow.png')
+})
 
 export default {
   name: 'CrimeData',
   data() {
     return {
-      map: null,
-      searchQuery: '',
-      crimeRateRange: [0, 100],
-      sortBy: 'crimeRate-desc',
-      totalCrimes: 0,
-      highestCrimeArea: '',
-      averageCrimes: 0,
-      lastUpdate: '',
-      maxCrimeRate: 100,
-      drawerVisible: false,
-      selectedArea: null,
+      dateRange: [],
+      selectedCrimeType: '',
+      crimeTypes: ['Theft', 'Assault', 'Burglary', 'Robbery', 'Vandalism'],
       crimeData: [],
-      marks: {}
-    }
-  },
-  computed: {
-    sliderMarks() {
-      if (!this.maxCrimeRate) return {}
-      return {
-        0: 'Low',
-        [Math.floor(this.maxCrimeRate / 3)]: 'Medium',
-        [Math.floor(this.maxCrimeRate * 2 / 3)]: 'High'
-      }
-    },
-    currentRangeLevel() {
-      const avgValue = (this.crimeRateRange[0] + this.crimeRateRange[1]) / 2
-      if (avgValue <= this.maxCrimeRate / 3) return 'Low'
-      if (avgValue <= this.maxCrimeRate * 2 / 3) return 'Medium'
-      return 'High'
+      map: null,
+      heatmapLayer: null,
+      clusterLayer: null,
+      showHeatmap: true,
+      showClusters: false,
+      totalCrimes: 0,
+      avgCrimesPerDay: 0,
+      highestCrimeArea: '',
+      crimeTypeChart: null,
+      crimeTrendChart: null
     }
   },
   mounted() {
-    this.initializeMap()
-    this.loadCrimeData()
+    this.initMap()
+    this.initCharts()
+    this.fetchCrimeData()
   },
   methods: {
-    initializeMap() {
-      this.map = L.map(this.$refs.mapContainer).setView([51.505, -0.09], 11)
+    initMap() {
+      // 初始化地图，以伦敦为中心
+      this.map = L.map('crimeMap').setView([51.5074, -0.1278], 13)
+      
+      // 添加地图图层
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap contributors'
       }).addTo(this.map)
+    },
 
-      // 添加图例
-      const legend = L.control({ position: 'bottomright' })
-      legend.onAdd = () => {
-        const div = L.DomUtil.create('div', 'info legend')
-        div.style.backgroundColor = 'white'
-        div.style.padding = '10px'
-        div.style.borderRadius = '5px'
-        div.style.border = '1px solid #ccc'
-        
-        const grades = [0, 0.2, 0.4, 0.6, 0.8]
-        let html = '<h4 style="margin:0 0 10px 0">Crime Rate</h4>'
-        
-        for (let i = grades.length - 1; i >= 0; i--) {
-          html +=
-            '<i style="background:' + this.getCrimeColor(grades[i] * this.maxCrimeRate) +
-            '; width: 18px; height: 18px; float: left; margin-right: 8px; opacity: 0.7"></i> ' +
-            Math.round(grades[i] * 100) + '%' +
-            (grades[i + 1] ? '&ndash;' + Math.round(grades[i + 1] * 100) + '%' : '+') + '<br>'
-        }
-        
-        div.innerHTML = html
-        return div
-      }
-      legend.addTo(this.map)
+    initCharts() {
+      // 初始化犯罪类型分布图表
+      this.crimeTypeChart = echarts.init(document.getElementById('crimeTypeChart'))
+      
+      // 初始化时间趋势图表
+      this.crimeTrendChart = echarts.init(document.getElementById('crimeTrendChart'))
+      
+      // 设置图表响应式
+      window.addEventListener('resize', () => {
+        this.crimeTypeChart.resize()
+        this.crimeTrendChart.resize()
+      })
     },
-    async loadCrimeData() {
+
+    async fetchCrimeData() {
       try {
-        console.log('Fetching crime data...')
-        const response = await axios.get('http://localhost:3007/api/crimes')
-        console.log('Received data:', response.data)
-        
-        if (!response.data || !Array.isArray(response.data)) {
-          throw new Error('Invalid data format received')
+        const response = await request({
+          url: '/api/crimes',
+          method: 'get',
+          params: {
+            startDate: this.dateRange[0],
+            endDate: this.dateRange[1],
+            crimeType: this.selectedCrimeType
+          }
+        })
+
+        if (response && response.data) {
+          this.crimeData = response.data
+          this.updateStatistics()
+          this.updateMap()
+          this.updateCharts()
         }
-        
-        this.crimeData = response.data
-        this.processData()
-        this.updateMap()
-        
-        // 显示成功消息
-        this.$message.success('Successfully loaded ' + this.crimeData.length + ' areas')
       } catch (error) {
-        console.error('Error loading crime data:', error)
-        this.$message.error('Failed to load crime data: ' + (error.message || 'Unknown error'))
+        console.error('Failed to fetch crime data:', error)
+        this.$message.error('Failed to load crime data')
       }
     },
-    processData() {
-      if (!this.crimeData.length) return
+
+    updateStatistics() {
+      // 更新统计数据
+      this.totalCrimes = this.crimeData.length
+      this.avgCrimesPerDay = Math.round(this.totalCrimes / 30) // 假设是30天的数据
       
-      // 计算总体统计信息
-      this.totalCrimes = this.crimeData.reduce((sum, area) => sum + area.crime_count, 0)
-      this.averageCrimes = Math.round(this.totalCrimes / this.crimeData.length)
-      
-      // 找出最高犯罪率区域
-      const maxCrimeArea = this.crimeData.reduce((max, area) => 
-        area.crime_count > max.crime_count ? area : max
-      , this.crimeData[0])
-      this.highestCrimeArea = maxCrimeArea.neighbourhood_name
-      
-      // 设置最大犯罪率和滑块范围
-      this.maxCrimeRate = Math.max(...this.crimeData.map(area => area.crime_count))
-      this.crimeRateRange = [0, this.maxCrimeRate]
-      
-      // 更新时间
-      this.lastUpdate = new Date().toLocaleDateString()
+      // 计算犯罪最多的区域
+      const areaCounts = {}
+      this.crimeData.forEach(crime => {
+        areaCounts[crime.location] = (areaCounts[crime.location] || 0) + 1
+      })
+      this.highestCrimeArea = Object.entries(areaCounts)
+        .sort(([,a], [,b]) => b - a)[0][0]
     },
+
     updateMap() {
       // 清除现有图层
-      this.map.eachLayer((layer) => {
-        if (layer instanceof L.Circle) {
-          this.map.removeLayer(layer)
-        }
-      })
+      if (this.heatmapLayer) {
+        this.map.removeLayer(this.heatmapLayer)
+      }
+      if (this.clusterLayer) {
+        this.map.removeLayer(this.clusterLayer)
+      }
 
-      // 过滤数据
-      const filteredData = this.crimeData.filter(area => {
-        return area.crime_count >= this.crimeRateRange[0] && 
-               area.crime_count <= this.crimeRateRange[1]
-      })
-
-      // 添加新的数据点
-      filteredData.forEach(area => {
-        // 减小半径系数从50到20
-        const radius = Math.sqrt(area.crime_count) * 20
-        const circle = L.circle([area.latitude, area.longitude], {
-          color: this.getCrimeColor(area.crime_count),
-          fillColor: this.getCrimeColor(area.crime_count),
-          fillOpacity: 0.3, // 降低透明度
-          weight: 1, // 减小边框宽度
-          radius: radius
+      // 添加热力图层
+      if (this.showHeatmap) {
+        const heatData = this.crimeData.map(crime => [
+          crime.latitude,
+          crime.longitude,
+          1 // 权重
+        ])
+        this.heatmapLayer = L.heatLayer(heatData, {
+          radius: 25,
+          blur: 15,
+          maxZoom: 10
         }).addTo(this.map)
+      }
 
-        // 添加点击事件
-        circle.on('click', () => {
-          this.selectedArea = {
-            name: area.neighbourhood_name,
-            crimeCount: area.crime_count,
-            aboveAverage: area.crime_count > this.averageCrimes,
-            comparisonText: this.getComparisonText(area.crime_count)
-          }
-          this.drawerVisible = true
+      // 添加聚合图层
+      if (this.showClusters) {
+        this.clusterLayer = L.markerClusterGroup()
+        this.crimeData.forEach(crime => {
+          const marker = L.marker([crime.latitude, crime.longitude])
+            .bindPopup(`
+              <h4>${crime.type}</h4>
+              <p>Date: ${crime.date}</p>
+              <p>Location: ${crime.location}</p>
+              <p>Severity: ${crime.severity}</p>
+            `)
+          this.clusterLayer.addLayer(marker)
         })
-
-        // 添加悬停提示
-        circle.bindTooltip(
-          `${area.neighbourhood_name}<br>Crime Count: ${area.crime_count}`,
-          { permanent: false }
-        )
-      })
-    },
-    getCrimeColor(count) {
-      // 优化颜色区分度
-      const ratio = count / this.maxCrimeRate
-      if (ratio > 0.8) return '#dc3545'      // 深红色
-      if (ratio > 0.6) return '#fd7e14'      // 橙色
-      if (ratio > 0.4) return '#ffc107'      // 黄色
-      if (ratio > 0.2) return '#28a745'      // 绿色
-      return '#20c997'                        // 青绿色
-    },
-    getComparisonText(count) {
-      const diff = count - this.averageCrimes
-      const percentage = Math.round((diff / this.averageCrimes) * 100)
-      return `${percentage > 0 ? 'Above' : 'Below'} average by ${Math.abs(percentage)}%`
-    },
-    // 添加监听器以在滑块值变化时更新地图
-    watch: {
-      crimeRateRange() {
-        this.updateMap()
+        this.map.addLayer(this.clusterLayer)
       }
     },
+
+    updateCharts() {
+      // 更新犯罪类型分布图表
+      const typeData = {}
+      this.crimeData.forEach(crime => {
+        typeData[crime.type] = (typeData[crime.type] || 0) + 1
+      })
+
+      const typeChartOption = {
+        title: {
+          text: 'Crime Type Distribution'
+        },
+        tooltip: {
+          trigger: 'item',
+          formatter: '{b}: {c} ({d}%)'
+        },
+        series: [{
+          type: 'pie',
+          radius: '65%',
+          data: Object.entries(typeData).map(([name, value]) => ({
+            name,
+            value
+          }))
+        }]
+      }
+      this.crimeTypeChart.setOption(typeChartOption)
+
+      // 更新时间趋势图表
+      const trendData = {}
+      this.crimeData.forEach(crime => {
+        const date = crime.date.split(' ')[0]
+        trendData[date] = (trendData[date] || 0) + 1
+      })
+
+      const trendChartOption = {
+        title: {
+          text: 'Crime Trend'
+        },
+        tooltip: {
+          trigger: 'axis'
+        },
+        xAxis: {
+          type: 'category',
+          data: Object.keys(trendData)
+        },
+        yAxis: {
+          type: 'value'
+        },
+        series: [{
+          type: 'line',
+          data: Object.values(trendData),
+          smooth: true
+        }]
+      }
+      this.crimeTrendChart.setOption(trendChartOption)
+    },
+
+    handleDateChange() {
+      this.fetchCrimeData()
+    },
+
+    handleCrimeTypeChange() {
+      this.fetchCrimeData()
+    },
+
     applyFilters() {
-      // 应用所有筛选条件
-      let filteredData = [...this.crimeData]
-      
-      // 应用搜索筛选
-      if (this.searchQuery) {
-        const query = this.searchQuery.toLowerCase()
-        filteredData = filteredData.filter(area => 
-          area.neighbourhood_name.toLowerCase().includes(query)
-        )
+      this.fetchCrimeData()
+    },
+
+    toggleHeatmap() {
+      this.showHeatmap = !this.showHeatmap
+      this.updateMap()
+    },
+
+    toggleClusters() {
+      this.showClusters = !this.showClusters
+      this.updateMap()
+    },
+
+    getSeverityType(severity) {
+      const types = {
+        'High': 'danger',
+        'Medium': 'warning',
+        'Low': 'success'
       }
-      
-      // 应用犯罪率范围筛选
-      filteredData = filteredData.filter(area => 
-        area.crime_count >= this.crimeRateRange[0] && 
-        area.crime_count <= this.crimeRateRange[1]
-      )
-      
-      // 应用排序
-      filteredData.sort((a, b) => {
-        switch(this.sortBy) {
-          case 'crimeRate-desc':
-            return b.crime_count - a.crime_count
-          case 'crimeRate-asc':
-            return a.crime_count - b.crime_count
-          case 'name':
-            return a.neighbourhood_name.localeCompare(b.neighbourhood_name)
-          default:
-            return 0
-        }
-      })
-      
-      // 更新地图显示
-      this.updateMapWithData(filteredData)
-    },
-    
-    updateMapWithData(data) {
-      // 清除现有图层
-      this.map.eachLayer((layer) => {
-        if (layer instanceof L.Circle) {
-          this.map.removeLayer(layer)
-        }
-      })
-
-      // 添加新的数据点
-      data.forEach(area => {
-        const radius = Math.sqrt(area.crime_count) * 20
-        const circle = L.circle([area.latitude, area.longitude], {
-          color: this.getCrimeColor(area.crime_count),
-          fillColor: this.getCrimeColor(area.crime_count),
-          fillOpacity: 0.3,
-          weight: 1,
-          radius: radius
-        }).addTo(this.map)
-
-        circle.on('click', () => {
-          this.selectedArea = {
-            name: area.neighbourhood_name,
-            crimeCount: area.crime_count,
-            aboveAverage: area.crime_count > this.averageCrimes,
-            comparisonText: this.getComparisonText(area.crime_count)
-          }
-          this.drawerVisible = true
-        })
-
-        circle.bindTooltip(
-          `${area.neighbourhood_name}<br>Crime Count: ${area.crime_count}`,
-          { permanent: false }
-        )
-      })
-      
-      // 显示更新消息
-      this.$message.success(`Displaying ${data.length} areas on the map`)
-    },
-    getCrimeRateLevel(value) {
-      if (value <= this.maxCrimeRate / 3) return 'Low'
-      if (value <= this.maxCrimeRate * 2 / 3) return 'Medium'
-      return 'High'
+      return types[severity] || 'info'
     }
   }
 }
 </script>
 
-<style scoped>
-.crime-data-container {
+<style lang="scss" scoped>
+.app-container {
   padding: 20px;
-  height: calc(100vh - 84px);
-  display: flex;
-  flex-direction: column;
 }
 
-.statistics-panel {
+.filter-section {
   margin-bottom: 20px;
-}
-
-.stat-item {
-  text-align: center;
-}
-
-.stat-value {
-  font-size: 24px;
-  font-weight: bold;
-  color: #409EFF;
+  background: #fff;
+  padding: 20px;
+  border-radius: 4px;
+  box-shadow: 0 2px 12px 0 rgba(0,0,0,0.1);
 }
 
 .main-content {
-  flex: 1;
   display: flex;
   gap: 20px;
-  min-height: 0;
+  margin-bottom: 20px;
 }
 
-.filter-panel {
-  width: 300px;
-  overflow-y: auto;
+.stats-panel {
+  flex: 0 0 400px;
+  
+  h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+  }
+}
+
+.stats-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.stats-card {
+  text-align: center;
+  
+  .stats-value {
+    font-size: 24px;
+    font-weight: bold;
+    color: #409EFF;
+  }
+  
+  .stats-label {
+    font-size: 14px;
+    color: #666;
+  }
+}
+
+.crime-chart,
+.trend-chart {
+  background: #fff;
+  padding: 20px;
+  border-radius: 4px;
+  box-shadow: 0 2px 12px 0 rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+  
+  h4 {
+    margin-top: 0;
+    margin-bottom: 15px;
+  }
 }
 
 .map-container {
   flex: 1;
-  min-height: 500px;
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-.area-details {
+  background: #fff;
   padding: 20px;
-}
-
-.detail-item {
-  margin: 10px 0;
-}
-
-.above-average {
-  color: #F56C6C;
-}
-
-.el-form-item {
-  margin-bottom: 20px;
-}
-
-.crime-range-label {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: bold;
-  color: #303133;
-}
-
-.range-indicators {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 5px;
-  color: #606266;
-  font-size: 13px;
-  background-color: #f5f7fa;
-  padding: 5px;
   border-radius: 4px;
+  box-shadow: 0 2px 12px 0 rgba(0,0,0,0.1);
+  
+  #crimeMap {
+    height: 600px;
+    border-radius: 4px;
+  }
+  
+  .map-controls {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+  }
 }
 
-.range-values {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 5px;
-  color: #409EFF;
-  font-size: 12px;
-}
-
-.range-values span {
-  background-color: #ecf5ff;
-  padding: 2px 8px;
-  border-radius: 3px;
-  border: 1px solid #d9ecff;
-}
-
-/* 自定义滑块标记样式 */
-:deep(.el-slider__marks-text) {
-  color: #606266;
-  font-size: 12px;
-  font-weight: bold;
-  margin-top: 5px;
-}
-
-:deep(.el-slider__button) {
-  border: 2px solid #409EFF;
+.data-table {
+  background: #fff;
+  padding: 20px;
+  border-radius: 4px;
+  box-shadow: 0 2px 12px 0 rgba(0,0,0,0.1);
+  
+  h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+  }
 }
 </style> 
