@@ -181,6 +181,19 @@ export const constantRoutes = [
   },
 
   {
+    path: '/home',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        name: 'Home',
+        component: () => import('@/views/home/index'),
+        meta: { title: 'Home', icon: 'el-icon-s-home' }
+      }
+    ]
+  },
+
+  {
     path: '/movie-list',
     component: Layout,
     children: [
