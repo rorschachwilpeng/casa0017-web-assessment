@@ -6,10 +6,10 @@
       <div class="movie-selector">
         <span class="label">Select Movie:</span>
         <el-select 
+          style="width: 300px"
           v-model="selectedMovieId" 
-          placeholder="请选择电影" 
+          placeholder="Please select a movie" 
           @change="handleMovieChange"
-          style="width: 300px;"
         >
           <el-option
             v-for="movie in moviesList"
@@ -25,7 +25,9 @@
         </el-select>
       </div>
 
-      <h2 class="movie-title" v-if="movieTitle">{{ movieTitle }}</h2>
+      <div v-if="movieTitle" class="movie-title">
+        {{ movieTitle }}
+      </div>
       
       <!-- 时间和筛选选项 -->
       <div class="filter-section">
@@ -103,7 +105,7 @@
               </div>
               <div class="mode-details">
                 <div class="detail-item">
-                  <i class="el-icon-time"></i>
+                  <i class="el-icon-time" />
                   <span>{{ data.duration }}</span>
                 </div>
                 <div class="detail-item">
@@ -248,9 +250,6 @@ export default {
       selectedTransportMode: 'driving' // 默认选择驾驶模式
     }
   },
-  async created() {
-    await this.fetchMovies()
-  },
   computed: {
     sortedCinemas() {
       if (!this.cinemas.length) return [];
@@ -270,6 +269,9 @@ export default {
 
       return sorted.slice(0, 5); // 只返回前5个影院
     }
+  },
+  async created() {
+    await this.fetchMovies()
   },
   mounted() {
     this.initMap()
@@ -371,50 +373,49 @@ export default {
 
     getCurrentLocation() {
       if (!navigator.geolocation) {
-        this.$message.error('Geolocation is not supported by your browser')
-        return
+        this.$message.error('Geolocation is not supported by your browser');
+        return;
       }
 
       this.$message({
         message: 'Getting your location...',
         type: 'info'
-      })
+      });
 
       navigator.geolocation.getCurrentPosition(
         position => {
-          const { latitude, longitude } = position.coords
-          this.userLocation = { latitude, longitude }
+          const { latitude, longitude } = position.coords;
+          this.userLocation = { latitude, longitude };
 
-          // 更新或添加用户位置标记
-          if (this.userMarker) {
-            this.userMarker.setLatLng([latitude, longitude])
-          } else {
-            const userIcon = L.divIcon({
-              className: 'user-location-marker',
-              html: '<i class="el-icon-location"></i>',
-              iconSize: [30, 30],
-              iconAnchor: [15, 15]
-            })
-
-            this.userMarker = L.marker([latitude, longitude], { icon: userIcon })
-              .addTo(this.map)
+          // Ensure map is initialized
+          if (!this.map) {
+            this.$message.error('Map is not initialized');
+            return;
           }
 
-          // 将地图中心移动到用户位置
-          this.map.setView([latitude, longitude], 13)
+          // Update or add user location marker
+          if (this.userMarker) {
+            this.userMarker.setLatLng([latitude, longitude]);
+          } else {
+            this.userMarker = L.marker([latitude, longitude])
+              .addTo(this.map);
+          }
 
-          // 更新所有影院的距离
-          this.updateCinemaDistances()
+          // Center map on user location
+          this.map.setView([latitude, longitude], 13);
+
+          // Update distances to all cinemas
+          this.updateCinemaDistances();
 
           this.$message({
             message: 'Location found!',
             type: 'success'
-          })
+          });
         },
         error => {
-          this.$message.error('Unable to get your location: ' + error.message)
+          this.$message.error('Unable to get your location: ' + error.message);
         }
-      )
+      );
     },
 
     updateCinemaDistances() {
@@ -772,8 +773,20 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+/* 全局样式 */
 .app-container {
-  padding: 20px;
+  width: 100%;
+  min-height: 100vh;
+  background-color: #0A0A0A;
+  color: #ffffff;
+  padding: 120px 124px 60px;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(26, 26, 26, 0.8) 5%,
+    rgba(26, 26, 26, 1) 10%,
+    rgba(26, 26, 26, 1) 100%
+  );
 }
 
 .movie-header {
@@ -825,53 +838,113 @@ export default {
   }
   
   &::-webkit-scrollbar-track {
-    background: #f1f1f1;
+    background: rgba(255, 255, 255, 0.1);
     border-radius: 3px;
   }
   
   &::-webkit-scrollbar-thumb {
-    background: #888;
+    background: rgba(255, 255, 255, 0.2);
     border-radius: 3px;
     
     &:hover {
-      background: #555;
+      background: rgba(255, 255, 255, 0.3);
     }
   }
   
   .cinema-item {
-    background: #fff;
-    padding: 15px;
-    margin-bottom: 15px;
-    border-radius: 4px;
-    box-shadow: 0 2px 12px 0 rgba(0,0,0,0.1);
+    background: rgba(26, 26, 26, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
     cursor: pointer;
 
     &:hover {
-      background: #f5f7fa;
+      transform: translateY(-4px);
+      border-color: rgba(64, 158, 255, 0.5);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
     }
 
     h3 {
-      margin: 0 0 10px;
+      margin: 0 0 12px;
+      font-size: 18px;
+      font-weight: 600;
+      color: #ffffff;
     }
 
     .cinema-info {
       display: flex;
       justify-content: space-between;
-      margin-bottom: 10px;
-      color: #666;
+      margin-bottom: 12px;
+      
+      span {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: #999;
+        font-size: 14px;
+        
+        i {
+          color: #409EFF;
+        }
+      }
+    }
 
-      .distance {
-        font-weight: bold;
-        color: #409EFF;
+    .safety-info {
+      margin-bottom: 12px;
+      padding: 8px;
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.2);
+      
+      .safety-score {
+        font-weight: 500;
+        color: #ffffff;
+      }
+      
+      .safety-level {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 4px;
+        margin-left: 8px;
+        font-size: 12px;
+        
+        &.high {
+          background: rgba(76, 175, 80, 0.2);
+          color: #81c784;
+        }
+        
+        &.medium {
+          background: rgba(255, 193, 7, 0.2);
+          color: #ffd54f;
+        }
+        
+        &.low {
+          background: rgba(244, 67, 54, 0.2);
+          color: #e57373;
+        }
       }
     }
 
     .showtime-info {
       .times {
         display: flex;
-        gap: 10px;
-        margin-top: 5px;
-        color: #409EFF;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 8px;
+        
+        span {
+          padding: 4px 8px;
+          background: rgba(64, 158, 255, 0.1);
+          border-radius: 4px;
+          color: #409EFF;
+          font-size: 12px;
+          
+          &:hover {
+            background: rgba(64, 158, 255, 0.2);
+          }
+        }
       }
     }
   }
@@ -948,17 +1021,47 @@ export default {
 }
 
 :global(.user-location-marker) {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #409EFF;
-  border-radius: 50%;
-  width: 30px !important;
-  height: 30px !important;
+  .marker-container {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 
-  i {
-    color: white;
-    font-size: 18px;
+  .marker-dot {
+    width: 14px;
+    height: 14px;
+    background: #409EFF;
+    border: 3px solid #ffffff;
+    border-radius: 50%;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+    z-index: 2;
+  }
+
+  .marker-pulse {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    background: rgba(64, 158, 255, 0.4);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0% {
+      transform: scale(0.5);
+      opacity: 0.8;
+    }
+    70% {
+      transform: scale(2);
+      opacity: 0;
+    }
+    100% {
+      transform: scale(0.5);
+      opacity: 0;
+    }
   }
 }
 
@@ -975,52 +1078,130 @@ export default {
 }
 
 .cinema-details {
-  background: #fff;
+  background: #0A0A0A;
+  color: #ffffff;
   padding: 20px;
-  border-radius: 4px;
-  box-shadow: 0 2px 12px 0 rgba(0,0,0,0.1);
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 
   h2 {
     margin: 0 0 20px;
-  }
-
-  .cinema-images {
-    margin-bottom: 20px;
-    img {
-      max-width: 100%;
-      height: auto;
-      border-radius: 4px;
-    }
+    color: #ffffff;
+    font-size: 24px;
+    font-weight: 600;
   }
 
   .info-section {
     margin-bottom: 20px;
 
     .info-item {
-      margin-bottom: 15px;
+      margin-bottom: 20px;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
 
       label {
-        font-weight: bold;
+        font-weight: 500;
         display: block;
-        margin-bottom: 5px;
+        margin-bottom: 8px;
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 14px;
       }
 
       p {
         margin: 0;
-        color: #666;
+        color: #ffffff;
+        font-size: 16px;
       }
 
       .comments {
         p {
-          margin-bottom: 5px;
+          margin-bottom: 8px;
+          line-height: 1.5;
+          
+          &:last-child {
+            margin-bottom: 0;
+          }
         }
       }
+    }
+
+    .safety-details {
+      .safety-stats {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+      }
+
+      .safety-score {
+        .value {
+          font-size: 28px;
+          font-weight: bold;
+          color: #409EFF;
+        }
+      }
+
+      .nearby-areas {
+        h4 {
+          margin: 15px 0 10px;
+          color: rgba(255, 255, 255, 0.7);
+          font-size: 14px;
+        }
+
+        ul {
+          list-style: none;
+          padding: 0;
+          margin: 0;
+
+          li {
+            padding: 8px 0;
+            color: #ffffff;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 14px;
+
+            &:last-child {
+              border-bottom: none;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .cinema-images {
+    margin-bottom: 20px;
+    
+    img {
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     }
   }
 
   .route-buttons {
     display: flex;
     gap: 15px;
+    margin-top: 20px;
+
+    .el-button {
+      flex: 1;
+      height: 40px;
+      font-size: 16px;
+      
+      &.el-button--primary {
+        background: #409EFF;
+        border-color: #409EFF;
+        
+        &:hover {
+          background: #66b1ff;
+          border-color: #66b1ff;
+        }
+      }
+    }
   }
 }
 
@@ -1411,6 +1592,96 @@ export default {
         }
       }
     }
+  }
+}
+
+/* Element UI 深色主题样式覆盖 */
+:deep(.el-select) {
+  .el-input__inner {
+    background: rgba(26, 26, 26, 0.8);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    border-radius: 4px;
+    height: 40px;
+    
+    &:hover, &:focus {
+      border-color: #409EFF;
+    }
+  }
+  
+  .el-select-dropdown {
+    background: rgba(26, 26, 26, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    
+    .el-select-dropdown__item {
+      color: #ffffff;
+      
+      &:hover, &.selected {
+        background: rgba(64, 158, 255, 0.2);
+      }
+      
+      &.selected {
+        color: #409EFF;
+      }
+    }
+  }
+}
+
+:deep(.el-radio-group) {
+  .el-radio-button__inner {
+    background: rgba(26, 26, 26, 0.8);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    height: 32px;
+    line-height: 32px;
+    padding: 0 15px;
+    
+    &:hover {
+      color: #409EFF;
+    }
+  }
+  
+  .el-radio-button__orig-radio:checked + .el-radio-button__inner {
+    background-color: #409EFF;
+    border-color: #409EFF;
+    box-shadow: -1px 0 0 0 #409EFF;
+    color: #ffffff;
+  }
+}
+
+:deep(.el-button) {
+  &.el-button--default {
+    background: rgba(26, 26, 26, 0.8);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    height: 32px;
+    padding: 0 15px;
+    
+    &:hover, &:focus {
+      background: rgba(64, 158, 255, 0.1);
+      border-color: #409EFF;
+      color: #409EFF;
+    }
+  }
+  
+  &.el-button--primary {
+    background: #409EFF;
+    border-color: #409EFF;
+    
+    &:hover, &:focus {
+      background: #66b1ff;
+      border-color: #66b1ff;
+    }
+  }
+
+  &.location-button {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 1000;
+    border-radius: 20px;
+    padding: 8px 16px;
   }
 }
 </style> 
