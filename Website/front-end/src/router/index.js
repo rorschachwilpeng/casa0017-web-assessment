@@ -227,7 +227,7 @@ export const constantRoutes = [
         path: 'index',
         name: 'CrimeData',
         component: () => import('@/views/crime-data/index'),
-        meta: { title: 'Crime Statistics', icon: 'el-icon-data-analysis' }
+        meta: { title: 'Crime Data Analysis', icon: 'el-icon-warning' }
       }
     ]
   },

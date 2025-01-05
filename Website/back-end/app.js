@@ -38,11 +38,13 @@ const userRouter = require("./router/user");
 const moviesRouter = require('./router/movies');
 const cinemasRouter = require('./router/cinemas');
 const crimesRouter = require('./router/crimes');
+const routesRouter = require('./router/routes');
 
 app.use("/api", userRouter);
 app.use('/api', moviesRouter);
 app.use('/api', cinemasRouter);
 app.use('/api/crimes', crimesRouter);
+app.use('/api/routes', routesRouter);
 
 // 错误处理中间件
 app.use((err, req, res, next) => {

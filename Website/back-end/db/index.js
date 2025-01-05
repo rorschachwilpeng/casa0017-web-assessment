@@ -10,7 +10,8 @@ const config = {
   database: process.env.DB_DATABASE,
   waitForConnections: true,
   connectionLimit: 10,
-  queueLimit: 0
+  queueLimit: 0,
+  authPluginName: 'mysql_native_password'
 };
 
 // 打印配置信息（不包含密码）
@@ -27,8 +28,8 @@ if (!config.host || !config.user || !config.password || !config.database) {
   process.exit(1);
 }
 
+// 创建连接池
 const pool = mysql.createPool(config);
-const db = pool.promise();
 
 // 测试连接
 pool.getConnection((err, connection) => {
@@ -40,4 +41,5 @@ pool.getConnection((err, connection) => {
   connection.release();
 });
 
-module.exports = db;
+// 导出 promise 版本的连接池
+module.exports = pool.promise();
