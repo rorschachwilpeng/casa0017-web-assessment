@@ -323,55 +323,220 @@
         <div class="section-header">
           <h2>Cinema Recommendations</h2>
           <div class="header-controls">
-            <div class="slider-controls">
-              <button class="control-btn prev">
-                <i class="fas fa-chevron-left"></i>
-              </button>
-              <button class="control-btn next">
-                <i class="fas fa-chevron-right"></i>
-              </button>
-            </div>
-            <a href="#" class="view-all">View All</a>
-          </div>
-        </div>
-        <div class="cinema-cards">
-          <div class="cinema-card">
-            <img src="@/assets/cinemas/cinema1.jpg" alt="Vue Cinema">
-            <div class="cinema-info">
-              <h3>Vue Cinema - Westfield Stratford</h3>
-              <p>A modern cineplex with state-of-the-art screens</p>
-              <div class="rating">
-                <div class="stars">⭐⭐⭐⭐⭐</div>
-                <button class="details-btn">View Property Details</button>
+            <div class="controls-wrapper">
+              <div class="slider-controls">
+                <div class="dark-box" @click="prevCinemaPage" :class="{ disabled: currentCinemaPage === 0 }">
+                  <span class="nav-arrow">&#8592;</span>
+                </div>
+                <div class="page-indicator">
+                  <span class="indicator" :class="{ active: currentCinemaPage === 0 }"></span>
+                  <span class="indicator" :class="{ active: currentCinemaPage === 1 }"></span>
+                </div>
+                <div class="dark-box" @click="nextCinemaPage" :class="{ disabled: currentCinemaPage === 1 }">
+                  <span class="nav-arrow">&#8594;</span>
+                </div>
               </div>
             </div>
+            <div class="view-all-wrapper">
+              <a href="#" class="view-all">View All</a>
+            </div>
           </div>
-          <!-- 其他影院卡片 -->
+        </div>
+
+        <div class="cinemas-container">
+          <transition-group name="slide">
+            <!-- 第一页影院 -->
+            <div v-show="currentCinemaPage === 0" key="cinema-page1" class="cinema-cards">
+              <div class="cinema-card">
+                <img src="@/assets/cinemas/cinema1.jpg" alt="Vue Cinema">
+                <div class="cinema-info">
+                  <h3>Vue Cinema - Westfield Stratford</h3>
+                  <p>A modern cineplex with state-of-the-art screens</p>
+                  <div class="rating">
+                    <div class="stars">⭐⭐⭐⭐⭐</div>
+                    <button class="details-btn">View Details</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="cinema-card">
+                <img src="@/assets/cinemas/cinema2.jpg" alt="Odeon Luxe">
+                <div class="cinema-info">
+                  <h3>Odeon Luxe - Leicester Square</h3>
+                  <p>Luxury cinema experience in the heart of London</p>
+                  <div class="rating">
+                    <div class="stars">⭐⭐⭐⭐⭐</div>
+                    <button class="details-btn">View Details</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="cinema-card">
+                <img src="@/assets/cinemas/cinema3.jpg" alt="Picturehouse">
+                <div class="cinema-info">
+                  <h3>Picturehouse Central</h3>
+                  <p>Arthouse and mainstream films in stylish surroundings</p>
+                  <div class="rating">
+                    <div class="stars">⭐⭐⭐⭐½</div>
+                    <button class="details-btn">View Details</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 第二页影院 -->
+            <div v-show="currentCinemaPage === 1" key="cinema-page2" class="cinema-cards">
+              <div class="cinema-card">
+                <img src="@/assets/cinemas/cinema4.jpg" alt="Everyman">
+                <div class="cinema-info">
+                  <h3>Everyman Screen on the Green</h3>
+                  <p>Boutique cinema with sofa seating and bar service</p>
+                  <div class="rating">
+                    <div class="stars">⭐⭐⭐⭐½</div>
+                    <button class="details-btn">View Details</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="cinema-card">
+                <img src="@/assets/cinemas/cinema5.jpg" alt="Curzon">
+                <div class="cinema-info">
+                  <h3>Curzon Soho</h3>
+                  <p>Independent cinema showing art house films</p>
+                  <div class="rating">
+                    <div class="stars">⭐⭐⭐⭐</div>
+                    <button class="details-btn">View Details</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="cinema-card">
+                <img src="@/assets/cinemas/cinema6.jpg" alt="BFI IMAX">
+                <div class="cinema-info">
+                  <h3>BFI IMAX - Waterloo</h3>
+                  <p>The UK's largest cinema screen</p>
+                  <div class="rating">
+                    <div class="stars">⭐⭐⭐⭐⭐</div>
+                    <button class="details-btn">View Details</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </transition-group>
         </div>
       </div>
 
-      <!-- 活动事项模块 -->
-      <div class="module-section events-module">
-        <div class="section-header">
-          <h2>Events</h2>
-          <!-- ... 其他内容 ... -->
+      <!-- Events & Promotional Offers 部分 -->
+      <section class="events-section">
+        <h2>Events & Promotional Offers</h2>
+        <p class="description">
+          With StreamVibe, you can enjoy your favorite movies and TV shows anytime, anywhere. Our platform is designed to be compatible with a wide range of devices, ensuring that you never miss a moment of entertainment.
+        </p>
+        
+        <!-- 第一行卡片 -->
+        <div class="events-grid-row">
+          <div class="event-card">
+            <div class="event-icon">
+              <i class="fas fa-ticket"></i>
+            </div>
+            <div class="event-content">
+              <h3 class="event-title">Online booking</h3>
+              <p class="event-description">
+                StreamVibe is optimized for both Android and iOS smartphones. Download our app from the Google Play Store or the Apple App Store
+              </p>
+            </div>
+          </div>
+
+          <div class="event-card">
+            <div class="event-icon">
+              <i class="fas fa-heart"></i>
+            </div>
+            <div class="event-content">
+              <h3 class="event-title">Valentine's Day</h3>
+              <p class="event-description">
+                StreamVibe is optimized for both Android and iOS smartphones. Download our app from the Google Play Store or the Apple App Store
+              </p>
+            </div>
+          </div>
+
+          <div class="event-card">
+            <div class="event-icon">
+              <i class="fas fa-users"></i>
+            </div>
+            <div class="event-content">
+              <h3 class="event-title">Family ticket</h3>
+              <p class="event-description">
+                StreamVibe is optimized for both Android and iOS smartphones. Download our app from the Google Play Store or the Apple App Store
+              </p>
+            </div>
+          </div>
         </div>
-        <!-- 活动内容 -->
-      </div>
+
+        <!-- 第二行卡片 -->
+        <div class="events-grid-row">
+          <div class="event-card">
+            <div class="event-icon">
+              <i class="fas fa-gift"></i>
+            </div>
+            <div class="event-content">
+              <h3 class="event-title">Prize draw</h3>
+              <p class="event-description">
+                StreamVibe is optimized for both Android and iOS smartphones. Download our app from the Google Play Store or the Apple App Store
+              </p>
+            </div>
+          </div>
+
+          <div class="event-card">
+            <div class="event-icon">
+              <i class="fas fa-theater-masks"></i>
+            </div>
+            <div class="event-content">
+              <h3 class="event-title">Pop-up show</h3>
+              <p class="event-description">
+                StreamVibe is optimized for both Android and iOS smartphones. Download our app from the Google Play Store or the Apple App Store
+              </p>
+            </div>
+          </div>
+
+          <div class="event-card">
+            <div class="event-icon">
+              <i class="fas fa-popcorn"></i>
+            </div>
+            <div class="event-content">
+              <h3 class="event-title">Free popcorn</h3>
+              <p class="event-description">
+                StreamVibe is optimized for both Android and iOS smartphones. Download our app from the Google Play Store or the Apple App Store
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 使用订票模块组件 -->
+      <BookingBanner />
     </section>
+
+    <!-- 添加页脚 -->
+    <TheFooter />
   </div>
 </template>
 
 <script setup>
 import SvgIcon from '@/components/SvgIcon'  // 导入 SvgIcon 组件
+import BookingBanner from '@/components/BookingBanner.vue'
+import TheFooter from '@/components/TheFooter.vue'
 </script>
 
 <script>
+import BookingBanner from '@/components/BookingBanner.vue'
+import TheFooter from '@/components/TheFooter.vue'
+
 export default {
   name: 'Home',
   data() {
     return {
-      currentPage: 0
+      currentPage: 0,
+      currentCinemaPage: 0
     }
   },
   methods: {
@@ -384,7 +549,21 @@ export default {
       if (this.currentPage < 1) {
         this.currentPage++
       }
+    },
+    prevCinemaPage() {
+      if (this.currentCinemaPage > 0) {
+        this.currentCinemaPage--
+      }
+    },
+    nextCinemaPage() {
+      if (this.currentCinemaPage < 1) {
+        this.currentCinemaPage++
+      }
     }
+  },
+  components: {
+    BookingBanner,
+    TheFooter
   }
 }
 </script>
@@ -686,6 +865,9 @@ main {
   margin-top: -200px;  /* 向上移动整个模块 */
   position: relative;
   z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 16px; /* 减小模块之间的间距 */
 }
 
 /* 分类部分上移 */
@@ -735,7 +917,7 @@ main {
 /* 控制按钮样式 */
 .header-controls {
   display: flex;
-  gap: 12px;  /* 减小间距 */
+  gap: 20px;  /* 减小间距 */
   align-items: center;
 }
 
@@ -841,10 +1023,10 @@ main {
 }
 
 .view-all-wrapper {
-  background: #1A1A1A;
+  background: #3c3c3c;
   border-radius: 12px;
   padding: 4px;
-  height: 52px;  /* 与箭头框保持相同高度 */
+  height: 54px;  /* 与箭头框保持相同高度 */
   display: flex;
   align-items: center;
 }
@@ -852,8 +1034,8 @@ main {
 .view-all {
   display: flex;
   align-items: center;
-  height: 44px;  /* 与内层框保持相同高度 */
-  padding: 0 16px;
+  height: 46px;  /* 与内层框保持相同高度 */
+  padding: 0px 12px;
   background: #2A2A2A;
   border-radius: 8px;
   color: #FFFFFF;
@@ -877,13 +1059,13 @@ main {
 
 /* 分类卡片样式优化 */
 .category-card {
-  background: #2A2A2A;
+  background: #212121;
   border-radius: 16px;
   overflow: hidden;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
   cursor: pointer;
   position: relative;
   padding: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.15); /* 仅添加描边 */
 }
 
 .category-images {
@@ -1003,27 +1185,75 @@ main {
   background: #1A1A1A;
 }
 
-/* 影院卡片样式 */
+/* 影院卡片容器 */
 .cinema-cards {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 24px;
 }
 
+/* 影院卡片样式 */
 .cinema-card {
-  background: #2A2A2A;
-  border-radius: 12px;
+  background: #1A1A1A; /* 深色背景 */
+  border-radius: 16px;
   overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.15); /* 添加描边 */
 }
 
+/* 影院图片 */
 .cinema-card img {
   width: 100%;
   height: 200px;
   object-fit: cover;
 }
 
+/* 影院信息区域 */
 .cinema-info {
   padding: 20px;
+}
+
+/* 影院标题 */
+.cinema-info h3 {
+  color: #FFFFFF;
+  font-size: 18px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+/* 影院描述 */
+.cinema-info p {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+/* 评分和按钮区域 */
+.rating {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* 星级评分 */
+.stars {
+  color: #FFD700; /* 金色星星 */
+  font-size: 14px;
+}
+
+/* 查看详情按钮 */
+.details-btn {
+  background: #FF3B30; /* 红色按钮 */
+  color: white;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.details-btn:hover {
+  background: #E6352B;
 }
 
 /* 活动卡片样式 */
@@ -1176,5 +1406,144 @@ h2 {
 .categories-grid {
   position: absolute;
   width: 100%;
+}
+
+/* 内容区域的基础样式 */
+.content-section {
+  padding: 120px 120px;
+}
+
+/* 分类模块的底部间距 */
+.category-module {
+  margin-bottom: -60px; /* 确保没有额外的间距 */
+}
+
+/* 影院模块的底部间距 */
+.cinema-module {
+  margin-top: -60px; /* 向上移动模块 */
+}
+
+/* Events 模块标题和描述 */
+.events-section {
+  margin-bottom: 40px;
+}
+
+.events-section h2 {
+  font-size: 32px;
+  font-weight: 600;
+  color: #FFFFFF;
+  margin-bottom: 16px;
+}
+
+.events-section .description {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 16px;
+  line-height: 1.5;
+  margin-bottom: 40px;
+  max-width: 800px;
+}
+
+/* 活动卡片网格布局 */
+.events-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+/* 活动卡片样式 */
+.event-card {
+  background: rgba(26, 26, 26, 0.6);
+  border-radius: 16px;
+  padding: 24px;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+}
+
+/* 图标样式 */
+.event-icon {
+  color: #FF3B30;
+  font-size: 24px;
+  margin-bottom: 16px;
+}
+
+/* 活动标题 */
+.event-title {
+  color: #FFFFFF;
+  font-size: 20px;
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+
+/* 活动描述 */
+.event-description {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* 两行卡片布局 */
+.events-grid-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.events-grid-row:last-child {
+  margin-bottom: 0;
+}
+
+/* Events 模块样式 */
+.events-section {
+  padding: 60px 0;
+}
+
+/* 活动卡片网格 */
+.events-grid-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+/* 活动卡片 */
+.event-card {
+  background: rgba(18, 18, 18, 0.8); /* 更深的背景色 */
+  border-radius: 12px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column; /* 改为垂直布局 */
+  gap: 16px;
+}
+
+/* 图标和标题容器 */
+.event-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* 图标 */
+.event-icon {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  color: #FF0000; /* 红色图标 */
+}
+
+/* 活动标题 */
+.event-title {
+  color: #FFFFFF;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+/* 活动描述 */
+.event-description {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 14px;
+  line-height: 1.5;
+  margin-top: 8px;
 }
 </style>
