@@ -76,7 +76,7 @@ export default {
 .footer {
   background: #0F0F0F;
   padding: 60px 0 24px;
-  margin-top: 80px;
+  margin-top: 0;
   width: 100%;
   min-width: 320px;
 }
