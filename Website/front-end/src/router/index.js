@@ -232,6 +232,20 @@ export const constantRoutes = [
     ]
   },
 
+  {
+    path: '/movie-details',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        name: 'MovieDetails',
+        component: () => import('@/views/movie-details/index'),
+        meta: { title: 'Movie details', icon: 'el-icon-video-camera' }
+      }
+    ]
+  },
+
+
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
 ]
