@@ -1,0 +1,1126 @@
+<template>
+  <div class="booking-page">
+    <!-- 电影信息部分 -->
+    <div class="movie-info-section">
+      <div class="movie-basic-info">
+        <div class="movie-poster">
+          <img 
+            :src="'http://localhost:3007' + currentMovie.poster_url" 
+            :alt="currentMovie.name"
+          >
+        </div>
+        <div class="movie-details">
+          <h2>{{ currentMovie.name || 'Select a Movie' }}</h2>
+          <p v-if="currentMovie.length">Duration: {{ currentMovie.length }} mins</p>
+        </div>
+      </div>
+      
+      <!-- 新增的影院和场次信息 -->
+      <div class="session-info">
+        <!-- 电影选择 -->
+        <div class="info-item">
+          <span class="label">Movie</span>
+          <div class="custom-select" :class="{ 'active': isMovieDropdownOpen }">
+            <div class="selected" @click="toggleDropdown('movie')">
+              {{ selectedMovieId ? getMovieName(selectedMovieId) : 'Select movie' }}
+              <span class="arrow">▼</span>
+            </div>
+            <div class="options-container" v-if="isMovieDropdownOpen">
+              <div class="options">
+                <div v-for="movie in movieList" 
+                     :key="movie.id" 
+                     class="option"
+                     :class="{ 'selected': selectedMovieId === movie.id }"
+                     @click="selectMovie(movie)">
+                  {{ movie.name }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="info-item">
+          <span class="label">Cinema</span>
+          <div class="custom-select" :class="{ 'active': isCinemaDropdownOpen }">
+            <!-- 加载状态 -->
+            <div v-if="isLoading" class="loading">Loading cinemas...</div>
+            
+            <!-- 错误信息 -->
+            <div v-else-if="errorMessage" class="error">{{ errorMessage }}</div>
+            
+            <!-- 影院选择器 -->
+            <template v-else>
+              <div class="selected" @click="toggleDropdown('cinema')">
+                {{ selectedCinemaName }}
+                <span class="arrow">▼</span>
+              </div>
+              <div class="options-container" v-show="isCinemaDropdownOpen">
+                <div class="options">
+                  <div v-for="cinema in cinemaList" 
+                       :key="cinema.id" 
+                       class="option"
+                       :class="{ 'selected': selectedCinemaId === cinema.id }"
+                       @click="selectCinema(cinema)">
+                    {{ cinema.name }}
+                  </div>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
+        
+        <!-- 日期选择 -->
+        <div class="info-item">
+          <span class="label">Date</span>
+          <div class="custom-select" :class="{ 'active': isDateDropdownOpen }">
+            <div class="selected" @click="toggleDropdown('date')">
+              {{ selectedDateLabel || 'Select date' }}
+              <span class="arrow">▼</span>
+            </div>
+            <div class="options-container" v-show="isDateDropdownOpen">
+              <div class="options">
+                <div v-for="date in availableDates" 
+                     :key="date.value" 
+                     class="option"
+                     :class="{ 'selected': selectedDate === date.value }"
+                     @click="selectDate(date)">
+                  {{ date.label }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 时间选择 -->
+        <div class="info-item">
+          <span class="label">Time</span>
+          <div class="custom-select" :class="{ 'active': isTimeDropdownOpen }">
+            <div class="selected" @click="toggleDropdown('time')">
+              {{ selectedTimeLabel || 'Select time' }}
+              <span class="arrow">▼</span>
+            </div>
+            <div class="options-container" v-show="isTimeDropdownOpen">
+              <div class="options">
+                <div v-for="time in availableTimes" 
+                     :key="time.value" 
+                     class="option"
+                     :class="{ 'selected': selectedTime === time.value }"
+                     @click="selectTime(time)">
+                  {{ time.label }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 原有的座位选择部分，保持不变 -->
+    <div class="seat-selection">
+      <h1>Seat</h1>
+      <div class="seating-container">
+        <!-- 屏幕指示条 -->
+        <div class="screen-indicator">
+          <span>Screen</span>
+        </div>
+
+        <!-- 座位布局 -->
+        <div class="seating-layout">
+          <div v-for="row in rows" :key="row" class="seat-row">
+            <div v-for="col in 10" :key="col" 
+              class="seat" 
+              :class="getSeatClass(row, col)"
+              @click="toggleSeat(row, col)">
+              {{ row }}{{ col }}
+            </div>
+          </div>
+        </div>
+
+        <!-- 座位信息 -->
+        <div class="seat-info">
+          <div class="info-row">
+            <span class="info-label">TOTAL</span>
+            <span class="info-value">£ {{ totalPrice.toFixed(2) }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">SEAT</span>
+            <span class="info-value">{{ selectedSeatsDisplay }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 底部按钮 -->
+      <div class="bottom-bar">
+        <button class="back-btn">Back</button>
+        <button class="proceed-btn" @click="processPayment">Proceed Payment</button>
+      </div>
+    </div>
+  </div>
+</template>
+
+<style scoped>
+.booking-page {
+  background-color: #111;
+  min-height: 100vh;
+  padding: 20px;
+  color: white;
+}
+
+.movie-info-section {
+  max-width: 1200px;
+  margin: 0 auto 40px;
+  padding: 20px;
+  background-color: #1a1a1a;
+  border-radius: 8px;
+}
+
+.movie-basic-info {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.movie-poster {
+  width: 120px;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.movie-poster img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.movie-details {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.movie-details h2 {
+  margin: 0 0 10px 0;
+  font-size: 24px;
+  color: white;
+}
+
+.movie-details p {
+  margin: 0;
+  color: #999;
+}
+
+.session-info {
+  display: flex;
+  gap: 40px;
+  padding-top: 20px;
+  border-top: 1px solid #333;
+}
+
+.info-item {
+  margin-bottom: 20px;
+}
+
+.info-item .label {
+  color: #999;
+  font-size: 16px;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.info-item .value {
+  font-size: 16px;
+  color: white;
+}
+
+.seat-selection {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.seat-selection {
+  background-color: #111;
+  min-height: 100vh;
+  padding: 40px;
+  color: white;
+}
+
+h1 {
+  margin-bottom: 40px;
+  font-size: 24px;
+}
+
+.seating-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.seating-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0 auto;
+}
+
+.seat-row {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.seat {
+  width: 35px;
+  height: 35px;
+  background-color: white;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 12px;
+  color: #333;
+  transition: all 0.3s ease;
+}
+
+.seat:hover:not(.seat-occupied) {
+  transform: scale(1.1);
+  box-shadow: 0 0 8px rgba(255,255,255,0.3);
+}
+
+.seat-occupied {
+  background-color: #ff0000;
+  color: white;
+  cursor: not-allowed;
+}
+
+.seat-selected {
+  background-color: #2196f3;
+  color: white;
+}
+
+.seat-selected:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 8px rgba(33,150,243,0.5);
+}
+
+.screen-indicator {
+  width: 400px;
+  height: 40px;
+  background-color: white;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #333;
+  margin-bottom: 30px;
+}
+
+.seat-info {
+  width: 100%;
+  max-width: 400px;
+  margin-top: 40px;
+  border-top: 1px solid #333;
+  padding-top: 20px;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+
+.info-label {
+  color: #999;
+  font-size: 14px;
+}
+
+.info-value {
+  color: white;
+  font-size: 16px;
+}
+
+.bottom-bar {
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.back-btn {
+  padding: 12px 30px;
+  background-color: transparent;
+  border: 1px solid #333;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.proceed-btn {
+  padding: 12px 30px;
+  background-color: #ff0000;
+  border: none;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.back-btn:hover {
+  border-color: #666;
+}
+
+.proceed-btn:hover {
+  background-color: #d60000;
+}
+
+.select-input {
+  padding: 8px 12px;
+  background-color: #333;
+  border: 1px solid #444;
+  border-radius: 4px;
+  color: white;
+  font-size: 14px;
+  width: 200px;
+  cursor: pointer;
+}
+
+.select-input:hover {
+  border-color: #666;
+}
+
+.select-input:focus {
+  outline: none;
+  border-color: #2196f3;
+}
+
+.select-input option {
+  background-color: #333;
+  color: white;
+}
+
+/* 时间选择的特殊样式 */
+.time-select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 20px;
+}
+
+/* 修改时间选择下拉框样式 */
+.time-select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 20px;
+}
+
+/* 下拉列表展开时的样式 */
+.time-select:focus {
+  outline: none;
+  border-color: #2196f3;
+}
+
+/* 下拉选项样式 */
+.time-select option {
+  background-color: #333;
+  color: white;
+  padding: 8px 12px;
+}
+
+/* 设置下拉列表样式 */
+select.time-select:focus {
+  height: auto;
+}
+
+/* 下拉列表展开时的容器样式 */
+select.time-select:focus option {
+  padding: 12px;
+}
+
+/* 自定义滚动条样式 */
+select.time-select::-webkit-scrollbar {
+  width: 6px;
+}
+
+select.time-select::-webkit-scrollbar-track {
+  background: #333;
+  border-radius: 3px;
+}
+
+select.time-select::-webkit-scrollbar-thumb {
+  background: #666;
+  border-radius: 3px;
+}
+
+select.time-select::-webkit-scrollbar-thumb:hover {
+  background: #888;
+}
+
+/* 选项悬停和选中状态 */
+.time-select option:hover,
+.time-select option:focus {
+  background-color: #444;
+}
+
+.time-select option:checked {
+  background-color: #2196f3;
+  color: white;
+}
+
+@-moz-document url-prefix() {
+  /* Firefox 特定样式 */
+  .time-select {
+    scrollbar-width: thin;
+    scrollbar-color: #666 #333;
+  }
+}
+
+.time-option {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.time-option:hover {
+  background-color: #444;
+}
+
+/* 修改选择框样式 */
+.select-input {
+  padding: 8px 12px;
+  background-color: #333;
+  border: 1px solid #444;
+  border-radius: 4px;
+  color: white;
+  font-size: 14px;
+  width: 200px;
+  cursor: pointer;
+}
+
+.select-input option {
+  background-color: #333;
+  color: white;
+  padding: 8px 12px;
+}
+
+.select-input option:checked {
+  background-color: #2196f3;
+  color: white;
+}
+
+.custom-select {
+  position: relative;
+  width: 260px;
+}
+
+.selected {
+  padding: 12px 16px;
+  background-color: #333;
+  border: 1px solid #444;
+  border-radius: 6px;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 48px;
+}
+
+.arrow {
+  font-size: 12px;
+  transition: transform 0.2s;
+}
+
+.custom-select.active .arrow {
+  transform: rotate(180deg);
+}
+
+.options-container {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 6px;
+  background-color: #333;
+  border: 1px solid #444;
+  border-radius: 6px;
+  z-index: 1000;
+}
+
+.options {
+  max-height: 200px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #666 #333;
+}
+
+.option {
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-size: 16px;
+}
+
+.option:hover {
+  background-color: #444;
+}
+
+.option.selected {
+  background-color: #2196f3;
+  color: white;
+}
+
+/* 滚动条样式 */
+.options::-webkit-scrollbar {
+  width: 8px;
+}
+
+.options::-webkit-scrollbar-track {
+  background: #333;
+  border-radius: 4px;
+}
+
+.options::-webkit-scrollbar-thumb {
+  background: #666;
+  border-radius: 4px;
+}
+
+.options::-webkit-scrollbar-thumb:hover {
+  background: #888;
+}
+
+/* 选中状态 */
+.custom-select.active .selected {
+  border-color: #2196f3;
+}
+
+/* 悬停效果 */
+.selected:hover {
+  background-color: #3a3a3a;
+}
+
+.loading, .error {
+  padding: 8px 12px;
+  color: #666;
+}
+
+.error {
+  color: #ff4444;
+}
+
+.dropdown-container {
+  margin-bottom: 20px;
+}
+
+.dropdown-label {
+  color: #999;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.dropdown-wrapper {
+  position: relative;
+  width: 100%;
+  cursor: pointer;
+}
+
+.dropdown-selected {
+  background: #333;
+  color: #fff;
+  padding: 12px;
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dropdown-arrow {
+  color: #999;
+}
+
+.dropdown-options {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #333;
+  border-radius: 4px;
+  margin-top: 4px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+.dropdown-option {
+  padding: 12px;
+  color: #fff;
+}
+
+.dropdown-option:hover {
+  background: #444;
+}
+
+.dropdown-option.selected {
+  background: #505050;
+}
+</style>
+
+<script>
+import request from '@/utils/request'
+
+export default {
+  data() {
+    return {
+      movieInfo: {
+        title: 'Movie Title',
+        duration: 120,
+        poster: 'movie-poster.jpg'
+      },
+      sessionInfo: {
+        cinema: 'GSC Mid Valley',
+        date: 'Jan 5, 2025',
+        time: '20:30'
+      },
+      rows: ['A', 'B', 'C', 'D', 'E', 'F', 'G'],
+      seats: [],
+      selectedSeats: [],
+      loading: false,
+      selectedCinemaId: '',
+      selectedDate: '',
+      selectedTime: '',
+      cinemaList: [],
+      isCinemaDropdownOpen: false,
+      isDateDropdownOpen: false,
+      isTimeDropdownOpen: false,
+      isLoading: false,
+      errorMessage: '',
+      movieList: [],
+      selectedMovieId: '',
+      isMovieDropdownOpen: false,
+      currentSessionId: null,
+      seats: [],
+      currentMovie: {
+        name: '',
+        poster_url: '',
+        length: ''
+      }
+    }
+  },
+  computed: {
+    totalPrice() {
+      return this.selectedSeats.length * 10.5
+    },
+    selectedSeatsDisplay() {
+      return this.selectedSeats.join(', ') || 'None'
+    },
+    availableDates() {
+      const dates = []
+      const today = new Date()
+      
+      for (let i = 0; i < 4; i++) {
+        const date = new Date(today)
+        date.setDate(today.getDate() + i)
+        
+        dates.push({
+          value: date.toISOString().split('T')[0],
+          label: date.toLocaleDateString('en-US', {
+            weekday: 'short',
+            month: 'short',
+            day: 'numeric'
+          })
+        })
+      }
+      
+      return dates
+    },
+    availableTimes() {
+      const fixedTimes = [
+        { time: '10:00' },
+        { time: '12:00' },
+        { time: '15:00' },
+        { time: '17:00' },
+        { time: '19:00' },
+        { time: '21:00' }
+      ]
+
+      // 如果是当天，需要过滤掉已经过去的时间
+      if (this.selectedDate === this.availableDates[0].value) {
+        const now = new Date()
+        const currentHour = now.getHours()
+        
+        return fixedTimes
+          .filter(slot => {
+            const slotHour = parseInt(slot.time.split(':')[0])
+            return slotHour > currentHour
+          })
+          .map(slot => ({
+            value: slot.time,
+            label: slot.time
+          }))
+      }
+
+      // 如果不是当天，显示所有时间段
+      return fixedTimes.map(slot => ({
+        value: slot.time,
+        label: `${slot.time} (${slot.period})`
+      }))
+    },
+    selectedCinemaName() {
+      const selectedCinema = this.cinemaList.find(cinema => cinema.id === this.selectedCinemaId)
+      return selectedCinema ? selectedCinema.name : 'Select cinema'
+    },
+    selectedDateLabel() {
+      const date = this.availableDates.find(d => d.value === this.selectedDate)
+      return date ? date.label : 'Select date'
+    },
+    selectedTimeLabel() {
+      const time = this.availableTimes.find(t => t.value === this.selectedTime)
+      return time ? time.label : 'Select time'
+    }
+  },
+  watch: {
+    selectedDate() {
+      this.selectedTime = ''
+    },
+    seats: {
+      handler(newSeats) {
+        console.log('Seats updated:', newSeats)
+      },
+      deep: true
+    }
+  },
+  created() {
+    this.loadCinemas()
+    this.loadMovies()
+  },
+  methods: {
+    async loadSeats(silent = false) {
+      if (!this.currentSessionId) {
+        console.log('No session ID available')
+        return
+      }
+
+      if (!silent) {
+        this.loading = true
+      }
+      
+      try {
+        const response = await request({
+          url: `/api/seats?session_id=${this.currentSessionId}`,
+          method: 'get',
+          baseURL: 'http://localhost:3007'
+        })
+        console.log('Response received:', response.data)
+        
+        if (response.data && response.status === 0) {
+          this.seats = response.data
+          console.log('Seats loaded:', this.seats.length)
+        }
+      } catch (error) {
+        console.error('Failed to load seats:', error)
+      } finally {
+        if (!silent) {
+          this.loading = false
+        }
+      }
+    },
+    getSeatClass(row, col) {
+      const seat = this.seats.find(s => 
+        s.seat_row === row && 
+        Number(s.seat_col) === Number(col)
+      )
+      
+      return {
+        'seat': true,
+        'seat-occupied': seat && seat.status === 'occupied',
+        'seat-selected': this.selectedSeats.includes(`${row}${col}`)
+      }
+    },
+    toggleSeat(row, col) {
+      if (this.isSeatOccupied(row, col)) return
+
+      const seatId = `${row}${col}`
+      const index = this.selectedSeats.indexOf(seatId)
+      
+      if (index === -1) {
+        this.selectedSeats.push(seatId)
+      } else {
+        this.selectedSeats.splice(index, 1)
+      }
+    },
+    isSeatOccupied(row, col) {
+      const seat = this.seats.find(s => 
+        s.seat_row === row && 
+        Number(s.seat_col) === Number(col)
+      )
+      return seat?.status === 'occupied'
+    },
+    async processPayment() {
+      if (this.selectedSeats.length === 0) {
+        alert('Please select seats first')
+        return
+      }
+
+      try {
+        const seatsToUpdate = this.selectedSeats.map(seatId => {
+          const [row, col] = [seatId.charAt(0), seatId.slice(1)]
+          const seat = this.seats.find(s => 
+            s.seat_row === row && 
+            Number(s.seat_col) === Number(col)
+          )
+          
+          if (!seat) {
+            throw new Error(`Seat not found: ${row}${col}`)
+          }
+          
+          return {
+            id: seat.id
+          }
+        })
+        
+        console.log('Data to be sent:', { seats: seatsToUpdate })
+
+        const response = await request({
+          url: '/api/seats/reserve',
+          method: 'post',
+          data: { seats: seatsToUpdate },
+          baseURL: 'http://localhost:3007',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+
+        console.log('Raw response:', response)
+
+        // 清空选中的座位
+        this.selectedSeats = []
+        
+        // 使用新的 loadSeats 方法更新座位状态
+        if (this.currentSessionId) {
+          await this.loadSeats(true)
+          console.log('Seats updated after reservation')
+        }
+
+        if (response.data && response.data.status === 0) {
+          alert('Seats reserved successfully!')
+        }
+      } catch (error) {
+        console.error('Reservation failed:', error)
+        // 发生错误时也更新座位状态
+        if (this.currentSessionId) {
+          await this.loadSeats(true)
+        }
+      }
+    },
+    goBack() {
+      this.$router.go(-1)
+    },
+    toggleDropdown(type) {
+      // 先关闭其他下拉框
+      if (type !== 'cinema') this.isCinemaDropdownOpen = false
+      if (type !== 'date') this.isDateDropdownOpen = false
+      if (type !== 'time') this.isTimeDropdownOpen = false
+      if (type !== 'movie') this.isMovieDropdownOpen = false
+
+      // 切换当前下拉框
+      switch(type) {
+        case 'cinema':
+          this.isCinemaDropdownOpen = !this.isCinemaDropdownOpen
+          break
+        case 'date':
+          this.isDateDropdownOpen = !this.isDateDropdownOpen
+          break
+        case 'time':
+          this.isTimeDropdownOpen = !this.isTimeDropdownOpen
+          break
+        case 'movie':
+          this.isMovieDropdownOpen = !this.isMovieDropdownOpen
+          break
+      }
+    },
+    selectCinema(cinema) {
+      this.selectedCinemaId = cinema.id
+      this.isCinemaDropdownOpen = false
+      this.checkAndUpdateSession()
+    },
+    selectDate(date) {
+      this.selectedDate = date.value
+      this.isDateDropdownOpen = false
+      this.checkAndUpdateSession()
+    },
+    async selectTime(time) {
+      this.selectedTime = time.value
+      this.isTimeDropdownOpen = false
+      this.checkAndUpdateSession()
+    },
+    async fetchSessionSeats() {
+      try {
+        const response = await request({
+          url: '/api/seats/sessions',
+          method: 'post',
+          data: {
+            movie_id: this.selectedMovieId,
+            theater_id: this.selectedCinemaId,
+            date: this.selectedDate,
+            time: this.selectedTime
+          },
+          baseURL: 'http://localhost:3007'
+        })
+
+        console.log('Raw response:', response)  // 查看原始响应
+
+        if (response.data && response.data.status === 0) {
+          // 从 response.data 中提取数据
+          this.seats = response.data.seats
+          this.currentSessionId = response.data.session_id
+          
+          console.log('Extracted seats:', this.seats)  // 查看提取的座位数据
+          
+          this.$forceUpdate()
+        }
+      } catch (error) {
+        console.error('Failed to fetch seats:', error)
+        this.$message.error('Failed to update seat information')
+      }
+    },
+    handleClickOutside(event) {
+      const select = event.target.closest('.custom-select')
+      if (!select) {
+        this.isCinemaDropdownOpen = false
+        this.isDateDropdownOpen = false
+        this.isTimeDropdownOpen = false
+        this.isMovieDropdownOpen = false
+      }
+    },
+    async loadCinemas() {
+      this.isLoading = true
+      this.errorMessage = ''
+
+      try {
+        const { status, message, cinemaData } = await request.get('/api/seats/test-cinemas')
+        
+        if (status === 0 && cinemaData) {
+          this.cinemaList = cinemaData
+        } else {
+          this.errorMessage = message || '获取影院数据失败'
+        }
+      } catch (error) {
+        console.error('加载影院数据失败:', error)
+        this.errorMessage = '加载影院数据失败，请稍后重试'
+      } finally {
+        this.isLoading = false
+      }
+    },
+    async loadMovies() {
+      try {
+        const { status, message, movieData } = await request.get('/api/seats/movies')
+        if (status === 0 && movieData) {
+          this.movieList = movieData
+        }
+      } catch (error) {
+        console.error('加载电影数据失败:', error)
+      }
+    },
+    selectMovie(movie) {
+      console.log('Selected movie:', movie)  // 调试日志
+      this.selectedMovieId = movie.id
+      this.isMovieDropdownOpen = false
+      
+      // 更新当前电影信息
+      const selectedMovie = this.movieList.find(m => m.id === movie.id)
+      if (selectedMovie) {
+        this.currentMovie = {
+          name: selectedMovie.name,
+          poster_url: selectedMovie.poster_url,
+          length: selectedMovie.length
+        }
+        console.log('Current movie updated:', this.currentMovie)  // 调试日志
+      }
+      
+      this.checkAndUpdateSession()
+    },
+    getMovieName(id) {
+      const movie = this.movieList.find(m => m.id === id)
+      return movie ? movie.name : ''
+    },
+    async reserveSeats(selectedSeats) {
+      if (!this.currentSessionId) {
+        this.$message.error('No valid session selected')
+        return
+      }
+
+      try {
+        const response = await request({
+          url: '/api/seats/reserve',
+          method: 'post',
+          data: {
+            session_id: this.currentSessionId,
+            seats: selectedSeats
+          }
+        })
+
+        // ... 处理响应 ...
+      } catch (error) {
+        console.error('Failed to reserve seats:', error)
+        this.$message.error(error.message || 'Failed to reserve seats')
+      }
+    },
+    async checkAndUpdateSession() {
+      console.log('Starting checkAndUpdateSession...')
+      console.log('Current selections:', {
+        movie: this.selectedMovieId,
+        cinema: this.selectedCinemaId,
+        date: this.selectedDate,
+        time: this.selectedTime
+      })
+
+      if (this.selectedMovieId && this.selectedCinemaId && this.selectedDate && this.selectedTime) {
+        try {
+          console.log('Sending session request...')
+          const sessionResponse = await request({
+            url: '/api/seats/sessions',
+            method: 'post',
+            data: {
+              movie_id: this.selectedMovieId,
+              theater_id: this.selectedCinemaId,
+              date: this.selectedDate,
+              time: this.selectedTime
+            },
+            baseURL: 'http://localhost:3007'
+          })
+
+          console.log('Session response:', sessionResponse.data)
+
+          if (sessionResponse.data && sessionResponse.status === 0) {
+            this.currentSessionId = sessionResponse.data.session_id
+            // 直接使用返回的座位数据
+            this.seats = sessionResponse.data.seats
+            console.log('Seats updated:', this.seats.length)
+            this.$forceUpdate()  // 强制更新视图
+          }
+        } catch (error) {
+          console.error('Failed to update session:', error)
+        }
+      } else {
+        console.log('Not all selections are made yet')
+      }
+    },
+  },
+  mounted() {
+    document.addEventListener('click', this.handleClickOutside)
+  },
+  beforeDestroy() {
+    document.removeEventListener('click', this.handleClickOutside)
+  }
+}
+</script>

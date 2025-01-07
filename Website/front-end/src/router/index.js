@@ -245,6 +245,19 @@ export const constantRoutes = [
     ]
   },
 
+  {
+    path: '/seats',
+    component: Layout,
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/seats/index'),
+        name: 'SeatSelection',
+        meta: { title: 'Seat Selection', icon: 'chair' }
+      }
+    ]
+  },
+
 
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
