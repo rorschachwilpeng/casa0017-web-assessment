@@ -18,7 +18,7 @@
 
     <!-- Movie List -->
     <div v-loading="loading" class="movie-list">
-      <div v-for="movie in moviesList" :key="movie.id" class="movie-card">
+      <div v-for="movie in moviesList" :key="movie.id" class="movie-card" @click="goToMovieDetails(movie.id)">
         <div class="movie-poster">
           <img :src="'http://localhost:3007' + movie.poster_url" :alt="movie.name">
         </div>
@@ -82,6 +82,10 @@ export default {
     handleCategoryChange(category) {
       this.selectedCategory = category
       this.fetchMovies()
+    },
+
+    goToMovieDetails(movieId) {
+      this.$router.push(`/movie-details/index?id=${movieId}`)
     }
   }
 }
@@ -149,7 +153,7 @@ export default {
     .movie-director, .movie-cast {
       margin-bottom: 10px;
       color: #666;
-      
+
       strong {
         color: #333;
       }
@@ -182,4 +186,4 @@ export default {
 .el-radio-button:last-child .el-radio-button__inner {
   border-radius: 0 4px 4px 0;
 }
-</style> 
+</style>
