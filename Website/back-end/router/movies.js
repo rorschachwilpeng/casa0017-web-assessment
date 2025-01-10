@@ -48,20 +48,43 @@ router.get('/movies', async (req, res) => {
  */
 router.get('/movies/:id', async (req, res) => {
   try {
-    const [results] = await db.query('SELECT * FROM movies WHERE id = ?', [req.params.id]);
+    const sql = 'SELECT * FROM movies WHERE id = ?';
+    const [results] = await db.query(sql, [req.params.id]);
+
     if (results.length === 0) {
       return res.status(404).json({ 
         status: 1,
         message: 'Movie not found'
       });
     }
+
+    // 构建响应数据
+    const movie = results[0];
+    const movieData = {
+      id: movie.id,
+      name: movie.name,
+      category: movie.category,
+      director: movie.director,
+      cast: movie.cast ? movie.cast.split(',').map(actor => actor.trim()) : [], // 将演员字符串拆分为数组
+      description: movie.description,
+      plot_summary: movie.plot_summary,
+      rating: movie.rating,
+      length: movie.length,
+      poster_url: movie.poster_url
+    };
+
     res.json({
       status: 0,
       message: 'Success',
-      data: results[0]
+      data: movieData
     });
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+    console.error('Database error:', err);
+    return res.status(500).json({ 
+      status: 1,
+      message: 'Database error',
+      error: err.message 
+    });
   }
 });
 

@@ -251,6 +251,7 @@
 <script>
 import BookingBanner from '@/components/BookingBanner.vue'
 import TheFooter from '@/components/TheFooter.vue'
+import request from '@/utils/request'
 
 export default {
   name: 'MovieDetails',
@@ -260,151 +261,157 @@ export default {
   },
   data() {
     return {
+      loading: false,
+      error: null,
       movie: {
-        image: 'https://example.com/path/to/kantara-hero.jpg',
-        title: 'Kantara',
-        description: 'A fiery young man clashes with an unflinching forest officer in a south Indian village where spirituality, fate and folklore rule the lands.',
-        year: 2022,
-        languages: ['English', 'Hindi', 'Tamil', 'Telugu', 'Kannada'],
-        genres: ['Action', 'Adventure'],
-        imdbRating: 4.5,
-        streamRating: 4,
+        id: null,
+        title: '',
+        description: '',
+        year: '',
         director: {
-          name: 'Rishab Shetty',
-          location: 'From India',
-          image: '/path/to/director.jpg'
+          name: '',
+          location: '',
+          image: ''
         },
+        cast: [],
+        languages: [],
+        genres: [],
+        rating: 0,
+        imdbRating: 4.5,
+        streamvibeRating: 4.0,
+        length: '',
+        image: '',
         music: {
-          name: 'B. Ajaneesh Loknath',
-          location: 'From India',
-          image: '/path/to/music.jpg'
-        },
-        cast: [
-          { id: 1, name: 'Actor1', image: '/path/to/actor1.jpg' },
-          { id: 2, name: 'Actor2', image: '/path/to/actor2.jpg' },
-          // ... 更多演员
-        ],
-        reviews: [
-          {
-            id: 1,
-            author: 'Anikot Roy',
-            location: 'India',
-            rating: 4.5,
-            text: 'This movie was recommended to me by a very dear friend who went for the movie by herself. I went to the cinemas to watch but had a houseful board so couldn\'t watch it.'
-          },
-          {
-            id: 2,
-            author: 'Swaraj',
-            location: 'India',
-            rating: 5,
-            text: 'A restless king promises his lands to the local tribals in exchange of a stone (Panjurli, a deity of Keradi Village) wherein he finds solace and peace of mind.'
-          }
-        ]
+          name: '',
+          location: '',
+          image: ''
+        }
       },
       currentPage: 0,
-      itemsPerPage: 6, // 每页显示的演员数量
+      itemsPerPage: 6,
       reviewPage: 0,
-      reviewsPerPage: 2, // 每页显示2条评论
+      reviewsPerPage: 2,
       movieReviews: [
         {
           id: 1,
           name: "Anikot Roy",
           location: "India",
           rating: 4.5,
-          text: "This movie was recommended to me by a very dear friend who went for the movie by herself. I went to the cinemas to watch but had a houseful board so couldn't watch it."
-        },
-        {
-          id: 2,
-          name: "Swaraj",
-          location: "India",
-          rating: 5.0,
-          text: "A restless king promises his lands to the local tribals in exchange of a stone (Panjurli, a deity of Keradi Village) wherein he finds solace and peace of mind."
-        },
-        {
-          id: 3,
-          name: "Priya Sharma",
-          location: "India",
-          rating: 4.8,
-          text: "The film masterfully weaves together tradition and modernity, creating a mesmerizing spectacle that resonates deeply with audiences. The stunning visuals, powerful performances, and haunting soundtrack work in perfect harmony. Every scene is carefully crafted, drawing viewers into a world where ancient folklore meets contemporary storytelling." // 约 50 个单词，显示完整
-        },
-        {
-          id: 4,
-          name: "Rahul Menon",
-          location: "India",
-          rating: 4.7,
-          text: "The director has done an exceptional job in bringing this story to life. The attention to detail in portraying the local customs and traditions is remarkable. The performances are authentic and the background score elevates every scene."
+          text: "This movie was recommended to me by a very dear friend..."
         }
-      ],
-      currentCastPage: 0,
-      itemsPerPage: 4, // 每页显示的演员数量
-    };
+      ]
+    }
   },
   computed: {
-    maxPage() {
-      return Math.ceil(this.movie.cast.length / this.itemsPerPage) - 1;
-    },
     displayedCast() {
-      const start = this.currentPage * this.itemsPerPage;
-      const end = start + this.itemsPerPage;
-      return this.movie.cast.slice(start, end);
+      const start = this.currentPage * this.itemsPerPage
+      return this.movie.cast.slice(start, start + this.itemsPerPage)
     },
-    maxReviewPage() {
-      return Math.ceil(this.movieReviews.length / this.reviewsPerPage) - 1;
-    },
-    totalPages() {
-      return this.maxReviewPage + 1;
+    maxPage() {
+      return Math.ceil(this.movie.cast.length / this.itemsPerPage) - 1
     },
     displayedReviews() {
-      const start = this.reviewPage * this.reviewsPerPage;
-      const end = start + this.reviewsPerPage;
-      return this.movieReviews.slice(start, end);
+      const start = this.reviewPage * this.reviewsPerPage
+      return this.movieReviews.slice(start, start + this.reviewsPerPage)
     },
-    totalCastPages() {
-      return Math.ceil(this.movie.cast.length / this.itemsPerPage)
+    maxReviewPage() {
+      return Math.ceil(this.movieReviews.length / this.reviewsPerPage) - 1
     },
-    displayedCast() {
-      const start = this.currentCastPage * this.itemsPerPage
-      const end = start + this.itemsPerPage
-      return this.movie.cast.slice(start, end)
+    totalPages() {
+      return Math.ceil(this.movieReviews.length / this.reviewsPerPage)
     }
   },
   methods: {
-    playPreview() {
-      // 实现预览播放逻辑
-      console.log('Playing preview...');
+    async fetchMovieDetails(movieId) {
+      this.loading = true
+      try {
+        const response = await request({
+          url: `/api/movies/${movieId}`,
+          method: 'get'
+        })
+
+        if (response.data) {
+          const movieData = response.data
+          const posterUrl = movieData.poster_url
+            ? (movieData.poster_url.startsWith('http')
+              ? movieData.poster_url
+              : `${process.env.VUE_APP_BASE_API}${movieData.poster_url}`)
+            : ''
+
+          this.movie = {
+            id: movieData.id,
+            title: movieData.name,
+            description: movieData.description || 'No description available',
+            year: movieData.release_year,
+            director: {
+              name: movieData.director || 'Unknown',
+              location: 'From India',
+              image: ''
+            },
+            cast: movieData.cast ? movieData.cast.split(',').map(name => ({
+              id: Math.random(),
+              name: name.trim(),
+              image: ''
+            })) : [],
+            languages: movieData.languages ? movieData.languages.split(',') : [],
+            genres: movieData.category ? [movieData.category] : [],
+            rating: movieData.rating || 0,
+            imdbRating: 4.5,
+            streamvibeRating: 4.0,
+            length: movieData.length || 'Unknown',
+            image: posterUrl,
+            music: {
+              name: movieData.music || 'Unknown',
+              location: 'From India',
+              image: ''
+            }
+          }
+        }
+      } catch (error) {
+        console.error('获取电影详情失败:', error)
+        this.error = `Failed to load movie details: ${error.message}`
+      } finally {
+        this.loading = false
+      }
     },
     prevPage() {
       if (this.currentPage > 0) {
-        this.currentPage--;
+        this.currentPage--
       }
     },
     nextPage() {
       if (this.currentPage < this.maxPage) {
-        this.currentPage++;
+        this.currentPage++
       }
     },
     prevReviewPage() {
       if (this.reviewPage > 0) {
-        this.reviewPage--;
+        this.reviewPage--
       }
     },
     nextReviewPage() {
       if (this.reviewPage < this.maxReviewPage) {
-        this.reviewPage++;
-      }
-    },
-    prevCastPage() {
-      if (this.currentCastPage > 0) {
-        this.currentCastPage--
-      }
-    },
-    nextCastPage() {
-      if (this.currentCastPage < this.totalCastPages - 1) {
-        this.currentCastPage++
+        this.reviewPage++
       }
     }
+  },
+  created() {
+    const movieId = this.$route.query.id
+    if (movieId) {
+      this.fetchMovieDetails(movieId)
+    }
+  },
+  watch: {
+    '$route.query.id': {
+      handler(newId) {
+        if (newId) {
+          this.fetchMovieDetails(newId)
+        }
+      },
+      immediate: true
+    }
   }
-};
+}
 </script>
 
 <style scoped>
