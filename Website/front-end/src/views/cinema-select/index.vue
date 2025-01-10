@@ -218,11 +218,14 @@
             <el-button type="primary" @click="showRoute">Route</el-button>
           </div>
         </div>
+
+        <!-- 将 BookingBanner 移到这里 -->
+        <div class="banner-section">
+          <BookingBanner />
+        </div>
       </div>
     </div>
 
-    <!-- Banner和页脚 -->
-    <BookingBanner />
     <TheFooter />
   </div>
 </template>
@@ -801,23 +804,23 @@ export default {
 }
 
 .content-section {
-  padding: 120px 120px;
+  padding: 0px 0px;
+  
+  /* 添加这个容器样式来保持一致的内容宽度 */
+  .container {
+    padding: 0 124px;  // 使用与 app-container 相同的左右内边距
+    margin: 0 auto;
+    width: 100%;
+  }
 }
 
 /* 全局样式 */
 .app-container {
   width: 100%;
   min-height: 100vh;
-  background-color: #0A0A0A;
   color: #ffffff;
-  padding: 120px 124px 60px;
-  background: linear-gradient(
-    to bottom,
-    transparent 0%,
-    rgba(26, 26, 26, 0.8) 5%,
-    rgba(26, 26, 26, 1) 10%,
-    rgba(26, 26, 26, 1) 100%
-  );
+  padding: 120px 124px 40px; // 减小底部内边距为 60px
+  background: transparent;
 }
 
 .movie-header {
@@ -1714,5 +1717,18 @@ export default {
     border-radius: 20px;
     padding: 8px 16px;
   }
+}
+
+/* 添加 Banner 相关样式 */
+.banner-section {
+  position: relative;
+  z-index: 1;
+  margin: 100px 0;  
+  background: transparent;
+}
+
+/* 调整内容区域的样式以配合 banner */
+.content-section {
+  padding-bottom: 0px; // 为 banner 预留空间
 }
 </style> 
