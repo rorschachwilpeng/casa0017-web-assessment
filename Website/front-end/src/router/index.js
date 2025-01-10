@@ -250,7 +250,7 @@ export const constantRoutes = [
     component: Layout,
     children: [
       {
-        path: '',
+        path: 'index',
         component: () => import('@/views/seats/index'),
         name: 'SeatSelection',
         meta: { title: 'Seat Selection', icon: 'chair' }
@@ -258,6 +258,18 @@ export const constantRoutes = [
     ]
   },
 
+  {
+    path: '/about',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        name: 'About',
+        component: () => import('@/views/about/index'),
+        meta: { title: 'About', icon: 'el-icon-orange' }
+      }
+    ]
+  },
 
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
