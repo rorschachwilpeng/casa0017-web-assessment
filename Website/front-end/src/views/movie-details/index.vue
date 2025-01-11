@@ -7,7 +7,7 @@
           <h1>{{ movie.name }}</h1>
           <p>{{ movie.description }}</p>
           <div class="button-container">
-            <button class="preview-btn">
+            <button class="preview-btn" @click="playTrailer">
               <svg class="play-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M8 5.14V19.14L19 12.14L8 5.14Z" fill="currentColor"/>
               </svg>
@@ -162,6 +162,22 @@
       </div>
     </section>
     <TheFooter />
+    <div v-if="showPreviewModal" class="video-modal">
+      <div class="modal-content">
+        <button class="close-btn" @click="showPreviewModal = false">
+          <span class="close-icon">×</span>
+          <span class="close-text">Close</span>
+        </button>
+        <div class="video-wrapper">
+          <iframe
+            :src="getVideoUrl"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+          ></iframe>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -184,7 +200,8 @@ export default {
       loading: true,
       movieReviews: [],
       currentPage: 0,
-      reviewsPerPage: 2
+      reviewsPerPage: 2,
+      showPreviewModal: false
     }
   },
   computed: {
@@ -207,6 +224,11 @@ export default {
     },
     totalPages() {
       return Math.max(1, Math.ceil(this.movieReviews.length / this.reviewsPerPage));
+    },
+    getVideoUrl() {
+      if (!this.movie.trailer_url) return '';
+      const videoId = this.movie.trailer_url.split('v=')[1];
+      return `https://www.youtube.com/embed/${videoId}?autoplay=1`;
     }
   },
   async created() {
@@ -308,6 +330,10 @@ export default {
         return 'half';
       }
       return 'empty';
+    },
+
+    playTrailer() {
+      this.showPreviewModal = true;
     }
   }
 }
@@ -1023,6 +1049,57 @@ export default {
   font-size: 16px;
   color: #FFFFFF;
   line-height: 1.5;
+}
+
+.video-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  position: relative;
+  width: 90%;
+  max-width: 1200px;
+  background: #000;
+  border-radius: 8px;
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  color: white;
+  padding: 6px 10px;
+  cursor: pointer;
+  z-index: 2000;
+}
+
+.video-wrapper {
+  position: relative;
+  padding-bottom: 56.25%;
+  height: 0;
+  overflow: hidden;
+}
+
+.video-wrapper iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 </style>
 
