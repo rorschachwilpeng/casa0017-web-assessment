@@ -1,5 +1,8 @@
 <template>
   <div class="movie-detail">
+    <!-- 添加导航栏 -->
+    <TheNavbar />
+    
     <!-- 顶部大图部分 -->
     <div class="hero-section" :style="{ backgroundImage: `url(${movie.image})` }">
       <div class="overlay">
@@ -251,13 +254,15 @@
 <script>
 import BookingBanner from '@/components/BookingBanner.vue'
 import TheFooter from '@/components/TheFooter.vue'
+import TheNavbar from '@/components/TheNavbar.vue'
 import request from '@/utils/request'
 
 export default {
   name: 'MovieDetails',
   components: {
     BookingBanner,
-    TheFooter
+    TheFooter,
+    TheNavbar
   },
   data() {
     return {
@@ -419,6 +424,7 @@ export default {
   background-color: #111;
   color: #fff;
   min-height: 100vh;
+  padding-top: 80px;
 }
 
 .hero-section {
@@ -610,6 +616,7 @@ export default {
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 10;
+  line-clamp: 10;
   -webkit-box-orient: vertical;
   text-overflow: ellipsis;
   margin-top: 4px;
