@@ -223,13 +223,14 @@ export const constantRoutes = [
     component: Layout,
     children: [
       {
-        path: '',
+        path: 'index',
         component: () => import('@/views/seats/index'),
         name: 'SeatSelection',
         meta: { title: 'Seat Selection', icon: 'chair' }
       }
     ]
   },
+
 
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }

@@ -1,217 +1,232 @@
 <template>
-  <div class="app-container">
-    <!-- 顶部电影信息 -->
-    <div class="movie-header">
-      <!-- 添加电影选择器 -->
-      <div class="movie-selector">
-        <span class="label">Select Movie:</span>
-        <el-select 
-          style="width: 300px"
-          v-model="selectedMovieId" 
-          placeholder="Please select a movie" 
-          @change="handleMovieChange"
-        >
-          <el-option
-            v-for="movie in moviesList"
-            :key="movie.id"
-            :label="movie.name"
-            :value="movie.id"
-          >
-            <span style="float: left">{{ movie.name }}</span>
-            <span style="float: right; color: #8492a6; font-size: 13px">
-              {{ movie.category }}
-            </span>
-          </el-option>
-        </el-select>
-      </div>
-
-      <div v-if="movieTitle" class="movie-title">
-        {{ movieTitle }}
-      </div>
-      
-      <!-- 时间和筛选选项 -->
-      <div class="filter-section">
-        <div class="time-filter">
-          <span class="label">Time:</span>
-          <el-radio-group v-model="selectedTime" size="small">
-            <el-radio-button label="today">today</el-radio-button>
-            <el-radio-button label="tomorrow">tomorrow</el-radio-button>
-            <el-button size="small" icon="el-icon-date">select</el-button>
-          </el-radio-group>
-        </div>
-        
-        <div class="other-filters">
-          <span class="label">Filter:</span>
-          <el-radio-group v-model="selectedFilter" size="small">
-            <el-radio-button label="closest">closest</el-radio-button>
-            <el-radio-button label="highest-rated">highest rated</el-radio-button>
-            <el-radio-button label="safest">safest</el-radio-button>
-          </el-radio-group>
-        </div>
-      </div>
-    </div>
-
-    <!-- 主要内容区域 -->
-    <div class="main-content">
-      <!-- 左侧影院列表 -->
-      <div class="cinemas-list">
-        <div 
-          v-for="cinema in sortedCinemas" 
-          :key="cinema.cinema_id" 
-          class="cinema-item" 
-          :data-cinema-id="cinema.cinema_id"
-          @click="selectCinema(cinema)"
-        >
-          <h3>{{ cinema.name }}</h3>
-          <div class="cinema-info">
-            <span class="distance">Distance: {{ cinema.distance }}km</span>
-            <span class="rating">Rating: {{ cinema.rating }}</span>
-          </div>
-          <div class="safety-info" v-if="cinema.safety_score !== undefined">
-            <span class="safety-score">Safety Score: {{ cinema.safety_score }}</span>
-            <span class="safety-level" :class="cinema.safety_level.toLowerCase().replace(' ', '-')">
-              {{ cinema.safety_level }}
-            </span>
-          </div>
-          <div class="showtime-info">
-            <span>Recent screenings:</span>
-            <div class="times">
-              <span v-for="(time, index) in cinema.screenings" :key="index">
-                {{ time }}
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 右侧地图区域 -->
-      <div class="map-container">
-        <div id="map"></div>
-        
-        <!-- 修改后的路线信息控件 -->
-        <div v-if="routeInfo" class="route-info-control">
-          <h4>Route Information</h4>
-          <div class="route-modes">
-            <div 
-              v-for="(data, mode) in routeInfo" 
-              :key="mode"
-              class="route-mode-item"
-              :class="{ active: selectedTransportMode === mode }"
-              @click="handleTransportModeChange(mode)"
+  <div class="home">
+    <!-- 导航栏 -->
+    <TheNavbar />
+    
+    <div class="content-section">
+      <!-- 原有的内容 -->
+      <div class="app-container">
+        <!-- 顶部电影信息 -->
+        <div class="movie-header">
+          <!-- 添加电影选择器 -->
+          <div class="movie-selector">
+            <span class="label">Select Movie:</span>
+            <el-select 
+              style="width: 300px"
+              v-model="selectedMovieId" 
+              placeholder="Please select a movie" 
+              @change="handleMovieChange"
             >
-              <div class="mode-header">
-                <i :class="getTransportIcon(mode)"></i>
-                <span class="mode-name">{{ mode.charAt(0).toUpperCase() + mode.slice(1) }}</span>
+              <el-option
+                v-for="movie in moviesList"
+                :key="movie.id"
+                :label="movie.name"
+                :value="movie.id"
+              >
+                <span style="float: left">{{ movie.name }}</span>
+                <span style="float: right; color: #8492a6; font-size: 13px">
+                  {{ movie.category }}
+                </span>
+              </el-option>
+            </el-select>
+          </div>
+
+          <div v-if="movieTitle" class="movie-title">
+            {{ movieTitle }}
+          </div>
+          
+          <!-- 时间和筛选选项 -->
+          <div class="filter-section">
+            <div class="time-filter">
+              <span class="label">Time:</span>
+              <el-radio-group v-model="selectedTime" size="small">
+                <el-radio-button label="today">today</el-radio-button>
+                <el-radio-button label="tomorrow">tomorrow</el-radio-button>
+                <el-button size="small" icon="el-icon-date">select</el-button>
+              </el-radio-group>
+            </div>
+            
+            <div class="other-filters">
+              <span class="label">Filter:</span>
+              <el-radio-group v-model="selectedFilter" size="small">
+                <el-radio-button label="closest">closest</el-radio-button>
+                <el-radio-button label="highest-rated">highest rated</el-radio-button>
+                <el-radio-button label="safest">safest</el-radio-button>
+              </el-radio-group>
+            </div>
+          </div>
+        </div>
+
+        <!-- 主要内容区域 -->
+        <div class="main-content">
+          <!-- 左侧影院列表 -->
+          <div class="cinemas-list">
+            <div 
+              v-for="cinema in sortedCinemas" 
+              :key="cinema.cinema_id" 
+              class="cinema-item" 
+              :data-cinema-id="cinema.cinema_id"
+              @click="selectCinema(cinema)"
+            >
+              <h3>{{ cinema.name }}</h3>
+              <div class="cinema-info">
+                <span class="distance">Distance: {{ cinema.distance }}km</span>
+                <span class="rating">Rating: {{ cinema.rating }}</span>
               </div>
-              <div class="mode-details">
-                <div class="detail-item">
-                  <i class="el-icon-time" />
-                  <span>{{ data.duration }}</span>
-                </div>
-                <div class="detail-item">
-                  <i class="el-icon-location-outline"></i>
-                  <span>{{ data.distance }}</span>
+              <div class="safety-info" v-if="cinema.safety_score !== undefined">
+                <span class="safety-score">Safety Score: {{ cinema.safety_score }}</span>
+                <span class="safety-level" :class="cinema.safety_level.toLowerCase().replace(' ', '-')">
+                  {{ cinema.safety_level }}
+                </span>
+              </div>
+              <div class="showtime-info">
+                <span>Recent screenings:</span>
+                <div class="times">
+                  <span v-for="(time, index) in cinema.screenings" :key="index">
+                    {{ time }}
+                  </span>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-        
-        <div class="map-legend">
-          <h4>Safety Score</h4>
-          <div class="legend-items">
-            <div class="legend-item">
-              <span class="color-box high-safety"></span>
-              <span>High Safety (80-100)</span>
+
+          <!-- 右侧地图区域 -->
+          <div class="map-container">
+            <div id="map"></div>
+            
+            <!-- 修改后的路线信息控件 -->
+            <div v-if="routeInfo" class="route-info-control">
+              <h4>Route Information</h4>
+              <div class="route-modes">
+                <div 
+                  v-for="(data, mode) in routeInfo" 
+                  :key="mode"
+                  class="route-mode-item"
+                  :class="{ active: selectedTransportMode === mode }"
+                  @click="handleTransportModeChange(mode)"
+                >
+                  <div class="mode-header">
+                    <i :class="getTransportIcon(mode)"></i>
+                    <span class="mode-name">{{ mode.charAt(0).toUpperCase() + mode.slice(1) }}</span>
+                  </div>
+                  <div class="mode-details">
+                    <div class="detail-item">
+                      <i class="el-icon-time" />
+                      <span>{{ data.duration }}</span>
+                    </div>
+                    <div class="detail-item">
+                      <i class="el-icon-location-outline"></i>
+                      <span>{{ data.distance }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div class="legend-item">
-              <span class="color-box medium-safety"></span>
-              <span>Medium Safety (50-79)</span>
+            
+            <div class="map-legend">
+              <h4>Safety Score</h4>
+              <div class="legend-items">
+                <div class="legend-item">
+                  <span class="color-box high-safety"></span>
+                  <span>High Safety (80-100)</span>
+                </div>
+                <div class="legend-item">
+                  <span class="color-box medium-safety"></span>
+                  <span>Medium Safety (50-79)</span>
+                </div>
+                <div class="legend-item">
+                  <span class="color-box low-safety"></span>
+                  <span>Exercise Caution (0-49)</span>
+                </div>
+              </div>
             </div>
-            <div class="legend-item">
-              <span class="color-box low-safety"></span>
-              <span>Exercise Caution (0-49)</span>
-            </div>
+            <el-button 
+              class="location-button" 
+              type="primary" 
+              icon="el-icon-location" 
+              @click="getCurrentLocation"
+            >
+              Get My Location
+            </el-button>
           </div>
         </div>
-        <el-button 
-          class="location-button" 
-          type="primary" 
-          icon="el-icon-location" 
-          @click="getCurrentLocation"
-        >
-          Get My Location
-        </el-button>
+
+        <!-- 选中的影院详情 -->
+        <div v-if="selectedCinema" class="cinema-details">
+          <h2>{{ selectedCinema.name }}</h2>
+          
+          <!-- 影院图片 -->
+          <div class="cinema-images">
+            <img :src="selectedCinema.image" :alt="selectedCinema.name">
+          </div>
+
+          <!-- 影院信息 -->
+          <div class="info-section">
+            <div class="info-item safety-details" v-if="selectedCinema.safety_score !== undefined">
+              <label>Safety Information:</label>
+              <div class="safety-stats">
+                <div class="safety-score">
+                  <span class="label">Safety Score:</span>
+                  <span class="value">{{ selectedCinema.safety_score }}</span>
+                </div>
+                <div class="safety-level" :class="selectedCinema.safety_level.toLowerCase().replace(' ', '-')">
+                  {{ selectedCinema.safety_level }}
+                </div>
+              </div>
+              <div class="nearby-areas" v-if="selectedCinema.nearby_areas">
+                <h4>Nearby Areas Crime Statistics:</h4>
+                <ul>
+                  <li v-for="(area, index) in selectedCinema.nearby_areas" :key="index">
+                    {{ area.area_name }} ({{ area.distance }}m) - {{ area.crime_count }} incidents
+                  </li>
+                </ul>
+              </div>
+            </div>
+            
+            <div class="info-item">
+              <label>Comments:</label>
+              <div class="comments">
+                <p v-for="(comment, index) in selectedCinema.comments" :key="index">
+                  {{ comment }}
+                </p>
+              </div>
+            </div>
+            
+            <div class="info-item">
+              <label>Location:</label>
+              <p>{{ selectedCinema.location }}</p>
+            </div>
+            
+            <div class="info-item">
+              <label>Phone:</label>
+              <p>{{ selectedCinema.phone }}</p>
+            </div>
+            
+            <div class="info-item">
+              <label>Email:</label>
+              <p>{{ selectedCinema.email }}</p>
+            </div>
+            
+            <div class="info-item">
+              <label>Website:</label>
+              <p>{{ selectedCinema.website }}</p>
+            </div>
+          </div>
+
+          <!-- 路线按钮 -->
+          <div class="route-buttons">
+            <el-button type="primary" @click="showRoute">Route</el-button>
+          </div>
+        </div>
+
+        <!-- 将 BookingBanner 移到这里 -->
+        <div class="banner-section">
+          <BookingBanner />
+        </div>
       </div>
     </div>
 
-    <!-- 选中的影院详情 -->
-    <div v-if="selectedCinema" class="cinema-details">
-      <h2>{{ selectedCinema.name }}</h2>
-      
-      <!-- 影院图片 -->
-      <div class="cinema-images">
-        <img :src="selectedCinema.image" :alt="selectedCinema.name">
-      </div>
-
-      <!-- 影院信息 -->
-      <div class="info-section">
-        <div class="info-item safety-details" v-if="selectedCinema.safety_score !== undefined">
-          <label>Safety Information:</label>
-          <div class="safety-stats">
-            <div class="safety-score">
-              <span class="label">Safety Score:</span>
-              <span class="value">{{ selectedCinema.safety_score }}</span>
-            </div>
-            <div class="safety-level" :class="selectedCinema.safety_level.toLowerCase().replace(' ', '-')">
-              {{ selectedCinema.safety_level }}
-            </div>
-          </div>
-          <div class="nearby-areas" v-if="selectedCinema.nearby_areas">
-            <h4>Nearby Areas Crime Statistics:</h4>
-            <ul>
-              <li v-for="(area, index) in selectedCinema.nearby_areas" :key="index">
-                {{ area.area_name }} ({{ area.distance }}m) - {{ area.crime_count }} incidents
-              </li>
-            </ul>
-          </div>
-        </div>
-        
-        <div class="info-item">
-          <label>Comments:</label>
-          <div class="comments">
-            <p v-for="(comment, index) in selectedCinema.comments" :key="index">
-              {{ comment }}
-            </p>
-          </div>
-        </div>
-        
-        <div class="info-item">
-          <label>Location:</label>
-          <p>{{ selectedCinema.location }}</p>
-        </div>
-        
-        <div class="info-item">
-          <label>Phone:</label>
-          <p>{{ selectedCinema.phone }}</p>
-        </div>
-        
-        <div class="info-item">
-          <label>Email:</label>
-          <p>{{ selectedCinema.email }}</p>
-        </div>
-        
-        <div class="info-item">
-          <label>Website:</label>
-          <p>{{ selectedCinema.website }}</p>
-        </div>
-      </div>
-
-      <!-- 路线按钮 -->
-      <div class="route-buttons">
-        <el-button type="primary" @click="showRoute">Route</el-button>
-      </div>
-    </div>
+    <TheFooter />
   </div>
 </template>
 
@@ -220,6 +235,9 @@ import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
 import request from '@/utils/request'
 import axios from 'axios'
+import TheNavbar from '@/components/TheNavbar.vue'
+import BookingBanner from '@/components/BookingBanner.vue'
+import TheFooter from '@/components/TheFooter.vue'
 
 // 修复 Leaflet 图标路径问题
 delete L.Icon.Default.prototype._getIconUrl
@@ -231,6 +249,11 @@ L.Icon.Default.mergeOptions({
 
 export default {
   name: 'CinemaSelect',
+  components: {
+    TheNavbar,
+    BookingBanner,
+    TheFooter
+  },
   data() {
     return {
       moviesList: [], // 电影列表
@@ -773,20 +796,31 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-/* 全局样式 */
-.app-container {
+.home {
   width: 100%;
   min-height: 100vh;
   background-color: #0A0A0A;
   color: #ffffff;
-  padding: 120px 124px 60px;
-  background: linear-gradient(
-    to bottom,
-    transparent 0%,
-    rgba(26, 26, 26, 0.8) 5%,
-    rgba(26, 26, 26, 1) 10%,
-    rgba(26, 26, 26, 1) 100%
-  );
+}
+
+.content-section {
+  padding: 0px 0px;
+  
+  /* 添加这个容器样式来保持一致的内容宽度 */
+  .container {
+    padding: 0 124px;  // 使用与 app-container 相同的左右内边距
+    margin: 0 auto;
+    width: 100%;
+  }
+}
+
+/* 全局样式 */
+.app-container {
+  width: 100%;
+  min-height: 100vh;
+  color: #ffffff;
+  padding: 120px 124px 40px; // 减小底部内边距为 60px
+  background: transparent;
 }
 
 .movie-header {
@@ -1683,5 +1717,18 @@ export default {
     border-radius: 20px;
     padding: 8px 16px;
   }
+}
+
+/* 添加 Banner 相关样式 */
+.banner-section {
+  position: relative;
+  z-index: 1;
+  margin: 100px 0;  
+  background: transparent;
+}
+
+/* 调整内容区域的样式以配合 banner */
+.content-section {
+  padding-bottom: 0px; // 为 banner 预留空间
 }
 </style> 

@@ -1,164 +1,186 @@
 <template>
-  <div class="booking-page">
-    <!-- 电影信息部分 -->
-    <div class="movie-info-section">
-      <div class="movie-basic-info">
-        <div class="movie-poster">
-          <img 
-            :src="'http://localhost:3007' + currentMovie.poster_url" 
-            :alt="currentMovie.name"
-          >
-        </div>
-        <div class="movie-details">
-          <h2>{{ currentMovie.name || 'Select a Movie' }}</h2>
-          <p v-if="currentMovie.length">Duration: {{ currentMovie.length }} mins</p>
-        </div>
-      </div>
-      
-      <!-- 新增的影院和场次信息 -->
-      <div class="session-info">
-        <!-- 电影选择 -->
-        <div class="info-item">
-          <span class="label">Movie</span>
-          <div class="custom-select" :class="{ 'active': isMovieDropdownOpen }">
-            <div class="selected" @click="toggleDropdown('movie')">
-              {{ selectedMovieId ? getMovieName(selectedMovieId) : 'Select movie' }}
-              <span class="arrow">▼</span>
+  <div class="app-container">
+    <!-- 导航栏 -->
+    <TheNavbar />
+
+    <!-- 主要内容 -->
+    <div class="content-section">
+      <div class="booking-page">
+        <!-- 电影信息部分 -->
+        <div class="movie-info-section">
+          <div class="movie-basic-info">
+            <div class="movie-poster">
+              <img 
+                :src="'http://localhost:3007' + currentMovie.poster_url" 
+                :alt="currentMovie.name"
+              >
             </div>
-            <div class="options-container" v-if="isMovieDropdownOpen">
-              <div class="options">
-                <div v-for="movie in movieList" 
-                     :key="movie.id" 
-                     class="option"
-                     :class="{ 'selected': selectedMovieId === movie.id }"
-                     @click="selectMovie(movie)">
-                  {{ movie.name }}
-                </div>
-              </div>
+            <div class="movie-details">
+              <h2>{{ currentMovie.name || 'Select a Movie' }}</h2>
+              <p v-if="currentMovie.length">Duration: {{ currentMovie.length }} mins</p>
             </div>
           </div>
-        </div>
-        
-        <div class="info-item">
-          <span class="label">Cinema</span>
-          <div class="custom-select" :class="{ 'active': isCinemaDropdownOpen }">
-            <!-- 加载状态 -->
-            <div v-if="isLoading" class="loading">Loading cinemas...</div>
-            
-            <!-- 错误信息 -->
-            <div v-else-if="errorMessage" class="error">{{ errorMessage }}</div>
-            
-            <!-- 影院选择器 -->
-            <template v-else>
-              <div class="selected" @click="toggleDropdown('cinema')">
-                {{ selectedCinemaName }}
-                <span class="arrow">▼</span>
-              </div>
-              <div class="options-container" v-show="isCinemaDropdownOpen">
-                <div class="options">
-                  <div v-for="cinema in cinemaList" 
-                       :key="cinema.id" 
-                       class="option"
-                       :class="{ 'selected': selectedCinemaId === cinema.id }"
-                       @click="selectCinema(cinema)">
-                    {{ cinema.name }}
+          
+          <!-- 新增的影院和场次信息 -->
+          <div class="session-info">
+            <!-- 电影选择 -->
+            <div class="info-item">
+              <span class="label">Movie</span>
+              <div class="custom-select" :class="{ 'active': isMovieDropdownOpen }">
+                <div class="selected" @click="toggleDropdown('movie')">
+                  {{ selectedMovieId ? getMovieName(selectedMovieId) : 'Select movie' }}
+                  <span class="arrow">▼</span>
+                </div>
+                <div class="options-container" v-if="isMovieDropdownOpen">
+                  <div class="options">
+                    <div v-for="movie in movieList" 
+                         :key="movie.id" 
+                         class="option"
+                         :class="{ 'selected': selectedMovieId === movie.id }"
+                         @click="selectMovie(movie)">
+                      {{ movie.name }}
+                    </div>
                   </div>
                 </div>
               </div>
-            </template>
-          </div>
-        </div>
-        
-        <!-- 日期选择 -->
-        <div class="info-item">
-          <span class="label">Date</span>
-          <div class="custom-select" :class="{ 'active': isDateDropdownOpen }">
-            <div class="selected" @click="toggleDropdown('date')">
-              {{ selectedDateLabel || 'Select date' }}
-              <span class="arrow">▼</span>
             </div>
-            <div class="options-container" v-show="isDateDropdownOpen">
-              <div class="options">
-                <div v-for="date in availableDates" 
-                     :key="date.value" 
-                     class="option"
-                     :class="{ 'selected': selectedDate === date.value }"
-                     @click="selectDate(date)">
-                  {{ date.label }}
+            
+            <div class="info-item">
+              <span class="label">Cinema</span>
+              <div class="custom-select" :class="{ 'active': isCinemaDropdownOpen }">
+                <!-- 加载状态 -->
+                <div v-if="isLoading" class="loading">Loading cinemas...</div>
+                
+                <!-- 错误信息 -->
+                <div v-else-if="errorMessage" class="error">{{ errorMessage }}</div>
+                
+                <!-- 影院选择器 -->
+                <template v-else>
+                  <div class="selected" @click="toggleDropdown('cinema')">
+                    {{ selectedCinemaName }}
+                    <span class="arrow">▼</span>
+                  </div>
+                  <div class="options-container" v-show="isCinemaDropdownOpen">
+                    <div class="options">
+                      <div v-for="cinema in cinemaList" 
+                           :key="cinema.id" 
+                           class="option"
+                           :class="{ 'selected': selectedCinemaId === cinema.id }"
+                           @click="selectCinema(cinema)">
+                        {{ cinema.name }}
+                      </div>
+                    </div>
+                  </div>
+                </template>
+              </div>
+            </div>
+            
+            <!-- 日期选择 -->
+            <div class="info-item">
+              <span class="label">Date</span>
+              <div class="custom-select" :class="{ 'active': isDateDropdownOpen }">
+                <div class="selected" @click="toggleDropdown('date')">
+                  {{ selectedDateLabel || 'Select date' }}
+                  <span class="arrow">▼</span>
+                </div>
+                <div class="options-container" v-show="isDateDropdownOpen">
+                  <div class="options">
+                    <div v-for="date in availableDates" 
+                         :key="date.value" 
+                         class="option"
+                         :class="{ 'selected': selectedDate === date.value }"
+                         @click="selectDate(date)">
+                      {{ date.label }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 时间选择 -->
+            <div class="info-item">
+              <span class="label">Time</span>
+              <div class="custom-select" :class="{ 'active': isTimeDropdownOpen }">
+                <div class="selected" @click="toggleDropdown('time')">
+                  {{ selectedTimeLabel || 'Select time' }}
+                  <span class="arrow">▼</span>
+                </div>
+                <div class="options-container" v-show="isTimeDropdownOpen">
+                  <div class="options">
+                    <div v-for="time in availableTimes" 
+                         :key="time.value" 
+                         class="option"
+                         :class="{ 'selected': selectedTime === time.value }"
+                         @click="selectTime(time)">
+                      {{ time.label }}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        
-        <!-- 时间选择 -->
-        <div class="info-item">
-          <span class="label">Time</span>
-          <div class="custom-select" :class="{ 'active': isTimeDropdownOpen }">
-            <div class="selected" @click="toggleDropdown('time')">
-              {{ selectedTimeLabel || 'Select time' }}
-              <span class="arrow">▼</span>
+
+        <!-- 原有的座位选择部分，保持不变 -->
+        <div class="seat-selection">
+          <h1>Seat</h1>
+          <div class="seating-container">
+            <!-- 屏幕指示条 -->
+            <div class="screen-indicator">
+              <span>Screen</span>
             </div>
-            <div class="options-container" v-show="isTimeDropdownOpen">
-              <div class="options">
-                <div v-for="time in availableTimes" 
-                     :key="time.value" 
-                     class="option"
-                     :class="{ 'selected': selectedTime === time.value }"
-                     @click="selectTime(time)">
-                  {{ time.label }}
+
+            <!-- 座位布局 -->
+            <div class="seating-layout">
+              <div v-for="row in rows" :key="row" class="seat-row">
+                <div v-for="col in 10" :key="col" 
+                  class="seat" 
+                  :class="getSeatClass(row, col)"
+                  @click="toggleSeat(row, col)">
+                  {{ row }}{{ col }}
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
 
-    <!-- 原有的座位选择部分，保持不变 -->
-    <div class="seat-selection">
-      <h1>Seat</h1>
-      <div class="seating-container">
-        <!-- 屏幕指示条 -->
-        <div class="screen-indicator">
-          <span>Screen</span>
-        </div>
-
-        <!-- 座位布局 -->
-        <div class="seating-layout">
-          <div v-for="row in rows" :key="row" class="seat-row">
-            <div v-for="col in 10" :key="col" 
-              class="seat" 
-              :class="getSeatClass(row, col)"
-              @click="toggleSeat(row, col)">
-              {{ row }}{{ col }}
+            <!-- 座位信息 -->
+            <div class="seat-info">
+              <div class="info-row">
+                <span class="info-label">TOTAL</span>
+                <span class="info-value">£ {{ totalPrice.toFixed(2) }}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">SEAT</span>
+                <span class="info-value">{{ selectedSeatsDisplay }}</span>
+              </div>
             </div>
           </div>
-        </div>
 
-        <!-- 座位信息 -->
-        <div class="seat-info">
-          <div class="info-row">
-            <span class="info-label">TOTAL</span>
-            <span class="info-value">£ {{ totalPrice.toFixed(2) }}</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">SEAT</span>
-            <span class="info-value">{{ selectedSeatsDisplay }}</span>
+          <!-- 底部按钮 -->
+          <div class="bottom-bar">
+            <button class="back-btn">Back</button>
+            <button class="proceed-btn" @click="processPayment">Proceed Payment</button>
           </div>
         </div>
-      </div>
-
-      <!-- 底部按钮 -->
-      <div class="bottom-bar">
-        <button class="back-btn">Back</button>
-        <button class="proceed-btn" @click="processPayment">Proceed Payment</button>
       </div>
     </div>
+
+    <!-- 页脚 -->
+    <TheFooter />
   </div>
 </template>
 
 <style scoped>
+.app-container {
+  min-height: 100vh;
+  background-color: #111;
+  padding-top: 80px; /* 为固定导航栏留出空间 */
+}
+
+.content-section {
+  padding: 120px 120px;
+  background-color: #111;
+}
+
 .booking-page {
   background-color: #111;
   min-height: 100vh;
@@ -676,9 +698,16 @@ select.time-select::-webkit-scrollbar-thumb:hover {
 </style>
 
 <script>
+import TheNavbar from '@/components/TheNavbar.vue'
+import TheFooter from '@/components/TheFooter.vue'
 import request from '@/utils/request'
 
 export default {
+  name: 'SeatSelection',
+  components: {
+    TheNavbar,
+    TheFooter
+  },
   data() {
     return {
       movieInfo: {

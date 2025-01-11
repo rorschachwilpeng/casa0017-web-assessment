@@ -51,10 +51,7 @@ router.get('/movies/:id', async (req, res) => {
   console.log('获取电影详情, ID:', movieId);
 
   try {
-    const sql = `
-      SELECT * FROM movies WHERE id = ?
-    `;
-    
+    const sql = 'SELECT * FROM movies WHERE id = ?';
     const [results] = await db.query(sql, [movieId]);
     
     if (!results || results.length === 0) {
@@ -257,4 +254,4 @@ router.get('/movies/:id/reviews', async (req, res) => {
   }
 });
 
-module.exports = router; 
+module.exports = router;

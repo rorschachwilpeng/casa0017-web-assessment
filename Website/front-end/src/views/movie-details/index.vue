@@ -1,16 +1,19 @@
 <template>
-  <div class="movie-detail" v-loading="loading">
-    <div v-if="movie" class="hero-section" :style="{ backgroundImage: movie.poster_url ? `url(http://localhost:3007${movie.poster_url})` : '' }">
-      <div class="hero-content">
-        <h1>{{ movie.name }}</h1>
-        <p>{{ movie.description }}</p>
-        <div class="button-container">
-          <button class="preview-btn">
-            <svg class="play-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M8 5.14V19.14L19 12.14L8 5.14Z" fill="currentColor"/>
-            </svg>
-            Play Previews
-          </button>
+  <div class="movie-detail">
+    <!-- 顶部大图部分 -->
+    <div class="hero-section" :style="{ backgroundImage: `url(${movie.image})` }">
+      <div class="overlay">
+        <div class="hero-content">
+          <h1>{{ movie.title }}</h1>
+          <p>{{ movie.description }}</p>
+          <div class="button-container">
+            <button class="preview-btn">
+              <svg class="play-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8 5.14V19.14L19 12.14L8 5.14Z" fill="currentColor"/>
+              </svg>
+              Play Previews
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -160,110 +163,128 @@
 <script>
 import BookingBanner from '@/components/BookingBanner.vue'
 import TheFooter from '@/components/TheFooter.vue'
-import request from '@/utils/request'
 
 export default {
   name: 'MovieDetail',
   components: {
     BookingBanner,
-    TheFooter
+    TheFooter,
+    TheNavbar
   },
   data() {
     return {
-      movie: null,
-      loading: true,
-      movieReviews: [],
+      movie: {
+        image: 'https://example.com/path/to/kantara-hero.jpg',
+        title: 'Kantara',
+        description: 'A fiery young man clashes with an unflinching forest officer in a south Indian village where spirituality, fate and folklore rule the lands.',
+        year: 2022,
+        languages: ['English', 'Hindi', 'Tamil', 'Telugu', 'Kannada'],
+        genres: ['Action', 'Adventure'],
+        imdbRating: 4.5,
+        streamRating: 4,
+        director: {
+          name: 'Rishab Shetty',
+          location: 'From India',
+          image: '/path/to/director.jpg'
+        },
+        music: {
+          name: 'B. Ajaneesh Loknath',
+          location: 'From India',
+          image: '/path/to/music.jpg'
+        },
+        cast: [
+          { id: 1, name: 'Actor1', image: '/path/to/actor1.jpg' },
+          { id: 2, name: 'Actor2', image: '/path/to/actor2.jpg' },
+          // ... 更多演员
+        ],
+        reviews: [
+          {
+            id: 1,
+            author: 'Anikot Roy',
+            location: 'India',
+            rating: 4.5,
+            text: 'This movie was recommended to me by a very dear friend who went for the movie by herself. I went to the cinemas to watch but had a houseful board so couldn\'t watch it.'
+          },
+          {
+            id: 2,
+            author: 'Swaraj',
+            location: 'India',
+            rating: 5,
+            text: 'A restless king promises his lands to the local tribals in exchange of a stone (Panjurli, a deity of Keradi Village) wherein he finds solace and peace of mind.'
+          }
+        ]
+      },
       currentPage: 0,
-      reviewsPerPage: 2
-    }
+      itemsPerPage: 6, // 每页显示的演员数量
+      reviewPage: 0,
+      reviewsPerPage: 2, // 每页显示2条评论
+      movieReviews: [
+        {
+          id: 1,
+          name: "Anikot Roy",
+          location: "India",
+          rating: 4.5,
+          text: "This movie was recommended to me by a very dear friend who went for the movie by herself. I went to the cinemas to watch but had a houseful board so couldn't watch it."
+        },
+        {
+          id: 2,
+          name: "Swaraj",
+          location: "India",
+          rating: 5.0,
+          text: "A restless king promises his lands to the local tribals in exchange of a stone (Panjurli, a deity of Keradi Village) wherein he finds solace and peace of mind."
+        },
+        {
+          id: 3,
+          name: "Priya Sharma",
+          location: "India",
+          rating: 4.8,
+          text: "The film masterfully weaves together tradition and modernity, creating a mesmerizing spectacle that resonates deeply with audiences. The stunning visuals, powerful performances, and haunting soundtrack work in perfect harmony. Every scene is carefully crafted, drawing viewers into a world where ancient folklore meets contemporary storytelling." // 约 50 个单词，显示完整
+        },
+        {
+          id: 4,
+          name: "Rahul Menon",
+          location: "India",
+          rating: 4.7,
+          text: "The director has done an exceptional job in bringing this story to life. The attention to detail in portraying the local customs and traditions is remarkable. The performances are authentic and the background score elevates every scene."
+        }
+      ],
+      currentCastPage: 0,
+      itemsPerPage: 4, // 每页显示的演员数量
+    };
   },
   computed: {
-    languagesList() {
-      return this.movie.available_languages ? this.movie.available_languages.split(',').map(lang => lang.trim()) : []
+    maxPage() {
+      return Math.ceil(this.movie.cast.length / this.itemsPerPage) - 1;
     },
-    castList() {
-      return this.movie.cast ? this.movie.cast.split(',').map(name => name.trim()) : []
+    displayedCast() {
+      const start = this.currentPage * this.itemsPerPage;
+      const end = start + this.itemsPerPage;
+      return this.movie.cast.slice(start, end);
     },
-    displayedReviews() {
-      const start = this.currentPage * this.reviewsPerPage
-      return this.movieReviews.slice(start, start + this.reviewsPerPage)
+    maxReviewPage() {
+      return Math.ceil(this.movieReviews.length / this.reviewsPerPage) - 1;
     },
     totalPages() {
-      return Math.ceil(this.movieReviews.length / this.reviewsPerPage)
+      return this.maxReviewPage + 1;
     },
-    imdbStars() {
-      return (this.movie.rating_IMDb || 0) / 2
+    displayedReviews() {
+      const start = this.reviewPage * this.reviewsPerPage;
+      const end = start + this.reviewsPerPage;
+      return this.movieReviews.slice(start, end);
     },
-    streamvibeStars() {
-      return (this.movie.rating_streamvibe || 0) / 2
+    totalCastPages() {
+      return Math.ceil(this.movie.cast.length / this.itemsPerPage)
     },
-    parsedCast() {
-      if (!this.movie.cast) return []
-      try {
-        return JSON.parse(this.movie.cast)
-      } catch (e) {
-        console.error('Failed to parse cast data:', e)
-        return []
-      }
-    },
-    castArray() {
-      if (!this.movie.cast) return []
-      return this.movie.cast.split(',').map(name => name.trim())
+    displayedCast() {
+      const start = this.currentCastPage * this.itemsPerPage
+      const end = start + this.itemsPerPage
+      return this.movie.cast.slice(start, end)
     }
   },
   methods: {
-    async fetchMovieDetails() {
-      try {
-        const movieId = this.$route.params.id;
-        console.log('Fetching movie details for ID:', movieId);
-
-        const response = await request({
-          url: `/api/movies/${movieId}`,
-          method: 'get'
-        });
-
-        if (response.status === 0 && response.data) {
-          this.movie = {
-            ...response.data,
-            poster_url: response.data.poster_url || '',
-            available_languages: response.data.available_languages || '',
-            rating_IMDb: Number(response.data.rating_IMDb || 0),
-            rating_streamvibe: Number(response.data.rating_streamvibe || 0),
-            category: response.data.category || '',
-            length: response.data.length || ''
-          };
-        }
-      } catch (error) {
-        console.error('Failed to fetch movie details:', error);
-        this.$message.error('Failed to load movie details');
-      } finally {
-        this.loading = false;
-      }
-    },
-
-    async fetchMovieReviews() {
-      try {
-        const movieId = this.$route.params.id;
-        console.log('Fetching reviews for movie:', movieId);
-
-        const response = await request({
-          url: `/api/movies/${movieId}/reviews`,
-          method: 'get'
-        });
-
-        if (response && response.data) {
-          this.movieReviews = response.data.map(review => ({
-            ...review,
-            rating: Number(review.rating)
-          }));
-        } else {
-          this.movieReviews = [];
-        }
-      } catch (error) {
-        console.error('Failed to fetch reviews:', error);
-        this.$message.error('Failed to load reviews');
-        this.movieReviews = [];
-      }
+    playPreview() {
+      // 实现预览播放逻辑
+      console.log('Playing preview...');
     },
     prevPage() {
       if (this.currentPage > 0) {
@@ -271,34 +292,39 @@ export default {
       }
     },
     nextPage() {
-      if (this.currentPage < this.totalPages - 1) {
-        this.currentPage++
+      if (this.currentPage < this.maxPage) {
+        this.currentPage++;
       }
     },
-    formatDate(dateString) {
-      const date = new Date(dateString);
-      return date.toLocaleString('zh-CN', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit'
-      });
+    prevReviewPage() {
+      if (this.reviewPage > 0) {
+        this.reviewPage--;
+      }
+    },
+    nextReviewPage() {
+      if (this.reviewPage < this.maxReviewPage) {
+        this.reviewPage++;
+      }
+    },
+    prevCastPage() {
+      if (this.currentCastPage > 0) {
+        this.currentCastPage--
+      }
+    },
+    nextCastPage() {
+      if (this.currentCastPage < this.totalCastPages - 1) {
+        this.currentCastPage++
+      }
     }
-  },
-  async created() {
-    await Promise.all([
-      this.fetchMovieDetails(),
-      this.fetchMovieReviews()
-    ]);
   }
-}
+};
 </script>
 <style scoped>
 .movie-detail {
   background-color: #111;
   color: #fff;
   min-height: 100vh;
+  padding-top: 80px;
 }
 
 .hero-section {
@@ -453,6 +479,41 @@ export default {
 .cast-member {
   display: flex;
   flex-direction: column;
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  flex-shrink: 0;
+}
+
+.review-text {
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.6;
+  font-size: 14px;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 10;
+  -webkit-box-orient: vertical;
+  text-overflow: ellipsis;
+  margin-top: 4px;
+}
+
+.tag {
+  background: rgba(51, 51, 51, 0.6);
+  padding: 4px 12px;
+  border-radius: 16px;
+  display: inline-block;
+  margin: 0 8px 8px 0;
+  font-size: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.person-info {
+  display: flex;
+  gap: 12px;
   align-items: center;
   gap: 12px;
 }
