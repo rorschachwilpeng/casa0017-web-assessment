@@ -1,5 +1,8 @@
 <template>
   <div class="movie-detail">
+    <!-- 添加导航栏 -->
+    <TheNavbar />
+    
     <!-- 顶部大图部分 -->
     <div class="hero-section" :style="{ backgroundImage: `url(${movie.image})` }">
       <div class="overlay">
@@ -249,6 +252,7 @@
 </template>
 
 <script>
+import TheNavbar from '@/components/TheNavbar.vue'
 import BookingBanner from '@/components/BookingBanner.vue'
 import TheFooter from '@/components/TheFooter.vue'
 import request from '@/utils/request'
@@ -256,6 +260,7 @@ import request from '@/utils/request'
 export default {
   name: 'MovieDetails',
   components: {
+    TheNavbar,
     BookingBanner,
     TheFooter
   },

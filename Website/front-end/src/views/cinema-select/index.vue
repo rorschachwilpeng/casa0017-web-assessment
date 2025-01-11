@@ -1,5 +1,8 @@
 <template>
   <div class="app-container">
+    <!-- 添加导航栏组件 -->
+    <TheNavbar />
+    
     <!-- 顶部电影信息 -->
     <div class="movie-header">
       <!-- 添加电影选择器 -->
@@ -35,8 +38,6 @@
           <span class="label">Time:</span>
           <el-radio-group v-model="selectedTime" size="small">
             <el-radio-button label="today">today</el-radio-button>
-            <el-radio-button label="tomorrow">tomorrow</el-radio-button>
-            <el-button size="small" icon="el-icon-date">select</el-button>
           </el-radio-group>
         </div>
         
@@ -216,6 +217,7 @@
 </template>
 
 <script>
+import TheNavbar from '@/components/TheNavbar.vue'
 import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
 import request from '@/utils/request'
@@ -231,6 +233,9 @@ L.Icon.Default.mergeOptions({
 
 export default {
   name: 'CinemaSelect',
+  components: {
+    TheNavbar
+  },
   data() {
     return {
       moviesList: [], // 电影列表
@@ -779,7 +784,7 @@ export default {
   min-height: 100vh;
   background-color: #0A0A0A;
   color: #ffffff;
-  padding: 120px 124px 60px;
+  padding: 80px 124px 60px;
   background: linear-gradient(
     to bottom,
     transparent 0%,

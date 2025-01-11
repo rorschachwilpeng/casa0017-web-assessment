@@ -1,5 +1,8 @@
 <template>
   <div class="booking-page">
+    <!-- 添加导航栏 -->
+    <TheNavbar />
+    
     <!-- 电影信息部分 -->
     <div class="movie-info-section">
       <div class="movie-basic-info">
@@ -162,7 +165,7 @@
 .booking-page {
   background-color: #111;
   min-height: 100vh;
-  padding: 20px;
+  padding: 60px 20px 20px;
   color: white;
 }
 
@@ -676,9 +679,14 @@ select.time-select::-webkit-scrollbar-thumb:hover {
 </style>
 
 <script>
+import TheNavbar from '@/components/TheNavbar.vue'
 import request from '@/utils/request'
 
 export default {
+  name: 'Seats',
+  components: {
+    TheNavbar
+  },
   data() {
     return {
       movieInfo: {

@@ -1,5 +1,8 @@
 <template>
-  <div class="app-container">
+  <div class="movie-list-container">
+    <!-- 添加导航栏组件 -->
+    <TheNavbar />
+    
     <!-- Category Filter -->
     <div class="category-filter">
       <span class="category-label">Category : </span>
@@ -44,9 +47,13 @@
 
 <script>
 import request from '@/utils/request'
+import TheNavbar from '@/components/TheNavbar.vue'
 
 export default {
   name: 'MovieList',
+  components: {
+    TheNavbar
+  },
   data() {
     return {
       categories: ['Drama', 'Comedy', 'Action', 'Horror', 'Romance'],
@@ -92,6 +99,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.movie-list-container {
+  position: relative;
+  width: 100%;
+}
+
 .app-container {
   padding: 20px;
 }

@@ -8,11 +8,13 @@
         <!-- 添加深灰色背景 -->
         <div class="nav-background"></div>
         <div class="nav-links">
-          <router-link to="/" class="nav-link active">Home</router-link>
-          <router-link to="/movies" class="nav-link">Movies</router-link>
-          <router-link to="/cinemas" class="nav-link">Cinemas</router-link>
-          <router-link to="/booking" class="nav-link">Booking</router-link>
-          <router-link to="/about" class="nav-link">About</router-link>
+          <router-link to="/home/index" class="nav-item">Home</router-link>
+          <router-link to="/movie-list/index" class="nav-item">Movies</router-link>
+          <router-link to="/cinema-select/index" class="nav-item">Cinemas</router-link>
+          <router-link to="/seats" class="nav-item">Booking</router-link>
+          <a href="https://github.com/rorschachwilpeng/casa0017-web-assessment" 
+             target="_blank" 
+             class="nav-item">About</a>
         </div>
       </div>
       <div class="nav-icons">
@@ -100,26 +102,21 @@ export default {
   padding: 4px 0;
 }
 
-.nav-link {
-  color: rgba(255, 255, 255, 0.6);
+.nav-item {
+  color: #fff;
   text-decoration: none;
-  font-size: 14px;         /* 从 13px 增加到 14px */
-  font-weight: 500;
-  padding: 6px 12px;       /* 增加内边距 */
-  transition: all 0.3s ease;
-  border-radius: 6px;      /* 添加圆角 */
+  padding: 8px 16px;
+  border-radius: 4px;
+  transition: background-color 0.3s;
 }
 
-/* 导航链接悬浮效果 */
-.nav-link:hover {
-  color: rgba(255, 255, 255, 0.9);
+.nav-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
-/* 当前激活的导航链接 */
-.nav-link.active {
-  color: rgba(255, 255, 255, 0.9);
-  background-color: rgba(255, 255, 255, 0.1);  /* 浅灰色背景 */
-  backdrop-filter: blur(4px);                   /* 轻微模糊效果 */
+/* 激活状态的样式 */
+.router-link-active {
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
 /* 图标按钮样式 */
