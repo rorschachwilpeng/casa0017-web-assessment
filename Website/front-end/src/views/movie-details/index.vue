@@ -23,13 +23,13 @@
         <!-- 左侧主要内容 -->
         <div class="main-content">
           <!-- 描述部分 -->
-          <div class="info-block description-box">
+          <div class="description-section">
             <h3>Description</h3>
             <p>{{ movie.description }}</p>
           </div>
 
           <!-- Cast Section -->
-          <div class="content-section cast-section">
+          <div class="cast-section">
             <h2>Cast</h2>
             <div class="cast-list">
               <div v-for="(actor, index) in castArray" :key="index" class="cast-member">
@@ -43,10 +43,9 @@
           </div>
 
           <!-- 评论部分 -->
-          <div class="info-block reviews-section">
+          <div class="reviews-section">
             <div class="section-header">
-              <h2>Reviews</h2>
-              <button class="add-review-btn">+ Add Your Review</button>
+              <h2 class="section-title">Reviews</h2>
             </div>
             <div class="reviews-list">
               <div v-for="review in displayedReviews" :key="review.review_id" class="review-card">
@@ -54,22 +53,28 @@
                   <h4>{{ review.reviewer_name }}</h4>
                   <div class="review-rating">
                     <div class="stars">
-                      <span v-for="n in 5" :key="n"
-                            :class="['star', n <= (review.rating / 2) ? 'star-filled' : 'star-empty']">★</span>
+                      <span v-for="n in 5" :key="n" class="review-star">
+                        <span v-if="getStarType(review.rating, n) === 'full'" class="star-filled">★</span>
+                        <span v-else-if="getStarType(review.rating, n) === 'half'" class="star-half">★</span>
+                        <span v-else class="star-empty">★</span>
+                      </span>
                     </div>
-                    <span class="rating-number">{{ review.rating }}/10</span>
                   </div>
                 </div>
                 <p class="review-text">{{ review.comment }}</p>
-                <div class="review-date">{{ formatDate(review.review_date) }}</div>
               </div>
             </div>
             <!-- 分页控制 -->
             <div class="pagination-controls">
-              <button @click="prevPage" :disabled="currentPage === 0" class="nav-btn">
+              <button @click="prevPage"
+                      :disabled="currentPage === 0"
+                      class="nav-btn">
                 <i class="el-icon-arrow-left"></i>
               </button>
-              <button @click="nextPage" :disabled="currentPage >= totalPages - 1" class="nav-btn">
+              <span class="page-info">{{ currentPage + 1 }} / {{ totalPages }}</span>
+              <button @click="nextPage"
+                      :disabled="currentPage >= totalPages - 1"
+                      class="nav-btn">
                 <i class="el-icon-arrow-right"></i>
               </button>
             </div>
@@ -197,10 +202,11 @@ export default {
     },
     displayedReviews() {
       const start = this.currentPage * this.reviewsPerPage;
-      return this.movieReviews.slice(start, start + this.reviewsPerPage);
+      const end = Math.min(start + this.reviewsPerPage, this.movieReviews.length);
+      return this.movieReviews.slice(start, end);
     },
     totalPages() {
-      return Math.ceil(this.movieReviews.length / this.reviewsPerPage);
+      return Math.max(1, Math.ceil(this.movieReviews.length / this.reviewsPerPage));
     }
   },
   async created() {
@@ -231,24 +237,42 @@ export default {
 
     async fetchMovieReviews() {
       try {
-        const movieId = this.$route.params.id
+        const movieId = this.$route.params.id;
+        console.log('Fetching reviews for movie:', movieId);
+
         const response = await request({
           url: `/api/movies/${movieId}/reviews`,
           method: 'get'
-        })
+        });
 
-        if (response.status === 0) {
-          this.movieReviews = response.data.map(review => ({
-            ...review,
-            rating: Number(review.rating)
-          }));
+        if (response.status === 0 && Array.isArray(response.data)) {
+          // 使用 Set 去重
+          const uniqueReviewIds = new Set();
+          this.movieReviews = response.data
+            .filter(review => {
+              if (uniqueReviewIds.has(review.review_id)) {
+                return false;
+              }
+              uniqueReviewIds.add(review.review_id);
+              return true;
+            })
+            .map(review => ({
+              review_id: review.review_id,
+              reviewer_name: review.reviewer_name,
+              rating: Number(review.rating),
+              comment: review.comment,
+              review_date: review.review_date
+            }));
+
+          this.currentPage = 0;
+          console.log('Unique reviews count:', this.movieReviews.length);
         } else {
           this.movieReviews = [];
         }
       } catch (error) {
-        console.error('Failed to fetch reviews:', error)
-        this.$message.error('Failed to load reviews')
-        this.movieReviews = []
+        console.error('Failed to fetch reviews:', error);
+        this.$message.error('Failed to load reviews');
+        this.movieReviews = [];
       }
     },
 
@@ -274,6 +298,16 @@ export default {
       if (this.currentPage < this.totalPages - 1) {
         this.currentPage++;
       }
+    },
+
+    getStarType(rating, position) {
+      const starValue = rating / 2; // 将10分制转换为5星制
+      if (position <= Math.floor(starValue)) {
+        return 'full';
+      } else if (position - 0.5 <= starValue) {
+        return 'half';
+      }
+      return 'empty';
     }
   }
 }
@@ -379,65 +413,46 @@ export default {
   gap: 30px;
 }
 
-.info-block {
+.description-section {
   background: rgba(26, 26, 26, 0.6);
   border-radius: 16px;
-  padding: 24px;
-  margin-bottom: 24px;
-  border: 2px solid rgba(255, 255, 255, 0.15);
+  padding: 28px;
+  margin-bottom: 40px;
 }
 
-.main-content .info-block {
-  background: rgba(26, 26, 26, 0.6);
-  border: 2px solid rgba(255, 255, 255, 0.15);
-  border-radius: 16px;
-  padding: 24px;
-  margin-bottom: 24px;
-}
-
-.description-box {
-  background: rgba(26, 26, 26, 0.6);
-  border-radius: 16px;
-  padding: 24px;
-  margin-bottom: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.description-box h3 {
+.description-section h3 {
   color: rgba(255, 255, 255, 0.6);
-  font-size: 20px;
-  font-weight: 500;
-  margin-bottom: 16px;
-}
-
-.description-box p {
-  color: #FFFFFF;
-  line-height: 1.6;
-  font-size: 16px;
+  font-size: 24px;
+  margin-bottom: 24px;
+  margin-top: 0;
+  font-weight: normal;
 }
 
 .cast-section {
-  background: rgba(26, 26, 26, 0.8);
+  background: rgba(26, 26, 26, 0.6);
   border-radius: 16px;
-  padding: 32px;
-  margin-bottom: 32px;
+  padding: 28px;
+  margin-bottom: 40px;
 }
 
 .cast-section h2 {
-  color: #FFFFFF;
+  color: rgba(255, 255, 255, 0.6);
   font-size: 24px;
-  font-weight: 500;
+  font-weight: normal;
   margin-bottom: 24px;
 }
 
 .cast-list {
   display: flex;
-  gap: 32px;
+  gap: 28px;
+  flex-wrap: wrap;
 }
 
 .cast-member {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 
 .review-header {
@@ -478,18 +493,19 @@ export default {
 }
 
 .cast-image-placeholder {
-  width: 120px;
-  height: 120px;
+  width: 88px;
+  height: 88px;
+  background: rgba(26, 26, 26, 0.6);
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-bottom: 12px;
 }
 
 .cast-image-placeholder i {
-  font-size: 48px;
-  color: rgba(255, 255, 255, 0.3);
+  font-size: 32px;
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .actor-name {
@@ -515,13 +531,13 @@ export default {
 }
 
 .reviews-section {
-  background: rgba(26, 26, 26, 0.8);
+  background: rgba(26, 26, 26, 0.6);
   border-radius: 16px;
-  padding: 32px;
-  margin-bottom: 32px;
+  padding: 28px;
+  margin-bottom: 40px;
 }
 
-.section-header {
+.reviews-section .section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -529,7 +545,7 @@ export default {
 }
 
 .section-header h2 {
-  color: #FFFFFF;
+  color: rgba(255, 255, 255, 0.6);
   font-size: 24px;
   margin: 0;
 }
@@ -556,7 +572,7 @@ export default {
 }
 
 .review-card {
-  background: rgba(255, 255, 255, 0.05);
+  background: #1A1A1A;
   border-radius: 8px;
   padding: 20px;
   margin-bottom: 16px;
@@ -612,9 +628,9 @@ export default {
 
 .pagination-controls {
   display: flex;
-  align-items: center;
   justify-content: center;
-  gap: 12px;
+  align-items: center;
+  gap: 16px;
   margin-top: 20px;
 }
 
@@ -945,6 +961,68 @@ export default {
 .language-tag:hover {
   background: rgba(51, 51, 51, 0.8);
   border-color: rgba(255, 255, 255, 0.2);
+}
+
+.review-star {
+  font-size: 16px;
+  position: relative;
+  display: inline-block;
+}
+
+.star-filled {
+  color: #FF0000;
+}
+
+.star-half {
+  position: relative;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.star-half::before {
+  content: '★';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 50%;
+  color: #FF0000;
+  overflow: hidden;
+}
+
+.star-empty {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.review-rating .stars {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 8px;
+}
+
+.review-rating .rating-number {
+  color: #FF0000;
+  font-size: 14px;
+}
+
+.section-header .section-title {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 24px;
+  font-weight: normal;
+  margin: 0;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+/* 统一文字大小 */
+.description-section p,
+.cast-member .actor-name {
+  font-size: 16px;
+  color: #FFFFFF;
+  line-height: 1.5;
 }
 </style>
 

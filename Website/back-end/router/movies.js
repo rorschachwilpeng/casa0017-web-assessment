@@ -223,42 +223,26 @@ router.get('/movies/:id/reviews', async (req, res) => {
   console.log('获取电影评论, ID:', movieId);
 
   try {
-    // 修改SQL查询，添加排序和评分格式化
     const sql = `
-      SELECT 
-        r.review_id,
-        r.movie_id,
-        r.reviewer_name,
-        CAST(r.rating AS DECIMAL(3,1)) as rating,
-        r.comment,
-        DATE_FORMAT(r.review_date, '%Y-%m-%d %H:%i:%s') as review_date,
-        m.name as movie_name
-      FROM movie_reviews r
-      LEFT JOIN movies m ON r.movie_id = m.id
-      WHERE r.movie_id = ?
-      ORDER BY r.review_date DESC
+      SELECT DISTINCT
+        review_id,
+        movie_id,
+        reviewer_name,
+        rating,
+        comment,
+        review_date
+      FROM movie_reviews 
+      WHERE movie_id = ?
+      ORDER BY review_date DESC
     `;
     
     const [results] = await db.query(sql, [movieId]);
-    
-    // 添加调试日志
-    console.log(`Found ${results.length} reviews for movie ${movieId}`);
-    
-    // 格式化响应数据
-    const formattedResults = results.map(review => ({
-      review_id: review.review_id,
-      movie_id: review.movie_id,
-      reviewer_name: review.reviewer_name,
-      rating: parseFloat(review.rating),  // 确保评分是数字
-      comment: review.comment,
-      review_date: review.review_date,
-      movie_name: review.movie_name
-    }));
+    console.log('查询结果:', results);
 
     res.json({
       status: 0,
-      message: 'Success',
-      data: formattedResults
+      message: results.length ? 'Success' : 'No reviews found',
+      data: results
     });
 
   } catch (err) {
