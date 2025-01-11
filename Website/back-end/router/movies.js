@@ -47,21 +47,36 @@ router.get('/movies', async (req, res) => {
  * @route GET /api/movies/:id
  */
 router.get('/movies/:id', async (req, res) => {
+  const movieId = req.params.id;
+  console.log('获取电影详情, ID:', movieId);
+
   try {
-    const [results] = await db.query('SELECT * FROM movies WHERE id = ?', [req.params.id]);
-    if (results.length === 0) {
-      return res.status(404).json({ 
+    const sql = `
+      SELECT * FROM movies WHERE id = ?
+    `;
+    
+    const [results] = await db.query(sql, [movieId]);
+    
+    if (!results || results.length === 0) {
+      return res.status(404).json({
         status: 1,
-        message: 'Movie not found'
+        message: '电影不存在'
       });
     }
+
     res.json({
       status: 0,
       message: 'Success',
       data: results[0]
     });
+
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+    console.error('获取电影详情失败:', err);
+    res.status(500).json({
+      status: 1,
+      message: '获取电影详情失败',
+      error: err.message
+    });
   }
 });
 
@@ -198,6 +213,46 @@ router.delete('/movies/:id', async (req, res) => {
     return res.status(500).json({ 
       status: 1,
       message: err.message 
+    });
+  }
+});
+
+/**
+ * 获取电影评论
+ * @route GET /api/movies/:id/reviews
+ */
+router.get('/movies/:id/reviews', async (req, res) => {
+  const movieId = req.params.id;
+  console.log('获取电影评论, ID:', movieId);
+
+  try {
+    const sql = `
+      SELECT 
+        review_id,
+        movie_id,
+        reviewer_name,
+        rating,
+        comment,
+        DATE_FORMAT(review_date, '%Y-%m-%d %H:%i:%s') as review_date
+      FROM movie_reviews 
+      WHERE movie_id = ?
+      ORDER BY review_date DESC
+    `;
+    
+    const [results] = await db.query(sql, [movieId]);
+    
+    res.json({
+      status: 0,
+      message: 'Success',
+      data: results || []
+    });
+
+  } catch (err) {
+    console.error('获取电影评论失败:', err);
+    res.status(500).json({
+      status: 1,
+      message: '获取电影评论失败',
+      error: err.message
     });
   }
 });

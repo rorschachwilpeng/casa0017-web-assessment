@@ -63,7 +63,10 @@ app.use((err, req, res, next) => {
  */
 const PORT = 3007;
 app.listen(PORT, () => {
-    console.log(`API 服务器运行在 http://127.0.0.1:${PORT}`);
+  console.log(`服务器运行在 http://localhost:${PORT}`);
+  console.log('已注册的路由:');
+  console.log('/api/movies/:id - 获取电影详情');
+  console.log('/api/movies/:id/reviews - 获取电影评论');
 });
 
 

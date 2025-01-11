@@ -14,13 +14,14 @@
       border
       fit
       highlight-current-row
+      @row-click="handleRowClick"
     >
       <el-table-column align="center" label="ID" width="95">
         <template slot-scope="scope">
           {{ scope.row.id }}
         </template>
       </el-table-column>
-      
+
       <el-table-column label="Movie Name">
         <template slot-scope="scope">
           {{ scope.row.name }}
@@ -225,7 +226,7 @@ export default {
           cancelButtonText: 'Cancel',
           type: 'warning'
         })
-        
+
         const response = await request({
           url: `/api/movies/${row.id}`,
           method: 'delete'
@@ -260,11 +261,11 @@ export default {
             }
 
             console.log('Submitting form data:', submitData)
-            
+
             // 直接使用完整的URL
             const baseURL = 'http://localhost:3007'
             const url = isEdit ? `/api/movies/${this.movieForm.id}` : '/api/movies'
-            
+
             console.log('Full Request URL:', baseURL + url)
             console.log('Request Method:', isEdit ? 'put' : 'post')
 
@@ -307,6 +308,10 @@ export default {
           return false
         }
       })
+    },
+
+    handleRowClick(row) {
+      this.$router.push(`/movie-details/${row.id}`)
     }
   }
 }
@@ -319,4 +324,7 @@ export default {
 .filter-item {
   margin-bottom: 10px;
 }
-</style> 
+.el-table {
+  cursor: pointer;
+}
+</style>

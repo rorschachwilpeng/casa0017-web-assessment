@@ -1,25 +1,21 @@
 <template>
-  <div class="movie-detail">
-    <!-- 顶部大图部分 -->
-    <div class="hero-section" :style="{ backgroundImage: `url(${movie.image})` }">
-      <div class="overlay">
-        <div class="hero-content">
-          <h1>{{ movie.title }}</h1>
-          <p>{{ movie.description }}</p>
-          <div class="button-container">
-            <button class="preview-btn">
-              <svg class="play-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M8 5.14V19.14L19 12.14L8 5.14Z" fill="currentColor"/>
-              </svg>
-              Play Previews
-            </button>
-          </div>
+  <div class="movie-detail" v-loading="loading">
+    <div v-if="movie" class="hero-section" :style="{ backgroundImage: movie.poster_url ? `url(http://localhost:3007${movie.poster_url})` : '' }">
+      <div class="hero-content">
+        <h1>{{ movie.name }}</h1>
+        <p>{{ movie.description }}</p>
+        <div class="button-container">
+          <button class="preview-btn">
+            <svg class="play-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M8 5.14V19.14L19 12.14L8 5.14Z" fill="currentColor"/>
+            </svg>
+            Play Previews
+          </button>
         </div>
       </div>
     </div>
 
-    <!-- 修改内容区域的结构 -->
-    <section class="content-section">
+    <section v-if="movie" class="content-section">
       <div class="content-layout">
         <!-- 左侧主要内容 -->
         <div class="main-content">
@@ -29,221 +25,134 @@
             <p>{{ movie.description }}</p>
           </div>
 
-          <!-- 演员表部分 -->
-          <div class="info-block cast-section">
-            <div class="section-header">
-              <h3>Cast</h3>
-              <div class="navigation-controls">
-                <button class="nav-arrow" :class="{ disabled: true }" v-if="movie.cast.length <= itemsPerPage">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                </button>
-                <button class="nav-arrow" :class="{ disabled: currentCastPage === 0 }" @click="prevCastPage" v-else>
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                </button>
-
-                <!-- 只有一页时显示单个红线 -->
-                <div class="page-indicators" v-if="movie.cast.length <= itemsPerPage">
-                  <div class="page-indicator active"></div>
-                </div>
-
-                <!-- 多页时显示页面指示器 -->
-                <div class="page-indicators" v-else>
-                  <div v-for="page in totalCastPages"
-                       :key="page"
-                       :class="['page-indicator', { active: currentCastPage === page - 1 }]">
-                  </div>
-                </div>
-
-                <button class="nav-arrow" :class="{ disabled: true }" v-if="movie.cast.length <= itemsPerPage">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                </button>
-                <button class="nav-arrow" :class="{ disabled: currentCastPage === totalCastPages - 1 }" @click="nextCastPage" v-else>
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                </button>
-              </div>
-            </div>
+          <!-- Cast Section -->
+          <div class="content-section cast-section">
+            <h2>Cast</h2>
             <div class="cast-list">
-              <div v-for="actor in displayedCast" :key="actor.id" class="cast-item">
-                <img :src="actor.image" :alt="actor.name">
-                <span class="actor-name">{{ actor.name }}</span>
+              <div v-for="(actor, index) in castArray" :key="index" class="cast-member">
+                <div class="cast-image-placeholder">
+                  <!-- 暂时使用占位符 -->
+                  <i class="el-icon-user"></i>
+                </div>
+                <span class="actor-name">{{ actor }}</span>
               </div>
             </div>
           </div>
 
           <!-- 评论部分 -->
-          <div class="reviews-section">
+          <div class="info-block reviews-section">
             <div class="section-header">
-              <h3>Reviews</h3>
+              <h2>Reviews</h2>
               <button class="add-review-btn">+ Add Your Review</button>
             </div>
-            <div class="reviews-container">
-              <div class="reviews-list">
-                <div
-                  v-for="review in displayedReviews"
-                  :key="review.id"
-                  class="review-card"
-                >
-                  <div class="review-header">
-                    <div class="reviewer-info">
-                      <h4>{{ review.name }}</h4>
-                      <p>{{ review.location }}</p>
+            <div class="reviews-list">
+              <div v-for="review in movieReviews" :key="review.review_id" class="review-card">
+                <div class="review-header">
+                  <h4>{{ review.reviewer_name }}</h4>
+                  <div class="review-rating">
+                    <div class="stars">
+                      <span v-for="n in 5" :key="n"
+                            :class="['star', n <= (review.rating / 2) ? 'star-filled' : 'star-empty']">★</span>
                     </div>
-                    <div class="review-rating">
-                      <div class="stars">★★★★★</div>
-                      <span class="rating-number">{{ review.rating }}</span>
-                    </div>
+                    <span class="rating-number">{{ review.rating }}/10</span>
                   </div>
-                  <p class="review-text">{{ review.text }}</p>
                 </div>
+                <p class="review-text">{{ review.comment }}</p>
+                <div class="review-date">{{ formatDate(review.review_date) }}</div>
               </div>
             </div>
-            <div class="pagination">
-              <button
-                class="nav-arrow"
-                :class="{ disabled: reviewPage === 0 }"
-                @click="prevReviewPage"
-              >←</button>
-              <div class="page-indicators">
-                <div
-                  v-for="index in totalPages"
-                  :key="index"
-                  class="page-indicator"
-                  :class="{ active: reviewPage === index - 1 }"
-                ></div>
-              </div>
-              <button
-                class="nav-arrow"
-                :class="{ disabled: reviewPage >= maxReviewPage }"
-                @click="nextReviewPage"
-              >→</button>
+            <!-- 分页控制 -->
+            <div class="pagination-controls">
+              <button @click="prevPage" :disabled="currentPage === 0" class="nav-btn">
+                <i class="el-icon-arrow-left"></i>
+              </button>
+              <button @click="nextPage" :disabled="currentPage >= totalPages - 1" class="nav-btn">
+                <i class="el-icon-arrow-right"></i>
+              </button>
             </div>
           </div>
         </div>
 
-        <!-- 修改右侧栏结构 -->
+        <!-- 右侧边栏 -->
         <div class="sidebar">
           <div class="info-container">
-            <!-- Released Year -->
             <div class="info-item">
               <h4>
-                <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M19 4H5C3.89543 4 3 4.89543 3 6V20C3 21.1046 3.89543 22 5 22H19C20.1046 22 21 21.1046 21 20V6C21 4.89543 20.1046 4 19 4Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  <path d="M16 2V6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  <path d="M8 2V6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  <path d="M3 10H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
+                <i class="el-icon-date"></i>
                 Released Year
               </h4>
-              <p>2022</p>
+              <p>{{ movie.released_year }}</p>
             </div>
-
-            <!-- Available Languages -->
             <div class="info-item">
               <h4>
-                <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  <path d="M2 12H22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  <path d="M12 2C14.5013 4.73835 15.9228 8.29203 16 12C15.9228 15.708 14.5013 19.2616 12 22C9.49872 19.2616 8.07725 15.708 8 12C8.07725 8.29203 9.49872 4.73835 12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
+                <i class="el-icon-film"></i>
+                Director
+              </h4>
+              <p>{{ movie.director }}</p>
+            </div>
+            <div class="info-item">
+              <h4>
+                <i class="el-icon-time"></i>
+                Length
+              </h4>
+              <p>{{ movie.length }}</p>
+            </div>
+            <div class="info-item">
+              <h4>
+                <i class="el-icon-chat-dot-square"></i>
                 Available Languages
               </h4>
               <div class="languages-list">
-                <span v-for="lang in movie.languages" :key="lang" class="tag">{{ lang }}</span>
+                <span v-for="lang in languagesList" :key="lang" class="language-tag">
+                  {{ lang }}
+                </span>
               </div>
             </div>
-
-            <!-- Ratings -->
             <div class="info-item">
               <h4>
-                <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
+                <i class="el-icon-star-on"></i>
                 Ratings
               </h4>
               <div class="ratings-container">
                 <div class="rating-item">
-                  <span>IMDb</span>
+                  <span class="rating-label">IMDb</span>
                   <div class="stars">
-                    <span class="star-filled">★★★★</span><span class="star-half">★</span>
-                    <span class="rating-number">4.5</span>
+                    <span v-for="n in 5" :key="n"
+                          :class="['star',
+                            n <= imdbStars ? 'star-filled' :
+                            n - 0.5 <= imdbStars ? 'star-half' :
+                            'star-empty']">
+                      ★
+                    </span>
                   </div>
                 </div>
                 <div class="rating-item">
-                  <span>Streamvibe</span>
+                  <span class="rating-label">Streamvibe</span>
                   <div class="stars">
-                    <span class="star-filled">★★★★</span><span class="star-empty">★</span>
-                    <span class="rating-number">4.0</span>
+                    <span v-for="n in 5" :key="n"
+                          :class="['star',
+                            n <= streamvibeStars ? 'star-filled' :
+                            n - 0.5 <= streamvibeStars ? 'star-half' :
+                            'star-empty']">
+                      ★
+                    </span>
                   </div>
                 </div>
               </div>
             </div>
-
-            <!-- Genres -->
             <div class="info-item">
               <h4>
-                <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  <path d="M12 2C13.3132 2 14.6136 2.25866 15.8268 2.76121C17.0401 3.26375 18.1425 4.00035 19.0711 4.92893C19.9997 5.85752 20.7362 6.95991 21.2388 8.17317C21.7413 9.38642 22 10.6868 22 12C22 14.6522 20.9464 17.1957 19.0711 19.0711C17.1957 20.9464 14.6522 22 12 22C10.6868 22 9.38642 21.7413 8.17317 21.2388C6.95991 20.7362 5.85752 19.9997 4.92893 19.0711C3.05357 17.1957 2 14.6522 2 12C2 9.34784 3.05357 6.8043 4.92893 4.92893C6.8043 3.05357 9.34784 2 12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
+                <i class="el-icon-menu"></i>
                 Genres
               </h4>
               <div class="genres-list">
-                <span v-for="genre in movie.genres" :key="genre" class="tag">{{ genre }}</span>
-              </div>
-            </div>
-
-            <!-- Director -->
-            <div class="info-item">
-              <h4>
-                <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  <path d="M12 11C14.2091 11 16 9.20914 16 7C16 4.79086 14.2091 3 12 3C9.79086 3 8 4.79086 8 7C8 9.20914 9.79086 11 12 11Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                Director
-              </h4>
-              <div class="person-info">
-                <img :src="movie.director.image" :alt="movie.director.name">
-                <div>
-                  <p>{{ movie.director.name }}</p>
-                  <small>{{ movie.director.location }}</small>
-                </div>
-              </div>
-            </div>
-
-            <!-- Music -->
-            <div class="info-item">
-              <h4>
-                <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M9 18V5L21 3V16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  <path d="M6 21C7.65685 21 9 19.6569 9 18C9 16.3431 7.65685 15 6 15C4.34315 15 3 16.3431 3 18C3 19.6569 4.34315 21 6 21Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  <path d="M18 19C19.6569 19 21 17.6569 21 16C21 14.3431 19.6569 13 18 13C16.3431 13 15 14.3431 15 16C15 17.6569 16.3431 19 18 19Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                Music
-              </h4>
-              <div class="person-info">
-                <img :src="movie.music.image" :alt="movie.music.name">
-                <div>
-                  <p>{{ movie.music.name }}</p>
-                  <small>{{ movie.music.location }}</small>
-                </div>
+                <span>{{ movie.category }}</span>
               </div>
             </div>
           </div>
         </div>
       </div>
-
-      <!-- 订票横幅 -->
-      <BookingBanner />
     </section>
-
     <TheFooter />
   </div>
 </template>
@@ -251,162 +160,140 @@
 <script>
 import BookingBanner from '@/components/BookingBanner.vue'
 import TheFooter from '@/components/TheFooter.vue'
+import request from '@/utils/request'
 
 export default {
-  name: 'MovieDetails',
+  name: 'MovieDetail',
   components: {
     BookingBanner,
     TheFooter
   },
   data() {
     return {
-      movie: {
-        image: 'https://example.com/path/to/kantara-hero.jpg',
-        title: 'Kantara',
-        description: 'A fiery young man clashes with an unflinching forest officer in a south Indian village where spirituality, fate and folklore rule the lands.',
-        year: 2022,
-        languages: ['English', 'Hindi', 'Tamil', 'Telugu', 'Kannada'],
-        genres: ['Action', 'Adventure'],
-        imdbRating: 4.5,
-        streamRating: 4,
-        director: {
-          name: 'Rishab Shetty',
-          location: 'From India',
-          image: '/path/to/director.jpg'
-        },
-        music: {
-          name: 'B. Ajaneesh Loknath',
-          location: 'From India',
-          image: '/path/to/music.jpg'
-        },
-        cast: [
-          { id: 1, name: 'Actor1', image: '/path/to/actor1.jpg' },
-          { id: 2, name: 'Actor2', image: '/path/to/actor2.jpg' },
-          // ... 更多演员
-        ],
-        reviews: [
-          {
-            id: 1,
-            author: 'Anikot Roy',
-            location: 'India',
-            rating: 4.5,
-            text: 'This movie was recommended to me by a very dear friend who went for the movie by herself. I went to the cinemas to watch but had a houseful board so couldn\'t watch it.'
-          },
-          {
-            id: 2,
-            author: 'Swaraj',
-            location: 'India',
-            rating: 5,
-            text: 'A restless king promises his lands to the local tribals in exchange of a stone (Panjurli, a deity of Keradi Village) wherein he finds solace and peace of mind.'
-          }
-        ]
-      },
+      movie: null,
+      loading: true,
+      movieReviews: [],
       currentPage: 0,
-      itemsPerPage: 6, // 每页显示的演员数量
-      reviewPage: 0,
-      reviewsPerPage: 2, // 每页显示2条评论
-      movieReviews: [
-        {
-          id: 1,
-          name: "Anikot Roy",
-          location: "India",
-          rating: 4.5,
-          text: "This movie was recommended to me by a very dear friend who went for the movie by herself. I went to the cinemas to watch but had a houseful board so couldn't watch it."
-        },
-        {
-          id: 2,
-          name: "Swaraj",
-          location: "India",
-          rating: 5.0,
-          text: "A restless king promises his lands to the local tribals in exchange of a stone (Panjurli, a deity of Keradi Village) wherein he finds solace and peace of mind."
-        },
-        {
-          id: 3,
-          name: "Priya Sharma",
-          location: "India",
-          rating: 4.8,
-          text: "The film masterfully weaves together tradition and modernity, creating a mesmerizing spectacle that resonates deeply with audiences. The stunning visuals, powerful performances, and haunting soundtrack work in perfect harmony. Every scene is carefully crafted, drawing viewers into a world where ancient folklore meets contemporary storytelling." // 约 50 个单词，显示完整
-        },
-        {
-          id: 4,
-          name: "Rahul Menon",
-          location: "India",
-          rating: 4.7,
-          text: "The director has done an exceptional job in bringing this story to life. The attention to detail in portraying the local customs and traditions is remarkable. The performances are authentic and the background score elevates every scene."
-        }
-      ],
-      currentCastPage: 0,
-      itemsPerPage: 4, // 每页显示的演员数量
-    };
+      reviewsPerPage: 2
+    }
   },
   computed: {
-    maxPage() {
-      return Math.ceil(this.movie.cast.length / this.itemsPerPage) - 1;
+    languagesList() {
+      return this.movie.available_languages ? this.movie.available_languages.split(',').map(lang => lang.trim()) : []
     },
-    displayedCast() {
-      const start = this.currentPage * this.itemsPerPage;
-      const end = start + this.itemsPerPage;
-      return this.movie.cast.slice(start, end);
-    },
-    maxReviewPage() {
-      return Math.ceil(this.movieReviews.length / this.reviewsPerPage) - 1;
-    },
-    totalPages() {
-      return this.maxReviewPage + 1;
+    castList() {
+      return this.movie.cast ? this.movie.cast.split(',').map(name => name.trim()) : []
     },
     displayedReviews() {
-      const start = this.reviewPage * this.reviewsPerPage;
-      const end = start + this.reviewsPerPage;
-      return this.movieReviews.slice(start, end);
+      const start = this.currentPage * this.reviewsPerPage
+      return this.movieReviews.slice(start, start + this.reviewsPerPage)
     },
-    totalCastPages() {
-      return Math.ceil(this.movie.cast.length / this.itemsPerPage)
+    totalPages() {
+      return Math.ceil(this.movieReviews.length / this.reviewsPerPage)
     },
-    displayedCast() {
-      const start = this.currentCastPage * this.itemsPerPage
-      const end = start + this.itemsPerPage
-      return this.movie.cast.slice(start, end)
+    imdbStars() {
+      return (this.movie.rating_IMDb || 0) / 2
+    },
+    streamvibeStars() {
+      return (this.movie.rating_streamvibe || 0) / 2
+    },
+    parsedCast() {
+      if (!this.movie.cast) return []
+      try {
+        return JSON.parse(this.movie.cast)
+      } catch (e) {
+        console.error('Failed to parse cast data:', e)
+        return []
+      }
+    },
+    castArray() {
+      if (!this.movie.cast) return []
+      return this.movie.cast.split(',').map(name => name.trim())
     }
   },
   methods: {
-    playPreview() {
-      // 实现预览播放逻辑
-      console.log('Playing preview...');
+    async fetchMovieDetails() {
+      try {
+        const movieId = this.$route.params.id;
+        console.log('Fetching movie details for ID:', movieId);
+
+        const response = await request({
+          url: `/api/movies/${movieId}`,
+          method: 'get'
+        });
+
+        if (response.status === 0 && response.data) {
+          this.movie = {
+            ...response.data,
+            poster_url: response.data.poster_url || '',
+            available_languages: response.data.available_languages || '',
+            rating_IMDb: Number(response.data.rating_IMDb || 0),
+            rating_streamvibe: Number(response.data.rating_streamvibe || 0),
+            category: response.data.category || '',
+            length: response.data.length || ''
+          };
+        }
+      } catch (error) {
+        console.error('Failed to fetch movie details:', error);
+        this.$message.error('Failed to load movie details');
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async fetchMovieReviews() {
+      try {
+        const movieId = this.$route.params.id;
+        console.log('Fetching reviews for movie:', movieId);
+
+        const response = await request({
+          url: `/api/movies/${movieId}/reviews`,
+          method: 'get'
+        });
+
+        if (response && response.data) {
+          this.movieReviews = response.data.map(review => ({
+            ...review,
+            rating: Number(review.rating)
+          }));
+        } else {
+          this.movieReviews = [];
+        }
+      } catch (error) {
+        console.error('Failed to fetch reviews:', error);
+        this.$message.error('Failed to load reviews');
+        this.movieReviews = [];
+      }
     },
     prevPage() {
       if (this.currentPage > 0) {
-        this.currentPage--;
+        this.currentPage--
       }
     },
     nextPage() {
-      if (this.currentPage < this.maxPage) {
-        this.currentPage++;
+      if (this.currentPage < this.totalPages - 1) {
+        this.currentPage++
       }
     },
-    prevReviewPage() {
-      if (this.reviewPage > 0) {
-        this.reviewPage--;
-      }
-    },
-    nextReviewPage() {
-      if (this.reviewPage < this.maxReviewPage) {
-        this.reviewPage++;
-      }
-    },
-    prevCastPage() {
-      if (this.currentCastPage > 0) {
-        this.currentCastPage--
-      }
-    },
-    nextCastPage() {
-      if (this.currentCastPage < this.totalCastPages - 1) {
-        this.currentCastPage++
-      }
+    formatDate(dateString) {
+      const date = new Date(dateString);
+      return date.toLocaleString('zh-CN', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
     }
+  },
+  async created() {
+    await Promise.all([
+      this.fetchMovieDetails(),
+      this.fetchMovieReviews()
+    ]);
   }
-};
+}
 </script>
-
 <style scoped>
 .movie-detail {
   background-color: #111;
@@ -518,6 +405,9 @@ export default {
 .main-content .info-block {
   background: rgba(26, 26, 26, 0.6);
   border: 2px solid rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
 }
 
 .description-box {
@@ -542,388 +432,127 @@ export default {
 }
 
 .cast-section {
-  margin-bottom: 30px;
+  background: rgba(26, 26, 26, 0.8);
+  border-radius: 16px;
+  padding: 32px;
+  margin-bottom: 32px;
 }
 
-.reviews-section {
-  position: relative;
-  margin-bottom: 30px;
+.cast-section h2 {
+  color: #FFFFFF;
+  font-size: 24px;
+  font-weight: 500;
+  margin-bottom: 24px;
 }
 
 .cast-list {
-  display: grid;
-  grid-template-columns: repeat(8, 1fr);
-  gap: 16px;
-  overflow: hidden;
+  display: flex;
+  gap: 32px;
 }
 
-.cast-item {
+.cast-member {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-}
-
-.cast-item img {
-  width: 100px;
-  height: 80px;
-  border-radius: 12px;
-  object-fit: cover;
-}
-
-.actor-name {
-  text-align: center;
-  font-size: 14px;
-  color: #ffffff;
-}
-
-.review-card {
-  background: rgba(33, 33, 33, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
-  padding: 24px;
-  width: 100%;
-  height: 300px;
-  display: flex;
-  flex-direction: column;
-}
-
-.review-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 20px;
-  flex-shrink: 0;
-}
-
-.review-text {
-  color: rgba(255, 255, 255, 0.6);
-  line-height: 1.6;
-  font-size: 14px;
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 10;
-  -webkit-box-orient: vertical;
-  text-overflow: ellipsis;
-  margin-top: 4px;
-}
-
-.tag {
-  background: rgba(51, 51, 51, 0.6);
-  padding: 4px 12px;
-  border-radius: 16px;
-  display: inline-block;
-  margin: 0 8px 8px 0;
-  font-size: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.person-info {
-  display: flex;
   gap: 12px;
-  align-items: center;
 }
 
-.person-info img {
-  width: 50px;
-  height: 50px;
+.cast-image-placeholder {
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
-  object-fit: cover;
-}
-
-.stars {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.star-filled {
-  color: #FF0000;
-}
-
-.star-half {
-  position: relative;
-  color: rgba(255, 255, 255, 0.3);
-}
-
-.star-half::before {
-  content: '★';
-  position: absolute;
-  color: #FF0000;
-  width: 50%;
-  overflow: hidden;
-  left: 0;
-}
-
-.star-empty {
-  color: rgba(255, 255, 255, 0.3);
-}
-
-.rating-number {
-  margin-left: 4px;
-  color: #FFFFFF;
-}
-
-.navigation-controls {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.nav-arrow {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: rgba(51, 51, 51, 0.6);
-  border: none;
-  color: white;
-  cursor: pointer;
+  background: rgba(255, 255, 255, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
 }
 
-.nav-arrow:hover:not(.disabled) {
-  background: rgba(71, 71, 71, 0.6);
+.cast-image-placeholder i {
+  font-size: 48px;
+  color: rgba(255, 255, 255, 0.3);
 }
 
-.nav-arrow.disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+.actor-name {
+  color: #FFFFFF;
+  font-size: 16px;
+  text-align: center;
 }
 
-.page-indicators {
-  display: flex;
-  gap: 4px;
-  align-items: center;
+@media (max-width: 768px) {
+  .cast-list {
+    flex-wrap: wrap;
+    gap: 24px;
+  }
+
+  .cast-image-placeholder {
+    width: 100px;
+    height: 100px;
+  }
+
+  .cast-image-placeholder i {
+    font-size: 36px;
+  }
 }
 
-.page-indicator {
-  width: 16px;
-  height: 2px;
-  background-color: rgba(255, 255, 255, 0.3);
-  transition: all 0.3s ease;
-}
-
-.page-indicator.active {
-  background-color: #FF0000;
+.reviews-section {
+  background: rgba(26, 26, 26, 0.8);
+  border-radius: 16px;
+  padding: 32px;
+  margin-bottom: 32px;
 }
 
 .section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
+}
+
+.section-header h2 {
+  color: #FFFFFF;
+  font-size: 24px;
+  margin: 0;
 }
 
 .add-review-btn {
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #FFFFFF;
   padding: 8px 16px;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .add-review-btn:hover {
   background: rgba(255, 255, 255, 0.1);
 }
 
-@media (max-width: 1024px) {
-  .content-section {
-    padding: 40px 20px;
-  }
-
-  .content-layout {
-    grid-template-columns: 1fr;
-  }
-
-  .cast-list {
-    grid-template-columns: repeat(6, 1fr);
-  }
-
-  .cast-item img {
-    width: 90px;
-    height: 70px;
-  }
-}
-
-/* 半透明灰色文字样式 */
-.sidebar .info-block h4,          /* Released Year, Languages, Ratings */
-.cast-section h3,                 /* Cast */
-.section-header h3,               /* 其他标题 */
-.review-card .reviewer-info p,    /* 评论者地址 */
-.review-card .review-text {       /* 评论内容 */
-  color: rgba(255, 255, 255, 0.6);
-}
-
-/* 标题样式 */
-.sidebar .info-block h4,
-.cast-section h3,
-.section-header h3 {
-  font-size: 20px;
-  font-weight: 500;
-  margin-bottom: 16px;
-}
-
-/* 评论文字样式 */
-.review-card .reviewer-info p,
-.review-card .review-text {
-  line-height: 1.6;
-}
-
-/* 白色文字样式 */
-.review-card .reviewer-info h4,
-.review-card .rating-number {
-  color: #FFFFFF;
-}
-
-.review-card .reviewer-info h4 {
-  margin-bottom: 4px;
-}
-
-/* 统一所有框的边框样式 */
-.description-box,
-.cast-section,
-.reviews-section,
-.info-block,
-.review-card {
-  background: rgba(26, 26, 26, 0.6);
-  border-radius: 16px;
-  padding: 24px;
-  margin-bottom: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.05); /* 统一的深色边框 */
-}
-
-/* 大框的样式 */
-.main-content .info-block {  /* Description, Cast, Reviews 大框 */
-  background: rgba(26, 26, 26, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 16px;
-  padding: 24px;
-  margin-bottom: 24px;
-}
-
-/* 评论卡片的特殊样式 */
-.review-card {
-  padding: 16px;
-  margin-bottom: 16px;
-  border-radius: 12px;
-  background: rgba(33, 33, 33, 0.6);
-}
-
-@media (max-width: 1024px) {
-  .cast-list {
-    grid-template-columns: repeat(6, 1fr);
-  }
-  .cast-item img {
-    width: 90px;
-    height: 70px;
-  }
-}
-
-@media (max-width: 768px) {
-  .cast-list {
-    grid-template-columns: repeat(4, 1fr);
-  }
-  .cast-item img {
-    width: 80px;
-    height: 60px;
-  }
-}
-
-.section-header {
-  display: flex;
-  justify-content: space-between; /* 改为两端对齐 */
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.section-header h3 {
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 20px;
-  font-weight: 500;
-  margin: 0;
-}
-
-.navigation-arrows {
-  display: flex;
-  gap: 8px; /* 控制两个箭头之间的间距 */
-}
-
-.nav-arrow {
-  background: rgba(51, 51, 51, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: white;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-}
-
-.nav-arrow:hover:not(.disabled) {
-  background: rgba(71, 71, 71, 0.6);
-}
-
-.nav-arrow.disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.reviews-section {
-  margin-bottom: 30px;
-}
-
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.reviews-container {
-  overflow: hidden;
-}
-
 .reviews-list {
   display: grid;
-  grid-template-columns: repeat(2, 1fr); /* 两列布局 */
-  gap: 20px;
-  transition: transform 0.3s ease;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  margin-bottom: 24px;
 }
 
 .review-card {
-  background: rgba(33, 33, 33, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
   padding: 20px;
+  margin-bottom: 16px;
 }
 
 .review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 12px;
 }
 
 .review-header h4 {
-  color: #FFFFFF;
-  margin: 0 0 4px 0;
+  margin: 0;
+  color: #fff;
   font-size: 16px;
-}
-
-.review-location {
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 14px;
-  margin-bottom: 8px;
 }
 
 .review-rating {
@@ -934,63 +563,34 @@ export default {
 
 .stars {
   display: flex;
-  align-items: center;
-  gap: 4px;
+  gap: 2px;
+}
+
+.star {
+  color: #666;
 }
 
 .star-filled {
-  color: #FF0000;
-}
-
-.star-half {
-  position: relative;
-  color: rgba(255, 255, 255, 0.3);
-}
-
-.star-half::before {
-  content: '★';
-  position: absolute;
-  color: #FF0000;
-  width: 50%;
-  overflow: hidden;
-  left: 0;
+  color: #FFD700;
 }
 
 .star-empty {
   color: rgba(255, 255, 255, 0.3);
 }
 
-.rating-number {
-  margin-left: 4px;
-  color: #FFFFFF;
-}
-
 .review-text {
-  color: rgba(255, 255, 255, 0.6);
+  margin: 0;
+  color: rgba(255, 255, 255, 0.8);
   line-height: 1.5;
-  font-size: 14px;
 }
 
-.add-review-btn {
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: #fff;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
+.review-date {
+  margin-top: 8px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
 }
 
-.add-review-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-@media (max-width: 768px) {
-  .reviews-list {
-    grid-template-columns: 1fr; /* 小屏幕时改为单列 */
-  }
-}
-
-.pagination {
+.pagination-controls {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1105,6 +705,47 @@ export default {
   margin: 0 auto;
 }
 
+.ratings-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rating-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.rating-label {
+  color: #FFFFFF;
+  font-size: 14px;
+}
+
+.rating-value {
+  color: #FF0000;
+  font-weight: 500;
+}
+
+.genres-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.info-item h4 {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 16px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.info-item h4 i {
+  font-size: 18px;
+}
+
 @media (max-width: 1024px) {
   .content-layout {
     grid-template-columns: 1fr;
@@ -1128,4 +769,163 @@ export default {
   display: flex;
   align-items: center;
 }
+
+.ratings-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rating-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.rating-label {
+  color: #FFFFFF;
+  font-size: 14px;
+}
+
+.rating-value {
+  color: #FF0000;
+  font-weight: 500;
+}
+
+.genres-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.info-item h4 {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 16px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.info-item h4 i {
+  font-size: 18px;
+}
+
+.languages-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.tag {
+  background: rgba(51, 51, 51, 0.6);
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 14px;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ratings-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.rating-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.rating-label {
+  color: #FFFFFF;
+  font-size: 14px;
+}
+
+.stars {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.star {
+  font-size: 16px;
+  position: relative;
+}
+
+.star-filled {
+  color: #FF0000;
+}
+
+.star-half {
+  position: relative;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.star-half::before {
+  content: '★';
+  position: absolute;
+  color: #FF0000;
+  width: 50%;
+  overflow: hidden;
+  left: 0;
+}
+
+.star-empty {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.rating-number {
+  margin-left: 8px;
+  color: #FF0000;
+  font-size: 14px;
+}
+
+.language-tag {
+  background: rgba(51, 51, 51, 0.6);
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 14px;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: inline-block;
+  margin: 0 8px 8px 0;
+}
+
+.genres-list {
+  color: #FFFFFF;
+  font-size: 14px;
+}
+
+.ratings-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.languages-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.language-tag {
+  background: rgba(51, 51, 51, 0.6);
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 14px;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: inline-block;
+}
+
+.language-tag:hover {
+  background: rgba(51, 51, 51, 0.8);
+  border-color: rgba(255, 255, 255, 0.2);
+}
 </style>
+
+

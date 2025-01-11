@@ -34,10 +34,10 @@ const pool = mysql.createPool(config);
 // 测试连接
 pool.getConnection((err, connection) => {
   if (err) {
-    console.error('Database connection failed:', err);
+    console.error('数据库连接失败:', err);
     return;
   }
-  console.log('Database connection pool created successfully');
+  console.log('数据库连接成功!');
   connection.release();
 });
 

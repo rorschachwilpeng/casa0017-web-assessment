@@ -9,33 +9,33 @@
           <!-- 第一组海报网格 -->
           <div class="movie-grid">
             <div v-for="row in 4" :key="`row1-${row}`" class="poster-row">
-              <img v-for="col in 6" 
-                   :key="`first-${row}-${col}`" 
-                   :src="`/images/posters/movie${((row-1)*6 + col) % 20}.jpg`" 
+              <img v-for="col in 6"
+                   :key="`first-${row}-${col}`"
+                   :src="`/images/posters/movie${((row-1)*6 + col) % 20}.jpg`"
                    :alt="`Movie ${((row-1)*6 + col) % 20}`" />
             </div>
           </div>
           <!-- 第二组海报网格 -->
           <div class="movie-grid">
             <div v-for="row in 4" :key="`row2-${row}`" class="poster-row">
-              <img v-for="col in 6" 
-                   :key="`second-${row}-${col}`" 
-                   :src="`/images/posters/movie${((row-1)*6 + col) % 20}.jpg`" 
+              <img v-for="col in 6"
+                   :key="`second-${row}-${col}`"
+                   :src="`/images/posters/movie${((row-1)*6 + col) % 20}.jpg`"
                    :alt="`Movie ${((row-1)*6 + col) % 20}`" />
             </div>
           </div>
           <!-- 添加第三组海报网格作为缓冲 -->
           <div class="movie-grid">
             <div v-for="row in 4" :key="`row3-${row}`" class="poster-row">
-              <img v-for="col in 6" 
-                   :key="`third-${row}-${col}`" 
-                   :src="`/images/posters/movie${((row-1)*6 + col) % 20}.jpg`" 
+              <img v-for="col in 6"
+                   :key="`third-${row}-${col}`"
+                   :src="`/images/posters/movie${((row-1)*6 + col) % 20}.jpg`"
                    :alt="`Movie ${((row-1)*6 + col) % 20}`" />
             </div>
           </div>
         </div>
       </div>
-      
+
       <!-- 上层文字内容 -->
       <div class="hero-content">
         <h1>The Best Cinema Experience for You</h1>
@@ -406,7 +406,7 @@
         <p class="description">
           With StreamVibe, you can enjoy your favorite movies and TV shows anytime, anywhere. Our platform is designed to be compatible with a wide range of devices, ensuring that you never miss a moment of entertainment.
         </p>
-        
+
         <!-- 第一行卡片 -->
         <div class="events-grid-row">
           <div class="event-card">
@@ -535,6 +535,12 @@ export default {
       if (this.currentCinemaPage < 1) {
         this.currentCinemaPage++
       }
+    },
+    goToMovieDetails(movieId) {
+      this.$router.push({
+        path: '/movie-details',
+        query: { id: movieId }
+      })
     }
   },
   components: {
