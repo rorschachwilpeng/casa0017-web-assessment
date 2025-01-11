@@ -22,26 +22,28 @@
           {{ moviesList.length }} films in total
         </div>
 
-    <!-- Movie List -->
-    <div v-loading="loading" class="movie-list">
-      <div v-for="movie in moviesList" :key="movie.id" class="movie-card">
-        <div class="movie-poster">
-          <img :src="'http://localhost:3007' + movie.poster_url" :alt="movie.name">
-        </div>
-        <div class="movie-info">
-          <h3 class="movie-title">{{ movie.name }}</h3>
-          <div class="movie-meta">
-            <span class="rating">Rating: {{ movie.rating }}%</span>
-            <span class="length">Length: {{ movie.length }}</span>
+        <!-- Movie List -->
+        <div v-loading="loading" class="movie-list">
+          <div v-for="movie in moviesList" :key="movie.id" class="movie-card" @click="goToDetails(movie.id)">
+            <div class="movie-poster">
+              <img :src="'http://localhost:3007' + movie.poster_url" :alt="movie.name">
+            </div>
+            <div class="movie-info">
+              <h3 class="movie-title">{{ movie.name }}</h3>
+              <div class="movie-meta">
+                <span class="rating">Rating: {{ movie.rating }}%</span>
+                <span class="length">Length: {{ movie.length }}</span>
+              </div>
+              <div class="movie-director">
+                <strong>Director:</strong> {{ movie.director }}
+              </div>
+              <div class="movie-cast">
+                <strong>Cast:</strong> {{ movie.cast }}
+              </div>
+              <p class="movie-description">{{ movie.description }}</p>
+              <p class="movie-plot" v-if="showFullPlot">{{ movie.plot_summary }}</p>
+            </div>
           </div>
-          <div class="movie-director">
-            <strong>Director:</strong> {{ movie.director }}
-          </div>
-          <div class="movie-cast">
-            <strong>Cast:</strong> {{ movie.cast }}
-          </div>
-          <p class="movie-description">{{ movie.description }}</p>
-          <p class="movie-plot" v-if="showFullPlot">{{ movie.plot_summary }}</p>
         </div>
       </div>
     </div>
@@ -96,6 +98,10 @@ export default {
     handleCategoryChange(category) {
       this.selectedCategory = category
       this.fetchMovies()
+    },
+
+    goToDetails(movieId) {
+      this.$router.push(`/movie-details/${movieId}`);
     }
   }
 }
