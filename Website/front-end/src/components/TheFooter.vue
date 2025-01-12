@@ -52,7 +52,11 @@
           </div>
           <div class="qr-code">
             <img src="@/assets/github-qr.png" alt="GitHub QR Code" />
-            <span>Scan to visit our GitHub</span>
+            <a href="https://github.com/rorschachwilpeng/casa0017-web-assessment" 
+               target="_blank" 
+               class="github-link">
+              visit our GitHub
+            </a>
           </div>
         </div>
       </div>
@@ -242,5 +246,18 @@ export default {
 
 .social-links {
   margin-bottom: 16px;
+}
+
+.github-link {
+  display: block;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 12px;
+  text-decoration: none;
+  transition: color 0.3s ease;
+  margin-top: 8px;
+}
+
+.github-link:hover {
+  color: #FFFFFF;
 }
 </style> 
