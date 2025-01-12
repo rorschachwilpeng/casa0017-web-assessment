@@ -3,35 +3,35 @@ const cors = require("cors");
 const path = require("path");
 
 /**
- * 创建 Express 应用实例
+ * Create Express application instance
  */
 const app = express();
 
 /**
- * 配置全局中间件\
+ * Configure global middleware
  */
-// 允许跨域请求
+// Enable CORS
 app.use(cors());
 
-// 解析 application/json 格式的请求体
+// Parse application/json request body
 app.use(express.json());
 
-// 解析 application/x-www-form-urlencoded 格式的请求体
+// Parse application/x-www-form-urlencoded request body
 app.use(express.urlencoded({ extended: false }));
 
-// 请求日志中间件
+// Request logging middleware
 app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
   next();
 });
 
-// 配置静态文件服务
+// Configure static file service
 const publicPath = path.join(__dirname, 'public');
-console.log('Static files path:', publicPath); // 调试用：打印静态文件路径
+console.log('Static files path:', publicPath); // Debug: Print static files path
 app.use(express.static(publicPath));
 
 /**
- * 注册路由模块
+ * Register route modules
  */
 const userRouter = require("./router/user");
 const moviesRouter = require('./router/movies');
@@ -49,7 +49,7 @@ app.use('/api/routes', routesRouter);
 app.use('/api', seatsRouter);
 app.use('/api/actors', actorsRouter);
 
-// 错误处理中间件
+// Error handling middleware
 app.use((err, req, res, next) => {
   console.error('Server Error:', err);
   res.status(500).json({
@@ -60,13 +60,13 @@ app.use((err, req, res, next) => {
 });
 
 /**
- * 启动服务器
+ * Start server
  */
 const PORT = 3007;
 app.listen(PORT, () => {
-  console.log(`服务器运行在 http://localhost:${PORT}`);
-  console.log('已注册的路由:');
-  console.log('/api/movies/:id - 获取电影详情');
-  console.log('/api/movies/:id/reviews - 获取电影评论');
+  console.log(`Server running at http://localhost:${PORT}`);
+  console.log('Registered routes:');
+  console.log('/api/movies/:id - Get movie details');
+  console.log('/api/movies/:id/reviews - Get movie reviews');
 });
 

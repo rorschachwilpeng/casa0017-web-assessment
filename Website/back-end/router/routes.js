@@ -2,11 +2,11 @@ const express = require('express');
 const router = express.Router();
 const axios = require('axios');
 
-// Mapbox API 配置
+// Mapbox API Configuration
 const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1Ijoic2xpbXJvcnNjaGFjaCIsImEiOiJjbTViODhpOTUwYzBkMmpxb3Nvdmx6OGFqIn0.JenG29Zpk1FQLaStd3jOgQ';
 const MAPBOX_API_URL = 'https://api.mapbox.com/directions/v5/mapbox';
 
-// 添加路由级别的日志中间件
+// Add router level logging middleware
 router.use((req, res, next) => {
   console.log('\n[Routes Router] ====== New Request ======');
   console.log(`[Routes Router] Time: ${new Date().toISOString()}`);
@@ -21,20 +21,20 @@ router.use((req, res, next) => {
   next();
 });
 
-// 性能日志函数
+// Performance logging function
 function logPerformance(startTime, label) {
   const duration = Date.now() - startTime;
   console.log(`[Performance] ${label}: ${duration}ms`);
   return Date.now();
 }
 
-// 路由测试端点
+// Test endpoint
 router.get('/test', (req, res) => {
   console.log('[Route] Test endpoint hit');
   res.json({ message: 'Route service is working' });
 });
 
-// 简单路由测试
+// Simple route test
 router.post('/test-calculate', (req, res) => {
   console.log('[Route] Test calculate endpoint hit');
   console.log('[Route] Request body:', req.body);
@@ -52,7 +52,7 @@ router.post('/test-calculate', (req, res) => {
   });
 });
 
-// 路线计算接口
+// Route calculation endpoint
 router.post('/calculate', async (req, res) => {
   console.log('\n[Route] ====== Starting route calculation ======');
   console.log(`[Route] Time: ${new Date().toISOString()}`);
@@ -64,7 +64,7 @@ router.post('/calculate', async (req, res) => {
   try {
     const { origin, destination } = req.body;
     
-    // 验证请求数据
+    // Validate request data
     if (!origin || !destination) {
       throw new Error('Missing origin or destination');
     }
@@ -73,20 +73,20 @@ router.post('/calculate', async (req, res) => {
       throw new Error('Invalid coordinates format');
     }
 
-    // 构建基础坐标字符串
+    // Build base coordinate string
     const coordinateString = `${origin.lng},${origin.lat};${destination.lng},${destination.lat}`;
     
-    // 定义 Mapbox API 模式和对应的前端模式名称
+    // Define Mapbox API modes and corresponding frontend mode names
     const modeMapping = {
       'driving-traffic': 'driving',
       'walking': 'walking',
       'cycling': 'cycling'
     };
     
-    // 存储所有路线结果
+    // Store all route results
     const routes = {};
     
-    // 获取所有交通方式的路线
+    // Get routes for all transportation modes
     for (const [mapboxMode, frontendMode] of Object.entries(modeMapping)) {
       const url = `${MAPBOX_API_URL}/${mapboxMode}/${coordinateString}`;
       console.log(`[Route] Fetching ${frontendMode} route...`);
@@ -121,7 +121,7 @@ router.post('/calculate', async (req, res) => {
       }
     }
 
-    // 检查是否至少有一条路线
+    // Check if at least one route was found
     if (Object.keys(routes).length === 0) {
       throw new Error('No routes found for any transport mode');
     }
@@ -152,6 +152,6 @@ router.post('/calculate', async (req, res) => {
   }
 });
 
-// 导出路由
+// Export router
 console.log('[Route] Routes module loaded');
 module.exports = router; 

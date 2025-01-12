@@ -3,7 +3,7 @@ const router = express.Router();
 const db = require('../db/index');
 
 /**
- * 获取所有座位状态
+ * Get all seat statuses
  * @route GET /api/seats
  */
 router.get('/seats', async (req, res) => {
@@ -11,7 +11,7 @@ router.get('/seats', async (req, res) => {
     console.log('Starting to fetch seats...');
     const { session_id } = req.query;
     
-    // 检查现有座位（针对特定场次）
+    // Check existing seats (for specific session)
     const [existingSeats] = await db.query(
       'SELECT COUNT(*) as count FROM seats WHERE session_id = ?',
       [session_id]
@@ -34,7 +34,6 @@ router.get('/seats', async (req, res) => {
     );
     console.log(`Found ${seats.length} seats`);
 
-    // 保持原有的返回格式
     res.json({
       status: 0,
       message: 'Success',
@@ -51,7 +50,7 @@ router.get('/seats', async (req, res) => {
 });
 
 /**
- * 更新座位状态
+ * Update seat status
  * @route POST /api/seats/reserve
  */
 router.post('/seats/reserve', async (req, res) => {
@@ -125,13 +124,13 @@ router.post('/seats/reserve', async (req, res) => {
 });
 
 /**
- * 初始化座位数据
+ * Initialize seat data
  */
 async function initializeSeats() {
   try {
     console.log('Starting seat initialization...')
     
-    // 使用单个 INSERT 语句
+    // Use single INSERT statement
     const values = []
     const rows = ['A', 'B', 'C', 'D', 'E', 'F', 'G']
     
@@ -154,7 +153,7 @@ async function initializeSeats() {
 }
 
 /**
- * 添加重置座位状态的路由
+ * Add route to reset seat status
  * @route POST /api/seats/reset
  */
 router.post('/seats/reset', async (req, res) => {
@@ -175,13 +174,13 @@ router.post('/seats/reset', async (req, res) => {
   }
 });
 
-// 测试获取影院列表
+// Test getting cinema list
 router.get('/seats/test-cinemas', async (req, res) => {
   try {
     const sql = 'SELECT cinema_id, name FROM cinemas WHERE cinema_id <= 10 ORDER BY cinema_id';
     const [cinemaResults] = await db.query(sql);
     
-    // 使用更清晰的响应结构
+    // Use clearer response structure
     res.json({
       status: 0,
       message: 'Success',
@@ -191,16 +190,16 @@ router.get('/seats/test-cinemas', async (req, res) => {
       }))
     });
   } catch (err) {
-    console.error('获取影院数据失败:', err);
+    console.error('Failed to fetch cinema data:', err);
     res.status(500).json({ 
       status: 1,
-      message: '获取影院数据失败',
+      message: 'Failed to fetch cinema data',
       error: err.message 
     });
   }
 });
 
-// 获取电影列表
+// Get movie list
 router.get('/seats/movies', async (req, res) => {
   try {
     const sql = 'SELECT id, name, poster_url, length FROM movies ORDER BY id';
@@ -217,21 +216,21 @@ router.get('/seats/movies', async (req, res) => {
       }))
     });
   } catch (err) {
-    console.error('获取电影数据失败:', err);
+    console.error('Failed to fetch movie data:', err);
     res.status(500).json({ 
       status: 1,
-      message: '获取电影数据失败',
+      message: 'Failed to fetch movie data',
       error: err.message 
     });
   }
 });
 
-// 添加新的路由处理会话数据
+// Add new route to handle session data
 router.post('/seats/sessions', async (req, res) => {
   try {
     const { movie_id, theater_id, date, time } = req.body;
 
-    // 验证必要字段
+    // Validate required fields
     if (!movie_id || !theater_id || !date || !time) {
       return res.status(400).json({
         status: 1,
@@ -239,7 +238,7 @@ router.post('/seats/sessions', async (req, res) => {
       });
     }
 
-    // 先查询是否存在匹配的场次
+    // Check if matching session exists
     const [existingSessions] = await db.query(
       'SELECT id FROM sessions WHERE movie_id = ? AND theater_id = ? AND date = ? AND time = ?',
       [movie_id, theater_id, date, time]
@@ -248,11 +247,11 @@ router.post('/seats/sessions', async (req, res) => {
     let session_id;
 
     if (existingSessions.length > 0) {
-      // 如果找到匹配的场次，使用现有的 session_id
+      // If matching session found, use existing session_id
       session_id = existingSessions[0].id;
       console.log('Found existing session:', session_id);
     } else {
-      // 如果没有找到匹配的场次，创建新的场次
+      // If no matching session found, create new session
       const [result] = await db.query(
         'INSERT INTO sessions (movie_id, theater_id, date, time) VALUES (?, ?, ?, ?)',
         [movie_id, theater_id, date, time]
@@ -260,7 +259,7 @@ router.post('/seats/sessions', async (req, res) => {
       session_id = result.insertId;
       console.log('Created new session:', session_id);
 
-      // 为新场次初始化座位
+      // Initialize seats for new session
       const values = [];
       const rows = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
       
@@ -276,7 +275,7 @@ router.post('/seats/sessions', async (req, res) => {
       );
     }
 
-    // 获取该场次的所有座位信息
+    // Get all seat information for this session
     const [seats] = await db.query(
       'SELECT * FROM seats WHERE session_id = ? ORDER BY seat_row, seat_col',
       [session_id]

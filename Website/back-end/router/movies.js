@@ -3,7 +3,7 @@ const db = require('../db/index');
 const router = express.Router();
 
 /**
- * 获取电影列表
+ * Get movie list
  * @route GET /api/movies
  */
 router.get('/movies', async (req, res) => {
@@ -18,13 +18,13 @@ router.get('/movies', async (req, res) => {
 
   sql += ' ORDER BY created_at DESC';
 
-  // 添加调试日志
+  // Add debug logs
   console.log('Executing SQL:', sql, 'with params:', params);
 
   try {
     const [results] = await db.query(sql, params);
     
-    // 添加调试日志
+    // Add debug logs
     console.log('Query results:', results);
 
     res.json({
@@ -43,12 +43,12 @@ router.get('/movies', async (req, res) => {
 });
 
 /**
- * 获取单个电影详情
+ * Get single movie details
  * @route GET /api/movies/:id
  */
 router.get('/movies/:id', async (req, res) => {
   const movieId = req.params.id;
-  console.log('获取电影详情, ID:', movieId);
+  console.log('Getting movie details, ID:', movieId);
 
   try {
     const sql = 'SELECT * FROM movies WHERE id = ?';
@@ -57,7 +57,7 @@ router.get('/movies/:id', async (req, res) => {
     if (!results || results.length === 0) {
       return res.status(404).json({
         status: 1,
-        message: '电影不存在'
+        message: 'Movie not found'
       });
     }
 
@@ -68,17 +68,17 @@ router.get('/movies/:id', async (req, res) => {
     });
 
   } catch (err) {
-    console.error('获取电影详情失败:', err);
+    console.error('Failed to get movie details:', err);
     res.status(500).json({
       status: 1,
-      message: '获取电影详情失败',
+      message: 'Failed to get movie details',
       error: err.message
     });
   }
 });
 
 /**
- * 添加新电影
+ * Add new movie
  * @route POST /api/movies
  */
 router.post('/movies', async (req, res) => {
@@ -129,7 +129,7 @@ router.post('/movies', async (req, res) => {
 });
 
 /**
- * 更新电影信息
+ * Update movie information
  * @route PUT /api/movies/:id
  */
 router.put('/movies/:id', async (req, res) => {
@@ -188,7 +188,7 @@ router.put('/movies/:id', async (req, res) => {
 });
 
 /**
- * 删除电影
+ * Delete movie
  * @route DELETE /api/movies/:id
  */
 router.delete('/movies/:id', async (req, res) => {
@@ -215,12 +215,12 @@ router.delete('/movies/:id', async (req, res) => {
 });
 
 /**
- * 获取电影评论
+ * Get movie reviews
  * @route GET /api/movies/:id/reviews
  */
 router.get('/movies/:id/reviews', async (req, res) => {
   const movieId = req.params.id;
-  console.log('获取电影评论, ID:', movieId);
+  console.log('Getting movie reviews, ID:', movieId);
 
   try {
     const sql = `
@@ -237,7 +237,7 @@ router.get('/movies/:id/reviews', async (req, res) => {
     `;
     
     const [results] = await db.query(sql, [movieId]);
-    console.log('查询结果:', results);
+    console.log('Query results:', results);
 
     res.json({
       status: 0,
@@ -246,10 +246,10 @@ router.get('/movies/:id/reviews', async (req, res) => {
     });
 
   } catch (err) {
-    console.error('获取电影评论失败:', err);
+    console.error('Failed to get movie reviews:', err);
     res.status(500).json({
       status: 1,
-      message: '获取电影评论失败',
+      message: 'Failed to get movie reviews',
       error: err.message
     });
   }

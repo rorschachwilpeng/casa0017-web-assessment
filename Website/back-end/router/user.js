@@ -3,52 +3,52 @@ const db = require("../db/index");
 const router = express.Router();
 
 /**
- * 用户注册路由
+ * User registration route
  * @route POST /api/reguser
  */
 router.post("/reguser", (req, res) => {
   try {
-    // 接收表单数据
+    // Receive form data
     const userinfo = req.body;
-    // 判断数据是否合法
+    // Validate data
     if (!userinfo.username || !userinfo.password) {
       return res.send({
         status: 1,
-        msg: "用户名或密码不能为空",
+        msg: "Username and password cannot be empty",
       });
     }
 
-    // 定义sql语句，查询用户名是否被占用
+    // Define SQL query to check if username is taken
     const sqlStr = "SELECT * FROM ev_users WHERE username=?";
     db.query(sqlStr, userinfo.username, (err, results) => {
-      if (err) return res.send({ status: 1, message: err.message }); //sql执行出错
-      // 判断用户是否被占用
+      if (err) return res.send({ status: 1, message: err.message }); // SQL execution error
+      // Check if username is taken
       if (results.length > 0) {
         return res.send({
           status: 1,
-          message: "用户名已被占用，请更换其他用户名",
+          message: "Username is already taken, please choose another one",
         });
       }
-      // 用户名可用
+      // Username is available
       // TODO Others
     });
     
   } catch (error) {
-    res.status(500).send("注册失败");
+    res.status(500).send("Registration failed");
   }
 });
 
 /**
- * 用户登录路由
+ * User login route
  * @route POST /api/login
  */
 router.post("/login", (req, res) => {
   try {
-    console.log("登录请求体:", req.body);
-    // TODO: 添加用户登录逻辑
+    console.log("Login request body:", req.body);
+    // TODO: Add user login logic
     res.send("login OK");
   } catch (error) {
-    res.status(500).send("登录失败");
+    res.status(500).send("Login failed");
   }
 });
 
