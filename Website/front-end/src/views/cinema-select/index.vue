@@ -255,6 +255,12 @@
             <el-button type="primary" @click="showRoute">Route</el-button>
           </div>
         </div>
+        <div v-else class="select-cinema-hint">
+          <div class="hint-content">
+            <i class="el-icon-film"></i>
+            <span>Please select a cinema from the list or map to view details</span>
+          </div>
+        </div>
 
         <!-- 将 BookingBanner 移到这里 -->
         <div class="banner-section">
@@ -1751,6 +1757,31 @@ export default {
 /* 调整内容区域的样式以配合 banner */
 .content-section {
   padding-bottom: 0px; // 为 banner 预留空间
+}
+
+/* 添加提示栏样式 */
+.select-cinema-hint {
+  background: rgba(51, 51, 51, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 30px;
+  margin: 20px 0;
+  text-align: center;
+  backdrop-filter: blur(10px);
+
+  .hint-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    color: #ffffff;
+    font-size: 16px;
+    
+    i {
+      font-size: 24px;
+      color: #409EFF;
+    }
+  }
 }
 </style>
 
