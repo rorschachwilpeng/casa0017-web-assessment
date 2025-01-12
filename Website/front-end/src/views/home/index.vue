@@ -805,6 +805,7 @@ main {
 .view-all-wrapper {
   display: flex;
   align-items: center;
+  height: 52px; /* 与控制按钮容器高度一致 */
 }
 
 .view-all {
@@ -812,10 +813,13 @@ main {
   text-decoration: none;
   font-size: 14px;
   cursor: pointer;
-  transition: opacity 0.3s ease;
-  padding: 8px 16px;
+  transition: all 0.3s ease;
+  padding: 16px 24px; /* 调整内边距使按钮更高 */
   background: rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
+  border-radius: 8px;
+  height: 100%; /* 填充父容器高度 */
+  display: flex;
+  align-items: center;
 }
 
 .view-all:hover {

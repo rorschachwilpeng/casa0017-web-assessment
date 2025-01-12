@@ -25,7 +25,7 @@ export default {
 
 <style scoped>
 .booking-section {
-  padding: 0 0px;
+  padding: 0;
   margin-top: 60px;
   width: 100%;
 }

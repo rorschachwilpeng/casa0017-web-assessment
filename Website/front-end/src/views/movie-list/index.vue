@@ -9,12 +9,16 @@
         <!-- Category Filter -->
         <div class="category-filter">
           <span class="category-label">Category : </span>
-          <el-radio-group v-model="selectedCategory" @change="handleCategoryChange">
-            <el-radio-button label="All">All</el-radio-button>
-            <el-radio-button v-for="category in categories" :key="category" :label="category">
-              {{ category }}
-            </el-radio-button>
-          </el-radio-group>
+          <div class="category-buttons">
+            <button 
+              v-for="cat in ['All', ...categories]" 
+              :key="cat"
+              :class="['category-btn', { active: selectedCategory === cat }]"
+              @click="handleCategoryChange(cat)"
+            >
+              {{ cat }}
+            </button>
+          </div>
         </div>
 
         <!-- Movie Count -->
@@ -45,8 +49,14 @@
             </div>
           </div>
         </div>
+        
+        <!-- 将 BookingBanner 移动到这里 -->
+        <BookingBanner />
       </div>
     </div>
+    
+    <!-- 页脚 -->
+    <TheFooter />
   </div>
 </template>
 
@@ -120,6 +130,7 @@ export default {
   width: 100%;
   box-sizing: border-box;
   min-height: calc(100vh - 80px);
+  margin-bottom: 60px;
 }
 
 .app-container {
@@ -128,10 +139,49 @@ export default {
 }
 
 .category-filter {
+  display: flex;
+  align-items: center;
   margin-bottom: 20px;
-  .category-label {
-    margin-right: 10px;
-    font-weight: bold;
+}
+
+.category-label {
+  color: #FFFFFF;
+  font-size: 16px;
+  margin-right: 16px;
+}
+
+.category-buttons {
+  display: flex;
+  gap: 1px;
+  background: #1A1A1A;
+  padding: 1px;
+  border-radius: 4px;
+}
+
+.category-btn {
+  background: #2A2A2A;
+  border: none;
+  color: #FFFFFF;
+  padding: 8px 24px;
+  cursor: pointer;
+  font-size: 14px;
+  height: 40px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: #3A3A3A;
+  }
+
+  &.active {
+    background: #4B91FF;
+  }
+
+  &:first-child {
+    border-radius: 4px 0 0 4px;
+  }
+
+  &:last-child {
+    border-radius: 0 4px 4px 0;
   }
 }
 
@@ -222,6 +272,7 @@ export default {
   &:hover {
     color: #1890ff;
   }
+
 }
 
 .el-radio-button__orig-radio:checked + .el-radio-button__inner {
@@ -238,3 +289,4 @@ export default {
   border-radius: 0 4px 4px 0;
 }
 </style>
+

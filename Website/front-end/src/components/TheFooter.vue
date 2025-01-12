@@ -7,9 +7,9 @@
           <h4>Home</h4>
           <ul>
             <li><a href="#">Categories</a></li>
-            <li><a href="#">Devices</a></li>
-            <li><a href="#">Pricing</a></li>
-            <li><a href="#">FAQ</a></li>
+            <li><a href="#">Cinema Reccomendation</a></li>
+            <li><a href="#">Events</a></li>
+            <li><a href="#">Booking</a></li>
           </ul>
         </div>
         <div class="nav-column">
@@ -24,38 +24,42 @@
         <div class="nav-column">
           <h4>Cinemas</h4>
           <ul>
-            <li><a href="#">Locations</a></li>
-            <li><a href="#">Partners</a></li>
-            <li><a href="#">Vue Theater</a></li>
-            <li><a href="#">Popular</a></li>
+            <li><a href="#">Map</a></li>
+            <li><a href="#">Movie Selection</a></li>
+            <li><a href="#">Cinema Selection</a></li>
+            <li><a href="#">Crime Data</a></li>
           </ul>
         </div>
         <div class="nav-column">
-          <h4>Support</h4>
+          <h4>Booking</h4>
           <ul>
-            <li><a href="#">Contact Us</a></li>
+            <li><a href="#">Booking Seats</a></li>
           </ul>
         </div>
         <div class="nav-column">
-          <h4>Subscription</h4>
+          <h4>About</h4>
           <ul>
-            <li><a href="#">Plans</a></li>
-            <li><a href="#">Features</a></li>
+            <li><a href="#">Team</a></li>
+            <li><a href="#">Introduction</a></li>
           </ul>
         </div>
-        <div class="nav-column">
+        <div class="nav-column connect-column">
           <h4>Connect With Us</h4>
           <div class="social-links">
             <a href="#"><i class="fab fa-facebook"></i></a>
             <a href="#"><i class="fab fa-twitter"></i></a>
             <a href="#"><i class="fab fa-linkedin"></i></a>
           </div>
+          <div class="qr-code">
+            <img src="@/assets/github-qr.png" alt="GitHub QR Code" />
+            <span>Scan to visit our GitHub</span>
+          </div>
         </div>
       </div>
 
       <!-- 页脚底部 -->
       <div class="footer-bottom">
-        <p class="copyright">© 2024 StreamVibe. All Rights Reserved.</p>
+        <p class="copyright">© 2025 CASA0017-Group1. All Rights Reserved.</p>
         <div class="footer-links">
           <a href="#">Terms of Use</a>
           <a href="#">Privacy Policy</a>
@@ -204,5 +208,39 @@ export default {
     grid-template-columns: repeat(2, 1fr);
     gap: 24px;
   }
+}
+
+/* 二维码样式 */
+.qr-code {
+  margin-top: 0;
+  text-align: center;
+}
+
+.qr-code img {
+  width: 120px;
+  height: 150px;
+  margin-bottom: 8px;
+}
+
+.qr-code span {
+  display: block;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 12px;
+}
+
+/* 修改最后一列的样式 */
+.connect-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.connect-column h4 {
+  margin-bottom: 16px;
+}
+
+.social-links {
+  margin-bottom: 16px;
 }
 </style> 

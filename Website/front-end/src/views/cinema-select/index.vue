@@ -35,24 +35,57 @@
             {{ movieTitle }}
           </div>
 
-          <!-- 时间和筛选选项 -->
+          <!-- 替换原有的 filter-section -->
           <div class="filter-section">
             <div class="time-filter">
               <span class="label">Time:</span>
-              <el-radio-group v-model="selectedTime" size="small">
-                <el-radio-button label="today">today</el-radio-button>
-                <el-radio-button label="tomorrow">tomorrow</el-radio-button>
-                <el-button size="small" icon="el-icon-date">select</el-button>
-              </el-radio-group>
+              <div class="button-group">
+                <div 
+                  class="button" 
+                  :class="{ active: selectedTime === 'today' }"
+                  @click="selectedTime = 'today'"
+                >
+                  today
+                </div>
+                <div 
+                  class="button" 
+                  :class="{ active: selectedTime === 'tomorrow' }"
+                  @click="selectedTime = 'tomorrow'"
+                >
+                  tomorrow
+                </div>
+                <div class="button" @click="handleDateSelect">
+                  <i class="el-icon-date"></i>
+                  select
+                </div>
+              </div>
             </div>
 
             <div class="other-filters">
               <span class="label">Filter:</span>
-              <el-radio-group v-model="selectedFilter" size="small">
-                <el-radio-button label="closest">closest</el-radio-button>
-                <el-radio-button label="highest-rated">highest rated</el-radio-button>
-                <el-radio-button label="safest">safest</el-radio-button>
-              </el-radio-group>
+              <div class="button-group">
+                <div 
+                  class="button" 
+                  :class="{ active: selectedFilter === 'closest' }"
+                  @click="selectedFilter = 'closest'"
+                >
+                  closest
+                </div>
+                <div 
+                  class="button" 
+                  :class="{ active: selectedFilter === 'highest-rated' }"
+                  @click="selectedFilter = 'highest-rated'"
+                >
+                  highest rated
+                </div>
+                <div 
+                  class="button" 
+                  :class="{ active: selectedFilter === 'safest' }"
+                  @click="selectedFilter = 'safest'"
+                >
+                  safest
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -787,6 +820,11 @@ export default {
         default:
           return '';
       }
+    },
+
+    handleDateSelect() {
+      // 处理日期选择的逻辑
+      console.log('Open date selector');
     }
   },
   watch: {
@@ -851,10 +889,65 @@ export default {
   .filter-section {
     display: flex;
     gap: 20px;
-    margin-top: 10px;
+    margin: 15px 0;
 
     .label {
+      color: #ffffff;
+      font-size: 14px;
       margin-right: 10px;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 1px;
+
+      .button {
+        background: #333333;
+        border: 1px solid #444444;
+        color: #ffffff;
+        height: 32px;
+        padding: 0 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 14px;
+        user-select: none;
+
+        &:first-child {
+          border-radius: 4px 0 0 4px;
+        }
+
+        &:last-child {
+          border-radius: 0 4px 4px 0;
+        }
+
+        &:hover {
+          background: #444444;
+        }
+
+        &.active {
+          background: #666666;
+          border-color: #666666;
+        }
+
+        i {
+          margin-right: 5px;
+        }
+      }
+    }
+
+    .time-filter, 
+    .other-filters {
+      display: flex;
+      align-items: center;
+    }
+
+    .other-filters {
+      .button {
+        min-width: 100px;
+      }
     }
   }
 }
@@ -1644,96 +1737,6 @@ export default {
         }
       }
     }
-  }
-}
-
-/* Element UI 深色主题样式覆盖 */
-:deep(.el-select) {
-  .el-input__inner {
-    background: rgba(26, 26, 26, 0.8);
-    border-color: rgba(255, 255, 255, 0.1);
-    color: #ffffff;
-    border-radius: 4px;
-    height: 40px;
-
-    &:hover, &:focus {
-      border-color: #409EFF;
-    }
-  }
-
-  .el-select-dropdown {
-    background: rgba(26, 26, 26, 0.95);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
-
-    .el-select-dropdown__item {
-      color: #ffffff;
-
-      &:hover, &.selected {
-        background: rgba(64, 158, 255, 0.2);
-      }
-
-      &.selected {
-        color: #409EFF;
-      }
-    }
-  }
-}
-
-:deep(.el-radio-group) {
-  .el-radio-button__inner {
-    background: rgba(26, 26, 26, 0.8);
-    border-color: rgba(255, 255, 255, 0.1);
-    color: #ffffff;
-    height: 32px;
-    line-height: 32px;
-    padding: 0 15px;
-
-    &:hover {
-      color: #409EFF;
-    }
-  }
-
-  .el-radio-button__orig-radio:checked + .el-radio-button__inner {
-    background-color: #409EFF;
-    border-color: #409EFF;
-    box-shadow: -1px 0 0 0 #409EFF;
-    color: #ffffff;
-  }
-}
-
-:deep(.el-button) {
-  &.el-button--default {
-    background: rgba(26, 26, 26, 0.8);
-    border-color: rgba(255, 255, 255, 0.1);
-    color: #ffffff;
-    height: 32px;
-    padding: 0 15px;
-
-    &:hover, &:focus {
-      background: rgba(64, 158, 255, 0.1);
-      border-color: #409EFF;
-      color: #409EFF;
-    }
-  }
-
-  &.el-button--primary {
-    background: #409EFF;
-    border-color: #409EFF;
-
-    &:hover, &:focus {
-      background: #66b1ff;
-      border-color: #66b1ff;
-    }
-  }
-
-  &.location-button {
-    position: absolute;
-    top: 16px;
-    right: 16px;
-    z-index: 1000;
-    border-radius: 20px;
-    padding: 8px 16px;
   }
 }
 
