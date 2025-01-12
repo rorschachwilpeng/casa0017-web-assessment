@@ -2,11 +2,11 @@
   <div class="about-page bg-black">
     <TheNavbar />
     
-    <!-- 主要内容容器 -->
+    <!-- Main content container -->
     <div class="main-container mx-auto px-[100px]">
-      <!-- 视频部分 -->
+      <!-- Video section -->
       <section class="video-section py-20">
-        <h2 class="text-3xl font-bold text-white mb-12 text-center">观看我们的视频</h2>
+        <h2 class="text-3xl font-bold text-white mb-12 text-center">Watch Our Video</h2>
         <div class="aspect-w-16 aspect-h-9">
           <iframe 
             src="https://www.youtube.com/embed/DSnffi7dldU" 
@@ -18,7 +18,7 @@
         </div>
       </section>
 
-      <!-- 预订横幅 -->
+      <!-- Booking banner section -->
       <section class="booking-banner-section py-20">
         <BookingBanner />
       </section>
@@ -42,25 +42,27 @@ export default {
   },
   data() {
     return {
-      // 删除 teamMembers 数组
+      // Component data will be added here
     }
   }
 }
 </script>
 
 <style scoped>
+/* Main page styles */
 .about-page {
   min-height: 100vh;
   background-color: #000;
   color: #fff;
 }
 
+/* Container layout */
 .main-container {
   padding: 80px 80px;
   margin: 0 auto;
 }
 
-/* 视频容器样式 */
+/* Video container styles */
 .video-section {
   position: relative;
   background: rgba(255, 255, 255, 0.05);
@@ -69,11 +71,13 @@ export default {
   backdrop-filter: blur(10px);
 }
 
+/* 16:9 aspect ratio container */
 .aspect-w-16 {
   position: relative;
-  padding-bottom: 56.25%; /* 16:9 比例 */
+  padding-bottom: 56.25%; /* 16:9 aspect ratio */
 }
 
+/* Video iframe styles */
 .aspect-w-16 iframe {
   position: absolute;
   top: 0;

@@ -1,7 +1,7 @@
 import request from '@/utils/request'
 
 export const moviesAPI = {
-  // 获取电影列表
+  // Get movie list
   getMovieList: () => {
     return request({
       url: '/api/movies',
@@ -9,7 +9,7 @@ export const moviesAPI = {
     })
   },
 
-  // 获取单个电影详情
+  // Get single movie details
   getMovieDetails: (movieId) => {
     return request({
       url: `/api/movies/${movieId}`,
@@ -17,7 +17,7 @@ export const moviesAPI = {
     })
   },
 
-  // 添加新电影
+  // Add new movie
   addMovie: (movieData) => {
     return request({
       url: '/api/movies',
@@ -26,7 +26,7 @@ export const moviesAPI = {
     })
   },
 
-  // 更新电影信息
+  // Update movie information
   updateMovie: (movieId, movieData) => {
     return request({
       url: `/api/movies/${movieId}`,
@@ -35,7 +35,7 @@ export const moviesAPI = {
     })
   },
 
-  // 删除电影
+  // Delete movie
   deleteMovie: (movieId) => {
     return request({
       url: `/api/movies/${movieId}`,

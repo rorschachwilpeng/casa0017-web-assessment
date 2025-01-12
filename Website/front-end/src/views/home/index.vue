@@ -1,12 +1,14 @@
 <template>
   <div class="home">
+    <!-- Navigation bar -->
     <TheNavbar />
-    <!-- 新增英雄区域（Hero Section）-->
+
+    <!-- Hero section -->
     <section class="hero-section">
-      <!-- 底层电影海报墙 -->
+      <!-- Movie poster wall background -->
       <div class="movie-wall">
         <div class="movie-track">
-          <!-- 第一组海报网格 -->
+          <!-- First grid of posters -->
           <div class="movie-grid">
             <div v-for="row in 4" :key="`row1-${row}`" class="poster-row">
               <img v-for="col in 6"
@@ -15,7 +17,7 @@
                    :alt="`Movie ${((row-1)*6 + col) % 20}`" />
             </div>
           </div>
-          <!-- 第二组海报网格 -->
+          <!-- Second grid of posters -->
           <div class="movie-grid">
             <div v-for="row in 4" :key="`row2-${row}`" class="poster-row">
               <img v-for="col in 6"
@@ -24,7 +26,7 @@
                    :alt="`Movie ${((row-1)*6 + col) % 20}`" />
             </div>
           </div>
-          <!-- 添加第三组海报网格作为缓冲 -->
+          <!-- Third grid of posters (for infinite scroll) -->
           <div class="movie-grid">
             <div v-for="row in 4" :key="`row3-${row}`" class="poster-row">
               <img v-for="col in 6"
