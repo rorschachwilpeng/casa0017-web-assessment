@@ -2,7 +2,7 @@
   <div class="home">
     <!-- 导航栏 -->
     <TheNavbar />
-    
+
     <div class="content-section">
       <!-- 原有的内容 -->
       <div class="app-container">
@@ -11,10 +11,10 @@
           <!-- 添加电影选择器 -->
           <div class="movie-selector">
             <span class="label">Select Movie:</span>
-            <el-select 
+            <el-select
               style="width: 300px"
-              v-model="selectedMovieId" 
-              placeholder="Please select a movie" 
+              v-model="selectedMovieId"
+              placeholder="Please select a movie"
               @change="handleMovieChange"
             >
               <el-option
@@ -34,7 +34,7 @@
           <div v-if="movieTitle" class="movie-title">
             {{ movieTitle }}
           </div>
-          
+
           <!-- 时间和筛选选项 -->
           <div class="filter-section">
             <div class="time-filter">
@@ -45,7 +45,7 @@
                 <el-button size="small" icon="el-icon-date">select</el-button>
               </el-radio-group>
             </div>
-            
+
             <div class="other-filters">
               <span class="label">Filter:</span>
               <el-radio-group v-model="selectedFilter" size="small">
@@ -61,10 +61,10 @@
         <div class="main-content">
           <!-- 左侧影院列表 -->
           <div class="cinemas-list">
-            <div 
-              v-for="cinema in sortedCinemas" 
-              :key="cinema.cinema_id" 
-              class="cinema-item" 
+            <div
+              v-for="cinema in sortedCinemas"
+              :key="cinema.cinema_id"
+              class="cinema-item"
               :data-cinema-id="cinema.cinema_id"
               @click="selectCinema(cinema)"
             >
@@ -93,13 +93,13 @@
           <!-- 右侧地图区域 -->
           <div class="map-container">
             <div id="map"></div>
-            
+
             <!-- 修改后的路线信息控件 -->
             <div v-if="routeInfo" class="route-info-control">
               <h4>Route Information</h4>
               <div class="route-modes">
-                <div 
-                  v-for="(data, mode) in routeInfo" 
+                <div
+                  v-for="(data, mode) in routeInfo"
                   :key="mode"
                   class="route-mode-item"
                   :class="{ active: selectedTransportMode === mode }"
@@ -122,7 +122,7 @@
                 </div>
               </div>
             </div>
-            
+
             <div class="map-legend">
               <h4>Safety Score</h4>
               <div class="legend-items">
@@ -140,10 +140,10 @@
                 </div>
               </div>
             </div>
-            <el-button 
-              class="location-button" 
-              type="primary" 
-              icon="el-icon-location" 
+            <el-button
+              class="location-button"
+              type="primary"
+              icon="el-icon-location"
               @click="getCurrentLocation"
             >
               Get My Location
@@ -154,10 +154,14 @@
         <!-- 选中的影院详情 -->
         <div v-if="selectedCinema" class="cinema-details">
           <h2>{{ selectedCinema.name }}</h2>
-          
+
           <!-- 影院图片 -->
           <div class="cinema-images">
-            <img :src="selectedCinema.image" :alt="selectedCinema.name">
+            <img
+              :src="selectedCinema.image_url ? `http://localhost:3007${selectedCinema.image_url}` : ''"
+              :alt="selectedCinema.name"
+              class="cinema-image"
+            >
           </div>
 
           <!-- 影院信息 -->
@@ -182,7 +186,7 @@
                 </ul>
               </div>
             </div>
-            
+
             <div class="info-item">
               <label>Comments:</label>
               <div class="comments">
@@ -191,22 +195,22 @@
                 </p>
               </div>
             </div>
-            
+
             <div class="info-item">
               <label>Location:</label>
               <p>{{ selectedCinema.location }}</p>
             </div>
-            
+
             <div class="info-item">
               <label>Phone:</label>
               <p>{{ selectedCinema.phone }}</p>
             </div>
-            
+
             <div class="info-item">
               <label>Email:</label>
               <p>{{ selectedCinema.email }}</p>
             </div>
-            
+
             <div class="info-item">
               <label>Website:</label>
               <p>{{ selectedCinema.website }}</p>
@@ -303,7 +307,7 @@ export default {
     initMap() {
       // 初始化地图，以伦敦为中心
       this.map = L.map('map').setView([51.5074, -0.1278], 13)
-      
+
       // 添加地图图层
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap contributors'
@@ -372,7 +376,7 @@ export default {
             className: 'custom-popup-container'
           })
           .addTo(this.map)
-        
+
         // 如果有安全分数，添加圆形区域表示安全等级
         if (cinema.safety_score !== undefined) {
           const circle = L.circle([cinema.latitude, cinema.longitude], {
@@ -381,7 +385,7 @@ export default {
             fillOpacity: 0.1,
             radius: 500 // 500米半径
           }).addTo(this.map)
-          
+
           this.cinemaMarkers.push(circle)
         }
 
@@ -470,11 +474,11 @@ export default {
           method: 'get'
         })
         console.log('电影列表响应:', response);
-        
+
         if (response && response.data) {
           this.moviesList = response.data
           console.log('获取到的电影列表:', this.moviesList);
-          
+
           // 如果有电影数据，默认选择第一个
           if (this.moviesList.length > 0) {
             this.selectedMovieId = this.moviesList[0].id
@@ -493,13 +497,13 @@ export default {
     // 处理电影选择变化
     async handleMovieChange(movieId) {
       if (!movieId) return
-      
+
       console.log('=== 电影选择变化 ===');
       console.log('选中的电影ID:', movieId);
-      
+
       this.movieTitle = this.moviesList.find(m => m.id === movieId)?.name || ''
       console.log('电影标题:', this.movieTitle);
-      
+
       await this.fetchCinemas(movieId)
     },
 
@@ -507,7 +511,7 @@ export default {
     async fetchCinemas(movieId) {
       console.log('=== 开始获取影院信息 ===');
       console.log('请求的电影ID:', movieId);
-      
+
       this.loading = true
       try {
         const response = await request({
@@ -515,7 +519,7 @@ export default {
           method: 'get'
         })
         console.log('影院数据响应:', response);
-        
+
         if (response && response.data) {
           this.cinemas = response.data.map(cinema => ({
             ...cinema,
@@ -523,20 +527,20 @@ export default {
             screenings: cinema.screening_times ? cinema.screening_times.split(',') : []
           }))
           console.log('处理后的影院数据:', this.cinemas);
-          
+
           // 确保地图已初始化
           if (!this.map) {
             this.initMap()
           }
-          
+
           // 添加或更新影院标记
           this.addCinemaMarkers()
-          
+
           // 如果有用户位置，更新距离
           if (this.userLocation) {
             this.updateCinemaDistances()
           }
-          
+
           // 调整地图视图以显示所有影院
           if (this.cinemas.length > 0) {
             const bounds = L.latLngBounds(this.cinemas.map(cinema => [cinema.latitude, cinema.longitude]))
@@ -555,9 +559,9 @@ export default {
       const R = 6371 // 地球半径，单位公里
       const dLat = this.deg2rad(lat2 - lat1)
       const dLon = this.deg2rad(lon2 - lon1)
-      const a = 
+      const a =
         Math.sin(dLat/2) * Math.sin(dLat/2) +
-        Math.cos(this.deg2rad(lat1)) * Math.cos(this.deg2rad(lat2)) * 
+        Math.cos(this.deg2rad(lat1)) * Math.cos(this.deg2rad(lat2)) *
         Math.sin(dLon/2) * Math.sin(dLon/2)
       const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))
       const distance = R * c // 距离，单位公里
@@ -580,7 +584,7 @@ export default {
         this.$message.warning('Please get your location first');
         return;
       }
-      
+
       try {
         // 准备请求数据
         const requestData = {
@@ -627,16 +631,16 @@ export default {
         console.error('\n[Route Frontend] ====== Route Calculation Failed ======');
         console.error('[Route Frontend] Error type:', error.name);
         console.error('[Route Frontend] Error message:', error.message);
-        
+
         if (error.response) {
           console.error('[Route Frontend] Response status:', error.response.status);
           console.error('[Route Frontend] Response data:', error.response.data);
         } else if (error.request) {
           console.error('[Route Frontend] No response received');
         }
-        
+
         this.$message.error(
-          error.response?.data?.message || 
+          error.response?.data?.message ||
           'Failed to calculate route. Please try again.'
         );
       }
@@ -645,7 +649,7 @@ export default {
     // 在地图上绘制路线
     drawRouteOnMap(routeInfo) {
       console.log('[Route] Starting to draw route with data:', JSON.stringify(routeInfo, null, 2));
-      
+
       // 清除现有路线
       if (this.routePolylines) {
         this.routePolylines.forEach(line => {
@@ -684,14 +688,14 @@ export default {
       }
 
       // 验证坐标格式
-      const isValidCoordinate = coord => 
-        Array.isArray(coord) && 
-        coord.length === 2 && 
-        typeof coord[0] === 'number' && 
+      const isValidCoordinate = coord =>
+        Array.isArray(coord) &&
+        coord.length === 2 &&
+        typeof coord[0] === 'number' &&
         typeof coord[1] === 'number';
 
       if (!route.path.every(isValidCoordinate)) {
-        console.error('[Route] Invalid coordinates in path:', 
+        console.error('[Route] Invalid coordinates in path:',
           route.path.find(coord => !isValidCoordinate(coord))
         );
         return;
@@ -805,7 +809,7 @@ export default {
 
 .content-section {
   padding: 0px 0px;
-  
+
   /* 添加这个容器样式来保持一致的内容宽度 */
   .container {
     padding: 0 124px;  // 使用与 app-container 相同的左右内边距
@@ -866,25 +870,25 @@ export default {
   height: 600px;
   overflow-y: auto;
   padding-right: 10px;
-  
+
   &::-webkit-scrollbar {
     width: 6px;
   }
-  
+
   &::-webkit-scrollbar-track {
     background: rgba(255, 255, 255, 0.1);
     border-radius: 3px;
   }
-  
+
   &::-webkit-scrollbar-thumb {
     background: rgba(255, 255, 255, 0.2);
     border-radius: 3px;
-    
+
     &:hover {
       background: rgba(255, 255, 255, 0.3);
     }
   }
-  
+
   .cinema-item {
     background: rgba(26, 26, 26, 0.8);
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -912,14 +916,14 @@ export default {
       display: flex;
       justify-content: space-between;
       margin-bottom: 12px;
-      
+
       span {
         display: flex;
         align-items: center;
         gap: 6px;
         color: #999;
         font-size: 14px;
-        
+
         i {
           color: #409EFF;
         }
@@ -931,29 +935,29 @@ export default {
       padding: 8px;
       border-radius: 8px;
       background: rgba(0, 0, 0, 0.2);
-      
+
       .safety-score {
         font-weight: 500;
         color: #ffffff;
       }
-      
+
       .safety-level {
         display: inline-block;
         padding: 4px 8px;
         border-radius: 4px;
         margin-left: 8px;
         font-size: 12px;
-        
+
         &.high {
           background: rgba(76, 175, 80, 0.2);
           color: #81c784;
         }
-        
+
         &.medium {
           background: rgba(255, 193, 7, 0.2);
           color: #ffd54f;
         }
-        
+
         &.low {
           background: rgba(244, 67, 54, 0.2);
           color: #e57373;
@@ -967,14 +971,14 @@ export default {
         flex-wrap: wrap;
         gap: 8px;
         margin-top: 8px;
-        
+
         span {
           padding: 4px 8px;
           background: rgba(64, 158, 255, 0.1);
           border-radius: 4px;
           color: #409EFF;
           font-size: 12px;
-          
+
           &:hover {
             background: rgba(64, 158, 255, 0.2);
           }
@@ -1154,7 +1158,7 @@ export default {
         p {
           margin-bottom: 8px;
           line-height: 1.5;
-          
+
           &:last-child {
             margin-bottom: 0;
           }
@@ -1206,14 +1210,28 @@ export default {
   }
 
   .cinema-images {
-    margin-bottom: 20px;
-    
+    width: 225px;
+    height: 225px;
+    margin: 0 auto 20px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+    background-color: #1a1a1a;
+
     img {
       width: 100%;
-      height: auto;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      height: 100%;
+      object-fit: cover;
+      display: block;
     }
+  }
+
+  .cinema-image {
+    transition: opacity 0.3s ease;
+  }
+
+  .cinema-images {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   }
 
   .route-buttons {
@@ -1225,11 +1243,11 @@ export default {
       flex: 1;
       height: 40px;
       font-size: 16px;
-      
+
       &.el-button--primary {
         background: #409EFF;
         border-color: #409EFF;
-        
+
         &:hover {
           background: #66b1ff;
           border-color: #66b1ff;
@@ -1253,17 +1271,17 @@ export default {
     padding: 2px 8px;
     border-radius: 4px;
     font-size: 12px;
-    
+
     &.high-safety {
       background-color: #E8F5E9;
       color: #4CAF50;
     }
-    
+
     &.medium-safety {
       background-color: #FFF3E0;
       color: #FF9800;
     }
-    
+
     &.exercise-caution {
       background-color: #FFEBEE;
       color: #F44336;
@@ -1637,24 +1655,24 @@ export default {
     color: #ffffff;
     border-radius: 4px;
     height: 40px;
-    
+
     &:hover, &:focus {
       border-color: #409EFF;
     }
   }
-  
+
   .el-select-dropdown {
     background: rgba(26, 26, 26, 0.95);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 4px;
-    
+
     .el-select-dropdown__item {
       color: #ffffff;
-      
+
       &:hover, &.selected {
         background: rgba(64, 158, 255, 0.2);
       }
-      
+
       &.selected {
         color: #409EFF;
       }
@@ -1670,12 +1688,12 @@ export default {
     height: 32px;
     line-height: 32px;
     padding: 0 15px;
-    
+
     &:hover {
       color: #409EFF;
     }
   }
-  
+
   .el-radio-button__orig-radio:checked + .el-radio-button__inner {
     background-color: #409EFF;
     border-color: #409EFF;
@@ -1691,18 +1709,18 @@ export default {
     color: #ffffff;
     height: 32px;
     padding: 0 15px;
-    
+
     &:hover, &:focus {
       background: rgba(64, 158, 255, 0.1);
       border-color: #409EFF;
       color: #409EFF;
     }
   }
-  
+
   &.el-button--primary {
     background: #409EFF;
     border-color: #409EFF;
-    
+
     &:hover, &:focus {
       background: #66b1ff;
       border-color: #66b1ff;
@@ -1723,7 +1741,7 @@ export default {
 .banner-section {
   position: relative;
   z-index: 1;
-  margin: 100px 0;  
+  margin: 100px 0;
   background: transparent;
 }
 
@@ -1731,4 +1749,5 @@ export default {
 .content-section {
   padding-bottom: 0px; // 为 banner 预留空间
 }
-</style> 
+</style>
+

@@ -106,7 +106,6 @@ export default {
   }
 }
 </script>
-
 <style lang="scss" scoped>
 .home {
   width: 100%;

@@ -40,7 +40,7 @@
       <div class="hero-content">
         <h1>The Best Cinema Experience for You</h1>
         <p>CINEKNIGHT is dedicated to providing you with an unparalleled cinema experience.</p>
-        <button class="cta-button">Find Cinema</button>
+        <button class="find-cinema-btn" @click="goToCinemaSelect">Find Cinema</button>
       </div>
     </section>
 
@@ -51,244 +51,119 @@
         <div class="section-header">
           <h2>Explore wide variety of categories</h2>
           <div class="header-controls">
-            <div class="controls-wrapper">
-              <div class="slider-controls">
-                <div class="dark-box" @click="prevPage" :class="{ disabled: currentPage === 0 }">
-                  <span class="nav-arrow">&#8592;</span>
-                </div>
-                <div class="page-indicator">
-                  <span class="indicator" :class="{ active: currentPage === 0 }"></span>
-                  <span class="indicator" :class="{ active: currentPage === 1 }"></span>
-                </div>
-                <div class="dark-box" @click="nextPage" :class="{ disabled: currentPage === 1 }">
-                  <span class="nav-arrow">&#8594;</span>
-                </div>
-              </div>
-            </div>
             <div class="view-all-wrapper">
-              <a href="#" class="view-all">View All</a>
+              <a @click="goToMovieList" class="view-all">View All</a>
             </div>
           </div>
         </div>
 
         <div class="categories-container">
-          <transition-group name="slide">
-            <!-- 第一页 -->
-            <div v-show="currentPage === 0" key="page1" class="categories-grid">
-              <!-- Action -->
-              <div class="category-card">
-                <div class="category-images">
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/action/action1.jpg" alt="Action">
-                  </div>
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/action/action2.jpg" alt="Action">
-                  </div>
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/action/action3.jpg" alt="Action">
-                  </div>
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/action/action4.jpg" alt="Action">
-                  </div>
+          <div class="categories-grid">
+            <!-- Drama -->
+            <div class="category-card">
+              <div class="category-images">
+                <div class="image-wrapper">
+                  <img src="@/assets/categories/drama/drama1.jpg" alt="Drama">
                 </div>
-                <div class="category-info">
-                  <h3 class="category-name">Action</h3>
+                <div class="image-wrapper">
+                  <img src="@/assets/categories/drama/drama2.jpg" alt="Drama">
+                </div>
+                <div class="image-wrapper">
+                  <img src="@/assets/categories/drama/drama3.jpg" alt="Drama">
+                </div>
+                <div class="image-wrapper">
+                  <img src="@/assets/categories/drama/drama4.jpg" alt="Drama">
                 </div>
               </div>
-
-              <!-- Adventure -->
-              <div class="category-card">
-                <div class="category-images">
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/adventure/adventure1.jpg" alt="Adventure">
-                  </div>
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/adventure/adventure2.jpg" alt="Adventure">
-                  </div>
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/adventure/adventure3.jpg" alt="Adventure">
-                  </div>
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/adventure/adventure4.jpg" alt="Adventure">
-                  </div>
-                </div>
-                <div class="category-info">
-                  <h3 class="category-name">Adventure</h3>
-                </div>
-              </div>
-
-              <!-- Comedy -->
-              <div class="category-card">
-                <div class="category-images">
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/comedy/comedy1.jpg" alt="Comedy">
-                  </div>
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/comedy/comedy2.jpg" alt="Comedy">
-                  </div>
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/comedy/comedy3.jpg" alt="Comedy">
-                  </div>
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/comedy/comedy4.jpg" alt="Comedy">
-                  </div>
-                </div>
-                <div class="category-info">
-                  <h3 class="category-name">Comedy</h3>
-                </div>
-              </div>
-
-              <!-- Drama -->
-              <div class="category-card">
-                <div class="category-images">
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/drama/drama1.jpg" alt="Drama">
-                  </div>
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/drama/drama2.jpg" alt="Drama">
-                  </div>
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/drama/drama3.jpg" alt="Drama">
-                  </div>
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/drama/drama4.jpg" alt="Drama">
-                  </div>
-                </div>
-                <div class="category-info">
-                  <h3 class="category-name">Drama</h3>
-                </div>
-              </div>
-
-              <!-- Horror -->
-              <div class="category-card">
-                <div class="category-images">
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/horror/horror1.jpg" alt="Horror">
-                  </div>
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/horror/horror2.jpg" alt="Horror">
-                  </div>
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/horror/horror3.jpg" alt="Horror">
-                  </div>
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/horror/horror4.jpg" alt="Horror">
-                  </div>
-                </div>
-                <div class="category-info">
-                  <h3 class="category-name">Horror</h3>
-                </div>
+              <div class="category-info">
+                <h3 class="category-name">Drama</h3>
               </div>
             </div>
 
-            <!-- 第二页 -->
-            <div v-show="currentPage === 1" key="page2" class="categories-grid">
-              <!-- Animation -->
-              <div class="category-card">
-                <div class="category-images">
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/animation/animation1.jpg" alt="Animation">
-                  </div>
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/animation/animation2.jpg" alt="Animation">
-                  </div>
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/animation/animation3.jpg" alt="Animation">
-                  </div>
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/animation/animation4.jpg" alt="Animation">
-                  </div>
+            <!-- Comedy -->
+            <div class="category-card">
+              <div class="category-images">
+                <div class="image-wrapper">
+                  <img src="@/assets/categories/comedy/comedy1.jpg" alt="Comedy">
                 </div>
-                <div class="category-info">
-                  <h3 class="category-name">Animation</h3>
+                <div class="image-wrapper">
+                  <img src="@/assets/categories/comedy/comedy2.jpg" alt="Comedy">
+                </div>
+                <div class="image-wrapper">
+                  <img src="@/assets/categories/comedy/comedy3.jpg" alt="Comedy">
+                </div>
+                <div class="image-wrapper">
+                  <img src="@/assets/categories/comedy/comedy4.jpg" alt="Comedy">
                 </div>
               </div>
-
-              <!-- Fantasy -->
-              <div class="category-card">
-                <div class="category-images">
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/fantasy/fantasy1.jpg" alt="Fantasy">
-                  </div>
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/fantasy/fantasy2.jpg" alt="Fantasy">
-                  </div>
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/fantasy/fantasy3.jpg" alt="Fantasy">
-                  </div>
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/fantasy/fantasy4.jpg" alt="Fantasy">
-                  </div>
-                </div>
-                <div class="category-info">
-                  <h3 class="category-name">Fantasy</h3>
-                </div>
-              </div>
-
-              <!-- Romance -->
-              <div class="category-card">
-                <div class="category-images">
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/romance/romance1.jpg" alt="Romance">
-                  </div>
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/romance/romance2.jpg" alt="Romance">
-                  </div>
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/romance/romance3.jpg" alt="Romance">
-                  </div>
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/romance/romance4.jpg" alt="Romance">
-                  </div>
-                </div>
-                <div class="category-info">
-                  <h3 class="category-name">Romance</h3>
-                </div>
-              </div>
-
-              <!-- Sci-Fi -->
-              <div class="category-card">
-                <div class="category-images">
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/scifi/scifi1.jpg" alt="Sci-Fi">
-                  </div>
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/scifi/scifi2.jpg" alt="Sci-Fi">
-                  </div>
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/scifi/scifi3.jpg" alt="Sci-Fi">
-                  </div>
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/scifi/scifi4.jpg" alt="Sci-Fi">
-                  </div>
-                </div>
-                <div class="category-info">
-                  <h3 class="category-name">Sci-Fi</h3>
-                </div>
-              </div>
-
-              <!-- Thriller -->
-              <div class="category-card">
-                <div class="category-images">
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/thriller/thriller1.jpg" alt="Thriller">
-                  </div>
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/thriller/thriller2.jpg" alt="Thriller">
-                  </div>
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/thriller/thriller3.jpg" alt="Thriller">
-                  </div>
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/thriller/thriller4.jpg" alt="Thriller">
-                  </div>
-                </div>
-                <div class="category-info">
-                  <h3 class="category-name">Thriller</h3>
-                </div>
+              <div class="category-info">
+                <h3 class="category-name">Comedy</h3>
               </div>
             </div>
-          </transition-group>
+
+            <!-- Action -->
+            <div class="category-card">
+              <div class="category-images">
+                <div class="image-wrapper">
+                  <img src="@/assets/categories/action/action1.jpg" alt="Action">
+                </div>
+                <div class="image-wrapper">
+                  <img src="@/assets/categories/action/action2.jpg" alt="Action">
+                </div>
+                <div class="image-wrapper">
+                  <img src="@/assets/categories/action/action3.jpg" alt="Action">
+                </div>
+                <div class="image-wrapper">
+                  <img src="@/assets/categories/action/action4.jpg" alt="Action">
+                </div>
+              </div>
+              <div class="category-info">
+                <h3 class="category-name">Action</h3>
+              </div>
+            </div>
+
+            <!-- Horror -->
+            <div class="category-card">
+              <div class="category-images">
+                <div class="image-wrapper">
+                  <img src="@/assets/categories/horror/horror1.jpg" alt="Horror">
+                </div>
+                <div class="image-wrapper">
+                  <img src="@/assets/categories/horror/horror2.jpg" alt="Horror">
+                </div>
+                <div class="image-wrapper">
+                  <img src="@/assets/categories/horror/horror3.jpg" alt="Horror">
+                </div>
+                <div class="image-wrapper">
+                  <img src="@/assets/categories/horror/horror4.jpg" alt="Horror">
+                </div>
+              </div>
+              <div class="category-info">
+                <h3 class="category-name">Horror</h3>
+              </div>
+            </div>
+
+            <!-- Romance -->
+            <div class="category-card">
+              <div class="category-images">
+                <div class="image-wrapper">
+                  <img src="@/assets/categories/romance/romance1.jpg" alt="Romance">
+                </div>
+                <div class="image-wrapper">
+                  <img src="@/assets/categories/romance/romance2.jpg" alt="Romance">
+                </div>
+                <div class="image-wrapper">
+                  <img src="@/assets/categories/romance/romance3.jpg" alt="Romance">
+                </div>
+                <div class="image-wrapper">
+                  <img src="@/assets/categories/romance/romance4.jpg" alt="Romance">
+                </div>
+              </div>
+              <div class="category-info">
+                <h3 class="category-name">Romance</h3>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -312,7 +187,7 @@
               </div>
             </div>
             <div class="view-all-wrapper">
-              <a href="#" class="view-all">View All</a>
+              <a @click="goToCinemaSelect" class="view-all">View All</a>
             </div>
           </div>
         </div>
@@ -511,21 +386,32 @@ export default {
   name: 'Home',
   data() {
     return {
-      currentPage: 0,
-      currentCinemaPage: 0
+      currentCinemaPage: 0,
+      categories: [
+        {
+          name: 'Action',
+          images: ['action1.jpg', 'action2.jpg', 'action3.jpg', 'action4.jpg']
+        },
+        {
+          name: 'Romance',
+          images: ['romance1.jpg', 'romance2.jpg', 'romance3.jpg', 'romance4.jpg']
+        },
+        {
+          name: 'Comedy',
+          images: ['comedy1.jpg', 'comedy2.jpg', 'comedy3.jpg', 'comedy4.jpg']
+        },
+        {
+          name: 'Drama',
+          images: ['drama1.jpg', 'drama2.jpg', 'drama3.jpg', 'drama4.jpg']
+        },
+        {
+          name: 'Horror',
+          images: ['horror1.jpg', 'horror2.jpg', 'horror3.jpg', 'horror4.jpg']
+        }
+      ]
     }
   },
   methods: {
-    prevPage() {
-      if (this.currentPage > 0) {
-        this.currentPage--
-      }
-    },
-    nextPage() {
-      if (this.currentPage < 1) {
-        this.currentPage++
-      }
-    },
     prevCinemaPage() {
       if (this.currentCinemaPage > 0) {
         this.currentCinemaPage--
@@ -536,11 +422,17 @@ export default {
         this.currentCinemaPage++
       }
     },
+    goToCinemaSelect() {
+      this.$router.push({ name: 'CinemaSelect' })
+    },
     goToMovieDetails(movieId) {
       this.$router.push({
         path: '/movie-details',
         query: { id: movieId }
       })
+    },
+    goToMovieList() {
+      this.$router.push({ name: 'MovieList' })
     }
   },
   components: {
@@ -911,30 +803,24 @@ main {
 }
 
 .view-all-wrapper {
-  background: #3c3c3c;
-  border-radius: 12px;
-  padding: 4px;
-  height: 54px;  /* 与箭头框保持相同高度 */
   display: flex;
   align-items: center;
 }
 
 .view-all {
-  display: flex;
-  align-items: center;
-  height: 46px;  /* 与内层框保持相同高度 */
-  padding: 0px 12px;
-  background: #2A2A2A;
-  border-radius: 8px;
   color: #FFFFFF;
   text-decoration: none;
   font-size: 14px;
-  transition: background-color 0.3s ease;
-  white-space: nowrap;  /* 防止文字换行 */
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
 }
 
 .view-all:hover {
-  background: #333333;
+  opacity: 0.8;
+  background: rgba(255, 255, 255, 0.2);
 }
 
 /* 分类网格样式优化 */
@@ -1433,5 +1319,26 @@ h2 {
   font-size: 14px;
   line-height: 1.5;
   margin-top: 8px;
+}
+
+.find-cinema-btn {
+  background-color: #FF0000;  /* 红色背景 */
+  color: #FFFFFF;  /* 白色文字 */
+  border: none;
+  padding: 12px 32px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 24px;
+}
+
+.find-cinema-btn:hover {
+  background-color: #E60000;  /* 鼠标悬停时稍深的红色 */
+}
+
+.find-cinema-btn:active {
+  transform: scale(0.98);  /* 点击时的按压效果 */
 }
 </style>

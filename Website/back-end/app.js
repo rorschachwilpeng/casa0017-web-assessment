@@ -22,15 +22,13 @@ app.use(express.urlencoded({ extended: false }));
 // 请求日志中间件
 app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
-  if (req.method !== 'GET') {
-    console.log('Request Body:', req.body);
-  }
   next();
 });
 
-// 提供静态文件访问
-app.use('/posters', express.static(path.join(__dirname, 'public/posters')));
-app.use('/actors', express.static(path.join(__dirname, 'public/actors')));
+// 配置静态文件服务
+const publicPath = path.join(__dirname, 'public');
+console.log('Static files path:', publicPath); // 调试用：打印静态文件路径
+app.use(express.static(publicPath));
 
 /**
  * 注册路由模块
@@ -71,5 +69,4 @@ app.listen(PORT, () => {
   console.log('/api/movies/:id - 获取电影详情');
   console.log('/api/movies/:id/reviews - 获取电影评论');
 });
-
 

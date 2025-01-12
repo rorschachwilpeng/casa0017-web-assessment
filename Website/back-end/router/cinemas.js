@@ -397,4 +397,33 @@ router.get('/cinemas/:id/safety', async (req, res) => {
   }
 });
 
+router.get('/cinemas', async (req, res) => {
+  try {
+    const [cinemas] = await db.query(`
+      SELECT 
+        cinema_id,
+        name,
+        description,
+        rating,
+        image_url
+      FROM cinemas
+      ORDER BY rating DESC
+      LIMIT 6
+    `)
+    
+    res.json({
+      status: 0,
+      message: 'Success',
+      data: cinemas
+    })
+  } catch (error) {
+    console.error('获取影院列表失败:', error)
+    res.status(500).json({
+      status: 1,
+      message: '获取影院列表失败',
+      error: error.message
+    })
+  }
+})
+
 module.exports = router; 
