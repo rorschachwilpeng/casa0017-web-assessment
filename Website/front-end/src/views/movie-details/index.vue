@@ -33,9 +33,11 @@
             <h2>Cast</h2>
             <div class="cast-list">
               <div v-for="(actor, index) in castArray" :key="index" class="cast-member">
-                <div class="cast-image-placeholder">
-                  <!-- 暂时使用占位符 -->
+                <div class="cast-image-placeholder" v-if="!actorImages[actor]">
                   <i class="el-icon-user"></i>
+                </div>
+                <div class="cast-image" v-else>
+                  <img :src="`http://localhost:3007${actorImages[actor]}`" :alt="actor">
                 </div>
                 <span class="actor-name">{{ actor }}</span>
               </div>
@@ -201,7 +203,8 @@ export default {
       movieReviews: [],
       currentPage: 0,
       reviewsPerPage: 2,
-      showPreviewModal: false
+      showPreviewModal: false,
+      actorImages: {}
     }
   },
   computed: {
@@ -248,6 +251,7 @@ export default {
 
         if (response.status === 0 && response.data) {
           this.movie = response.data
+          await this.fetchActorImages()
         }
       } catch (error) {
         console.error('Failed to fetch movie details:', error)
@@ -334,6 +338,29 @@ export default {
 
     playTrailer() {
       this.showPreviewModal = true;
+    },
+
+    async fetchActorImages() {
+      if (!this.castArray || this.castArray.length === 0) return;
+
+      try {
+        const response = await request({
+          url: '/api/actors',
+          method: 'get',
+          params: {
+            names: this.castArray.join(',')
+          }
+        });
+
+        if (response.status === 0 && response.data) {
+          this.actorImages = response.data.reduce((acc, actor) => {
+            acc[actor.cast_name] = actor.picture;
+            return acc;
+          }, {});
+        }
+      } catch (error) {
+        console.error('Failed to fetch actor images:', error);
+      }
     }
   }
 }
@@ -1100,6 +1127,21 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
+}
+
+.cast-image {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-bottom: 12px;
+  background-color: rgba(26, 26, 26, 0.6);
+}
+
+.cast-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 </style>
 

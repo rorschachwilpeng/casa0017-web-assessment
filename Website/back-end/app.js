@@ -8,7 +8,7 @@ const path = require("path");
 const app = express();
 
 /**
- * 配置全局中间件
+ * 配置全局中间件\
  */
 // 允许跨域请求
 app.use(cors());
@@ -30,6 +30,7 @@ app.use((req, res, next) => {
 
 // 提供静态文件访问
 app.use('/posters', express.static(path.join(__dirname, 'public/posters')));
+app.use('/actors', express.static(path.join(__dirname, 'public/actors')));
 
 /**
  * 注册路由模块
@@ -40,6 +41,7 @@ const cinemasRouter = require('./router/cinemas');
 const crimesRouter = require('./router/crimes');
 const routesRouter = require('./router/routes');
 const seatsRouter = require('./router/seats');
+const actorsRouter = require('./router/actors');
 
 app.use("/api", userRouter);
 app.use('/api', moviesRouter);
@@ -47,6 +49,7 @@ app.use('/api', cinemasRouter);
 app.use('/api/crimes', crimesRouter);
 app.use('/api/routes', routesRouter);
 app.use('/api', seatsRouter);
+app.use('/api/actors', actorsRouter);
 
 // 错误处理中间件
 app.use((err, req, res, next) => {
