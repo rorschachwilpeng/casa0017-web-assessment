@@ -41,7 +41,6 @@ export default {
     return {
       categories: ['Drama', 'Comedy', 'Action', 'Horror', 'Romance'],
       selectedCategory: 'Drama',
-      // 模拟数据，之后会从后端获取
       moviesList: [
         {
           id: 1,
@@ -52,7 +51,6 @@ export default {
           poster: 'https://example.com/paddington.jpg',
           category: 'Comedy'
         },
-        // 重复几次相同数据以模拟多个电影
         {
           id: 2,
           name: 'Paddington in Peru',
@@ -76,7 +74,6 @@ export default {
   },
   methods: {
     handleCategoryChange(category) {
-      // 之后会根据分类筛选电影
       console.log('Category changed to:', category)
     }
   }

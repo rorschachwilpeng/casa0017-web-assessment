@@ -3,36 +3,35 @@ const cors = require("cors");
 const path = require("path");
 
 /**
- * 创建 Express 应用实例
+ * Create Express application instance
  */
 const app = express();
 
 /**
- * 配置全局中间件
+ * Configure global middleware
  */
-// 允许跨域请求
+// Enable CORS
 app.use(cors());
 
-// 解析 application/json 格式的请求体
+// Parse application/json request body
 app.use(express.json());
 
-// 解析 application/x-www-form-urlencoded 格式的请求体
+// Parse application/x-www-form-urlencoded request body
 app.use(express.urlencoded({ extended: false }));
 
-// 请求日志中间件
+// Request logging middleware
 app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
-  if (req.method !== 'GET') {
-    console.log('Request Body:', req.body);
-  }
   next();
 });
 
-// 提供静态文件访问
-app.use('/posters', express.static(path.join(__dirname, 'public/posters')));
+// Configure static file service
+const publicPath = path.join(__dirname, 'public');
+console.log('Static files path:', publicPath); // Debug: Print static files path
+app.use(express.static(publicPath));
 
 /**
- * 注册路由模块
+ * Register route modules
  */
 const userRouter = require("./router/user");
 const moviesRouter = require('./router/movies');
@@ -40,6 +39,7 @@ const cinemasRouter = require('./router/cinemas');
 const crimesRouter = require('./router/crimes');
 const routesRouter = require('./router/routes');
 const seatsRouter = require('./router/seats');
+const actorsRouter = require('./router/actors');
 
 app.use("/api", userRouter);
 app.use('/api', moviesRouter);
@@ -47,8 +47,9 @@ app.use('/api', cinemasRouter);
 app.use('/api/crimes', crimesRouter);
 app.use('/api/routes', routesRouter);
 app.use('/api', seatsRouter);
+app.use('/api/actors', actorsRouter);
 
-// 错误处理中间件
+// Error handling middleware
 app.use((err, req, res, next) => {
   console.error('Server Error:', err);
   res.status(500).json({
@@ -59,11 +60,13 @@ app.use((err, req, res, next) => {
 });
 
 /**
- * 启动服务器
+ * Start server
  */
 const PORT = 3007;
 app.listen(PORT, () => {
-    console.log(`API 服务器运行在 http://127.0.0.1:${PORT}`);
+  console.log(`Server running at http://localhost:${PORT}`);
+  console.log('Registered routes:');
+  console.log('/api/movies/:id - Get movie details');
+  console.log('/api/movies/:id/reviews - Get movie reviews');
 });
-
 

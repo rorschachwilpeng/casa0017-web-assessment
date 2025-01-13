@@ -3,7 +3,7 @@ const db = require('../db/index');
 const router = express.Router();
 
 /**
- * 获取电影列表
+ * Get movie list
  * @route GET /api/movies
  */
 router.get('/movies', async (req, res) => {
@@ -18,13 +18,13 @@ router.get('/movies', async (req, res) => {
 
   sql += ' ORDER BY created_at DESC';
 
-  // 添加调试日志
+  // Add debug logs
   console.log('Executing SQL:', sql, 'with params:', params);
 
   try {
     const [results] = await db.query(sql, params);
     
-    // 添加调试日志
+    // Add debug logs
     console.log('Query results:', results);
 
     res.json({
@@ -43,53 +43,42 @@ router.get('/movies', async (req, res) => {
 });
 
 /**
- * 获取单个电影详情
+ * Get single movie details
  * @route GET /api/movies/:id
  */
 router.get('/movies/:id', async (req, res) => {
+  const movieId = req.params.id;
+  console.log('Getting movie details, ID:', movieId);
+
   try {
     const sql = 'SELECT * FROM movies WHERE id = ?';
-    const [results] = await db.query(sql, [req.params.id]);
-
-    if (results.length === 0) {
-      return res.status(404).json({ 
+    const [results] = await db.query(sql, [movieId]);
+    
+    if (!results || results.length === 0) {
+      return res.status(404).json({
         status: 1,
         message: 'Movie not found'
       });
     }
 
-    // 构建响应数据
-    const movie = results[0];
-    const movieData = {
-      id: movie.id,
-      name: movie.name,
-      category: movie.category,
-      director: movie.director,
-      cast: movie.cast ? movie.cast.split(',').map(actor => actor.trim()) : [], // 将演员字符串拆分为数组
-      description: movie.description,
-      plot_summary: movie.plot_summary,
-      rating: movie.rating,
-      length: movie.length,
-      poster_url: movie.poster_url
-    };
-
     res.json({
       status: 0,
       message: 'Success',
-      data: movieData
+      data: results[0]
     });
+
   } catch (err) {
-    console.error('Database error:', err);
-    return res.status(500).json({ 
+    console.error('Failed to get movie details:', err);
+    res.status(500).json({
       status: 1,
-      message: 'Database error',
-      error: err.message 
+      message: 'Failed to get movie details',
+      error: err.message
     });
   }
 });
 
 /**
- * 添加新电影
+ * Add new movie
  * @route POST /api/movies
  */
 router.post('/movies', async (req, res) => {
@@ -140,7 +129,7 @@ router.post('/movies', async (req, res) => {
 });
 
 /**
- * 更新电影信息
+ * Update movie information
  * @route PUT /api/movies/:id
  */
 router.put('/movies/:id', async (req, res) => {
@@ -199,7 +188,7 @@ router.put('/movies/:id', async (req, res) => {
 });
 
 /**
- * 删除电影
+ * Delete movie
  * @route DELETE /api/movies/:id
  */
 router.delete('/movies/:id', async (req, res) => {
@@ -225,4 +214,45 @@ router.delete('/movies/:id', async (req, res) => {
   }
 });
 
-module.exports = router; 
+/**
+ * Get movie reviews
+ * @route GET /api/movies/:id/reviews
+ */
+router.get('/movies/:id/reviews', async (req, res) => {
+  const movieId = req.params.id;
+  console.log('Getting movie reviews, ID:', movieId);
+
+  try {
+    const sql = `
+      SELECT DISTINCT
+        review_id,
+        movie_id,
+        reviewer_name,
+        rating,
+        comment,
+        review_date
+      FROM movie_reviews 
+      WHERE movie_id = ?
+      ORDER BY review_date DESC
+    `;
+    
+    const [results] = await db.query(sql, [movieId]);
+    console.log('Query results:', results);
+
+    res.json({
+      status: 0,
+      message: results.length ? 'Success' : 'No reviews found',
+      data: results
+    });
+
+  } catch (err) {
+    console.error('Failed to get movie reviews:', err);
+    res.status(500).json({
+      status: 1,
+      message: 'Failed to get movie reviews',
+      error: err.message
+    });
+  }
+});
+
+module.exports = router;

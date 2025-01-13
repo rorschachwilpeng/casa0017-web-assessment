@@ -1,15 +1,17 @@
 <template>
   <section class="booking-section">
-    <div class="booking-banner">
-      <div class="banner-bg">
-        <img src="@/assets/back.png" alt="Movies Collage" />
-      </div>
-      <div class="booking-content">
-        <div class="booking-text">
-          <h2>Book your tickets now!</h2>
-          <p>This is a clear and concise call to action that encourages users to sign up for a free trial of StreamVibe.</p>
+    <div class="content-wrapper">
+      <div class="booking-banner">
+        <div class="banner-bg">
+          <img src="@/assets/back.png" alt="Movies Collage" />
         </div>
-        <button class="book-ticket-btn">Book a Ticket</button>
+        <div class="booking-content">
+          <div class="booking-text">
+            <h2>Book your tickets now!</h2>
+            <p>This is a clear and concise call to action that encourages users to sign up for a free trial of StreamVibe.</p>
+          </div>
+          <router-link to="/seats/index" class="book-ticket-btn">Book a Ticket</router-link>
+        </div>
       </div>
     </div>
   </section>
@@ -26,6 +28,11 @@ export default {
   padding: 0;
   margin-top: 60px;
   width: 100%;
+}
+
+.content-wrapper {
+  max-width: 100%;
+  margin: 0 auto;
 }
 
 .booking-banner {
@@ -93,6 +100,8 @@ export default {
   font-weight: 500;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
 }
 
 .book-ticket-btn:hover {

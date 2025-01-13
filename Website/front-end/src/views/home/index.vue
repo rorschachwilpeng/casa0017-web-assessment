@@ -1,298 +1,175 @@
 <template>
   <div class="home">
+    <!-- Navigation bar -->
     <TheNavbar />
-    <!-- 新增英雄区域（Hero Section）-->
+
+    <!-- Hero section -->
     <section class="hero-section">
-      <!-- 底层电影海报墙 -->
+      <!-- Movie poster wall background -->
       <div class="movie-wall">
         <div class="movie-track">
-          <!-- 第一组海报网格 -->
+          <!-- First grid of posters -->
           <div class="movie-grid">
             <div v-for="row in 4" :key="`row1-${row}`" class="poster-row">
-              <img v-for="col in 6" 
-                   :key="`first-${row}-${col}`" 
-                   :src="`/images/posters/movie${((row-1)*6 + col) % 20}.jpg`" 
+              <img v-for="col in 6"
+                   :key="`first-${row}-${col}`"
+                   :src="`/images/posters/movie${((row-1)*6 + col) % 20}.jpg`"
                    :alt="`Movie ${((row-1)*6 + col) % 20}`" />
             </div>
           </div>
-          <!-- 第二组海报网格 -->
+          <!-- Second grid of posters -->
           <div class="movie-grid">
             <div v-for="row in 4" :key="`row2-${row}`" class="poster-row">
-              <img v-for="col in 6" 
-                   :key="`second-${row}-${col}`" 
-                   :src="`/images/posters/movie${((row-1)*6 + col) % 20}.jpg`" 
+              <img v-for="col in 6"
+                   :key="`second-${row}-${col}`"
+                   :src="`/images/posters/movie${((row-1)*6 + col) % 20}.jpg`"
                    :alt="`Movie ${((row-1)*6 + col) % 20}`" />
             </div>
           </div>
-          <!-- 添加第三组海报网格作为缓冲 -->
+          <!-- Third grid of posters (for infinite scroll) -->
           <div class="movie-grid">
             <div v-for="row in 4" :key="`row3-${row}`" class="poster-row">
-              <img v-for="col in 6" 
-                   :key="`third-${row}-${col}`" 
-                   :src="`/images/posters/movie${((row-1)*6 + col) % 20}.jpg`" 
+              <img v-for="col in 6"
+                   :key="`third-${row}-${col}`"
+                   :src="`/images/posters/movie${((row-1)*6 + col) % 20}.jpg`"
                    :alt="`Movie ${((row-1)*6 + col) % 20}`" />
             </div>
           </div>
         </div>
       </div>
-      
-      <!-- 上层文字内容 -->
+
+      <!-- Upper layer text content -->
       <div class="hero-content">
         <h1>The Best Cinema Experience for You</h1>
         <p>CINEKNIGHT is dedicated to providing you with an unparalleled cinema experience.</p>
-        <button class="cta-button">Find Cinema</button>
+        <button class="find-cinema-btn" @click="goToCinemaSelect">Find Cinema</button>
       </div>
     </section>
 
-    <!-- 新增内容板块 -->
+    <!-- New content section -->
     <section class="content-section">
-      <!-- 电影分类模块 -->
+      <!-- Movie category module -->
       <div class="module-section category-module">
         <div class="section-header">
           <h2>Explore wide variety of categories</h2>
           <div class="header-controls">
-            <div class="controls-wrapper">
-              <div class="slider-controls">
-                <div class="dark-box" @click="prevPage" :class="{ disabled: currentPage === 0 }">
-                  <span class="nav-arrow">&#8592;</span>
-                </div>
-                <div class="page-indicator">
-                  <span class="indicator" :class="{ active: currentPage === 0 }"></span>
-                  <span class="indicator" :class="{ active: currentPage === 1 }"></span>
-                </div>
-                <div class="dark-box" @click="nextPage" :class="{ disabled: currentPage === 1 }">
-                  <span class="nav-arrow">&#8594;</span>
-                </div>
-              </div>
-            </div>
             <div class="view-all-wrapper">
-              <a href="#" class="view-all">View All</a>
+              <a @click="goToMovieList" class="view-all">View All</a>
             </div>
           </div>
         </div>
 
         <div class="categories-container">
-          <transition-group name="slide">
-            <!-- 第一页 -->
-            <div v-show="currentPage === 0" key="page1" class="categories-grid">
-              <!-- Action -->
-              <div class="category-card">
-                <div class="category-images">
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/action/action1.jpg" alt="Action">
-                  </div>
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/action/action2.jpg" alt="Action">
-                  </div>
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/action/action3.jpg" alt="Action">
-                  </div>
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/action/action4.jpg" alt="Action">
-                  </div>
+          <div class="categories-grid">
+            <!-- Drama -->
+            <div class="category-card">
+              <div class="category-images">
+                <div class="image-wrapper">
+                  <img src="@/assets/categories/drama/drama1.jpg" alt="Drama">
                 </div>
-                <div class="category-info">
-                  <h3 class="category-name">Action</h3>
+                <div class="image-wrapper">
+                  <img src="@/assets/categories/drama/drama2.jpg" alt="Drama">
+                </div>
+                <div class="image-wrapper">
+                  <img src="@/assets/categories/drama/drama3.jpg" alt="Drama">
+                </div>
+                <div class="image-wrapper">
+                  <img src="@/assets/categories/drama/drama4.jpg" alt="Drama">
                 </div>
               </div>
-
-              <!-- Adventure -->
-              <div class="category-card">
-                <div class="category-images">
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/adventure/adventure1.jpg" alt="Adventure">
-                  </div>
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/adventure/adventure2.jpg" alt="Adventure">
-                  </div>
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/adventure/adventure3.jpg" alt="Adventure">
-                  </div>
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/adventure/adventure4.jpg" alt="Adventure">
-                  </div>
-                </div>
-                <div class="category-info">
-                  <h3 class="category-name">Adventure</h3>
-                </div>
-              </div>
-
-              <!-- Comedy -->
-              <div class="category-card">
-                <div class="category-images">
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/comedy/comedy1.jpg" alt="Comedy">
-                  </div>
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/comedy/comedy2.jpg" alt="Comedy">
-                  </div>
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/comedy/comedy3.jpg" alt="Comedy">
-                  </div>
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/comedy/comedy4.jpg" alt="Comedy">
-                  </div>
-                </div>
-                <div class="category-info">
-                  <h3 class="category-name">Comedy</h3>
-                </div>
-              </div>
-
-              <!-- Drama -->
-              <div class="category-card">
-                <div class="category-images">
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/drama/drama1.jpg" alt="Drama">
-                  </div>
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/drama/drama2.jpg" alt="Drama">
-                  </div>
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/drama/drama3.jpg" alt="Drama">
-                  </div>
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/drama/drama4.jpg" alt="Drama">
-                  </div>
-                </div>
-                <div class="category-info">
-                  <h3 class="category-name">Drama</h3>
-                </div>
-              </div>
-
-              <!-- Horror -->
-              <div class="category-card">
-                <div class="category-images">
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/horror/horror1.jpg" alt="Horror">
-                  </div>
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/horror/horror2.jpg" alt="Horror">
-                  </div>
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/horror/horror3.jpg" alt="Horror">
-                  </div>
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/horror/horror4.jpg" alt="Horror">
-                  </div>
-                </div>
-                <div class="category-info">
-                  <h3 class="category-name">Horror</h3>
-                </div>
+              <div class="category-info">
+                <h3 class="category-name">Drama</h3>
               </div>
             </div>
 
-            <!-- 第二页 -->
-            <div v-show="currentPage === 1" key="page2" class="categories-grid">
-              <!-- Animation -->
-              <div class="category-card">
-                <div class="category-images">
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/animation/animation1.jpg" alt="Animation">
-                  </div>
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/animation/animation2.jpg" alt="Animation">
-                  </div>
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/animation/animation3.jpg" alt="Animation">
-                  </div>
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/animation/animation4.jpg" alt="Animation">
-                  </div>
+            <!-- Comedy -->
+            <div class="category-card">
+              <div class="category-images">
+                <div class="image-wrapper">
+                  <img src="@/assets/categories/comedy/comedy1.jpg" alt="Comedy">
                 </div>
-                <div class="category-info">
-                  <h3 class="category-name">Animation</h3>
+                <div class="image-wrapper">
+                  <img src="@/assets/categories/comedy/comedy2.jpg" alt="Comedy">
+                </div>
+                <div class="image-wrapper">
+                  <img src="@/assets/categories/comedy/comedy3.jpg" alt="Comedy">
+                </div>
+                <div class="image-wrapper">
+                  <img src="@/assets/categories/comedy/comedy4.jpg" alt="Comedy">
                 </div>
               </div>
-
-              <!-- Fantasy -->
-              <div class="category-card">
-                <div class="category-images">
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/fantasy/fantasy1.jpg" alt="Fantasy">
-                  </div>
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/fantasy/fantasy2.jpg" alt="Fantasy">
-                  </div>
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/fantasy/fantasy3.jpg" alt="Fantasy">
-                  </div>
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/fantasy/fantasy4.jpg" alt="Fantasy">
-                  </div>
-                </div>
-                <div class="category-info">
-                  <h3 class="category-name">Fantasy</h3>
-                </div>
-              </div>
-
-              <!-- Romance -->
-              <div class="category-card">
-                <div class="category-images">
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/romance/romance1.jpg" alt="Romance">
-                  </div>
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/romance/romance2.jpg" alt="Romance">
-                  </div>
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/romance/romance3.jpg" alt="Romance">
-                  </div>
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/romance/romance4.jpg" alt="Romance">
-                  </div>
-                </div>
-                <div class="category-info">
-                  <h3 class="category-name">Romance</h3>
-                </div>
-              </div>
-
-              <!-- Sci-Fi -->
-              <div class="category-card">
-                <div class="category-images">
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/scifi/scifi1.jpg" alt="Sci-Fi">
-                  </div>
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/scifi/scifi2.jpg" alt="Sci-Fi">
-                  </div>
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/scifi/scifi3.jpg" alt="Sci-Fi">
-                  </div>
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/scifi/scifi4.jpg" alt="Sci-Fi">
-                  </div>
-                </div>
-                <div class="category-info">
-                  <h3 class="category-name">Sci-Fi</h3>
-                </div>
-              </div>
-
-              <!-- Thriller -->
-              <div class="category-card">
-                <div class="category-images">
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/thriller/thriller1.jpg" alt="Thriller">
-                  </div>
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/thriller/thriller2.jpg" alt="Thriller">
-                  </div>
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/thriller/thriller3.jpg" alt="Thriller">
-                  </div>
-                  <div class="image-wrapper">
-                    <img src="@/assets/categories/thriller/thriller4.jpg" alt="Thriller">
-                  </div>
-                </div>
-                <div class="category-info">
-                  <h3 class="category-name">Thriller</h3>
-                </div>
+              <div class="category-info">
+                <h3 class="category-name">Comedy</h3>
               </div>
             </div>
-          </transition-group>
+
+            <!-- Action -->
+            <div class="category-card">
+              <div class="category-images">
+                <div class="image-wrapper">
+                  <img src="@/assets/categories/action/action1.jpg" alt="Action">
+                </div>
+                <div class="image-wrapper">
+                  <img src="@/assets/categories/action/action2.jpg" alt="Action">
+                </div>
+                <div class="image-wrapper">
+                  <img src="@/assets/categories/action/action3.jpg" alt="Action">
+                </div>
+                <div class="image-wrapper">
+                  <img src="@/assets/categories/action/action4.jpg" alt="Action">
+                </div>
+              </div>
+              <div class="category-info">
+                <h3 class="category-name">Action</h3>
+              </div>
+            </div>
+
+            <!-- Horror -->
+            <div class="category-card">
+              <div class="category-images">
+                <div class="image-wrapper">
+                  <img src="@/assets/categories/horror/horror1.jpg" alt="Horror">
+                </div>
+                <div class="image-wrapper">
+                  <img src="@/assets/categories/horror/horror2.jpg" alt="Horror">
+                </div>
+                <div class="image-wrapper">
+                  <img src="@/assets/categories/horror/horror3.jpg" alt="Horror">
+                </div>
+                <div class="image-wrapper">
+                  <img src="@/assets/categories/horror/horror4.jpg" alt="Horror">
+                </div>
+              </div>
+              <div class="category-info">
+                <h3 class="category-name">Horror</h3>
+              </div>
+            </div>
+
+            <!-- Romance -->
+            <div class="category-card">
+              <div class="category-images">
+                <div class="image-wrapper">
+                  <img src="@/assets/categories/romance/romance1.jpg" alt="Romance">
+                </div>
+                <div class="image-wrapper">
+                  <img src="@/assets/categories/romance/romance2.jpg" alt="Romance">
+                </div>
+                <div class="image-wrapper">
+                  <img src="@/assets/categories/romance/romance3.jpg" alt="Romance">
+                </div>
+                <div class="image-wrapper">
+                  <img src="@/assets/categories/romance/romance4.jpg" alt="Romance">
+                </div>
+              </div>
+              <div class="category-info">
+                <h3 class="category-name">Romance</h3>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- 影院推荐模块 -->
+      <!-- Cinema recommendations module -->
       <div class="module-section cinema-module">
         <div class="section-header">
           <h2>Cinema Recommendations</h2>
@@ -312,14 +189,14 @@
               </div>
             </div>
             <div class="view-all-wrapper">
-              <a href="#" class="view-all">View All</a>
+              <a @click="goToCinemaSelect" class="view-all">View All</a>
             </div>
           </div>
         </div>
 
         <div class="cinemas-container">
           <transition-group name="slide">
-            <!-- 第一页影院 -->
+            <!-- First page of cinemas -->
             <div v-show="currentCinemaPage === 0" key="cinema-page1" class="cinema-cards">
               <div class="cinema-card">
                 <img src="@/assets/cinemas/cinema1.jpg" alt="Vue Cinema">
@@ -358,7 +235,7 @@
               </div>
             </div>
 
-            <!-- 第二页影院 -->
+            <!-- Second page of cinemas -->
             <div v-show="currentCinemaPage === 1" key="cinema-page2" class="cinema-cards">
               <div class="cinema-card">
                 <img src="@/assets/cinemas/cinema4.jpg" alt="Everyman">
@@ -400,14 +277,14 @@
         </div>
       </div>
 
-      <!-- Events & Promotional Offers 部分 -->
+      <!-- Events & Promotional Offers section -->
       <section class="events-section">
         <h2>Events & Promotional Offers</h2>
         <p class="description">
           With StreamVibe, you can enjoy your favorite movies and TV shows anytime, anywhere. Our platform is designed to be compatible with a wide range of devices, ensuring that you never miss a moment of entertainment.
         </p>
-        
-        <!-- 第一行卡片 -->
+
+        <!-- First row of cards -->
         <div class="events-grid-row">
           <div class="event-card">
             <div class="event-icon">
@@ -446,7 +323,7 @@
           </div>
         </div>
 
-        <!-- 第二行卡片 -->
+        <!-- Second row of cards -->
         <div class="events-grid-row">
           <div class="event-card">
             <div class="event-icon">
@@ -486,17 +363,17 @@
         </div>
       </section>
 
-      <!-- 使用订票模块组件 -->
+      <!-- Use booking module component -->
       <BookingBanner />
     </section>
 
-    <!-- 添加页脚 -->
+    <!-- Add footer -->
     <TheFooter />
   </div>
 </template>
 
 <script setup>
-import SvgIcon from '@/components/SvgIcon'  // 导入 SvgIcon 组件
+import SvgIcon from '@/components/SvgIcon'  // Import SvgIcon component
 import BookingBanner from '@/components/BookingBanner.vue'
 import TheFooter from '@/components/TheFooter.vue'
 import TheNavbar from '@/components/TheNavbar.vue'
@@ -511,21 +388,32 @@ export default {
   name: 'Home',
   data() {
     return {
-      currentPage: 0,
-      currentCinemaPage: 0
+      currentCinemaPage: 0,
+      categories: [
+        {
+          name: 'Action',
+          images: ['action1.jpg', 'action2.jpg', 'action3.jpg', 'action4.jpg']
+        },
+        {
+          name: 'Romance',
+          images: ['romance1.jpg', 'romance2.jpg', 'romance3.jpg', 'romance4.jpg']
+        },
+        {
+          name: 'Comedy',
+          images: ['comedy1.jpg', 'comedy2.jpg', 'comedy3.jpg', 'comedy4.jpg']
+        },
+        {
+          name: 'Drama',
+          images: ['drama1.jpg', 'drama2.jpg', 'drama3.jpg', 'drama4.jpg']
+        },
+        {
+          name: 'Horror',
+          images: ['horror1.jpg', 'horror2.jpg', 'horror3.jpg', 'horror4.jpg']
+        }
+      ]
     }
   },
   methods: {
-    prevPage() {
-      if (this.currentPage > 0) {
-        this.currentPage--
-      }
-    },
-    nextPage() {
-      if (this.currentPage < 1) {
-        this.currentPage++
-      }
-    },
     prevCinemaPage() {
       if (this.currentCinemaPage > 0) {
         this.currentCinemaPage--
@@ -535,6 +423,18 @@ export default {
       if (this.currentCinemaPage < 1) {
         this.currentCinemaPage++
       }
+    },
+    goToCinemaSelect() {
+      this.$router.push({ name: 'CinemaSelect' })
+    },
+    goToMovieDetails(movieId) {
+      this.$router.push({
+        path: '/movie-details',
+        query: { id: movieId }
+      })
+    },
+    goToMovieList() {
+      this.$router.push({ name: 'MovieList' })
     }
   },
   components: {
@@ -546,7 +446,7 @@ export default {
 </script>
 
 <style scoped>
-/* 全局背景样式 */
+/* Global background style */
 .home {
   width: 100%;
   min-height: 100vh;
@@ -554,12 +454,12 @@ export default {
   color: #ffffff;
 }
 
-/* 确保主要内容区域不被固定导航栏遮挡 */
+/* Ensure main content area is not covered by fixed navigation bar */
 main {
   padding-top: 80px;
 }
 
-/* 英雄区域样式 */
+/* Hero section style */
 .hero-section {
   position: relative;
   height: 100vh;
@@ -570,7 +470,7 @@ main {
   justify-content: center;
 }
 
-/* 电影海报墙样式 */
+/* Movie poster wall style */
 .movie-wall {
   position: absolute;
   top: 0;
@@ -632,7 +532,7 @@ main {
   opacity: 0.8;
 }
 
-/* 上层内容样式 */
+/* Upper layer text content */
 .hero-content {
   position: relative;
   z-index: 3;
@@ -673,7 +573,7 @@ main {
   background-color: #cc0000;
 }
 
-/* 海报墙滚动动画 */
+/* Movie poster wall scrolling animation */
 @keyframes scrollWall {
   0% {
     transform: translateX(0);
@@ -683,12 +583,12 @@ main {
   }
 }
 
-/* 移除额外的遮罩渐变 */
+/* Remove extra mask gradient */
 .hero-section::after {
   display: none;
 }
 
-/* 响应式调整 */
+/* Responsive adjustments */
 @media (max-width: 1440px) {
   .movie-grid img {
     width: 130px;
@@ -709,7 +609,7 @@ main {
   }
 }
 
-/* 确保两组海报完全一致 */
+/* Make sure two groups of posters are completely identical */
 .movie-grid:first-child {
   margin-right: 0;
 }
@@ -718,13 +618,13 @@ main {
   margin-left: 0;
 }
 
-/* 为最后一行海报添加渐变效果 */
+/* Add gradient effect for the last row of posters */
 .poster-row:last-child img {
   mask-image: linear-gradient(
     to bottom,
     rgba(0, 0, 0, 1) 0%,
-    rgba(0, 0, 0, 1) 50%,    /* 海报一半高度开始渐变 */
-    rgba(0, 0, 0, 0) 100%    /* 底部完全透明 */
+    rgba(0, 0, 0, 1) 50%,    /* Poster gradient starts halfway up */
+    rgba(0, 0, 0, 0) 100%    /* Bottom is completely transparent */
   );
   -webkit-mask-image: linear-gradient(
     to bottom,
@@ -734,36 +634,36 @@ main {
   );
 }
 
-/* 内容区域样式 */
+/* Content area style */
 .content-section {
   background: linear-gradient(
     to bottom,
     transparent 0%,
-    rgba(26, 26, 26, 0.8) 5%,   /* 快速渐变到深灰色 */
-    rgba(26, 26, 26, 1) 10%,    /* 完全不透明 */
-    rgba(26, 26, 26, 1) 100%    /* 保持不透明 */
+    rgba(26, 26, 26, 0.8) 5%,   /* Quick gradient to dark gray */
+    rgba(26, 26, 26, 1) 10%,    /* Completely opaque */
+    rgba(26, 26, 26, 1) 100%    /* Keep opaque */
   );
   padding: 60px 120px;
-  margin-top: -200px;  /* 向上移动整个模块 */
+  margin-top: -200px;  /* Move entire module up */
   position: relative;
   z-index: 2;
   display: flex;
   flex-direction: column;
-  gap: 16px; /* 减小模块之间的间距 */
+  gap: 16px; /* Reduce spacing between modules */
 }
 
-/* 分类部分上移 */
+/* Move category section up */
 .category-section {
-  margin-top: 40px;  /* 给顶部渐变留出空间 */
+  margin-top: 40px;  /* Leave space for top gradient */
 }
 
-/* 确保内容正确显示 */
+/* Ensure content displays correctly */
 .section-header {
   position: relative;
   z-index: 2;
 }
 
-/* 底部图片渐变保持不变 */
+/* Bottom image gradient remains unchanged */
 .image-wrapper.bottom::after {
   content: '';
   position: absolute;
@@ -782,7 +682,7 @@ main {
   border-radius: 12px;
 }
 
-/* 通用标题样式 */
+/* Generic title style */
 .section-header {
   display: flex;
   justify-content: space-between;
@@ -796,10 +696,10 @@ main {
   font-weight: 600;
 }
 
-/* 控制按钮样式 */
+/* Control button style */
 .header-controls {
   display: flex;
-  gap: 20px;  /* 减小间距 */
+  gap: 20px;  /* Reduce spacing */
   align-items: center;
 }
 
@@ -807,7 +707,7 @@ main {
   background: #1A1A1A;
   border-radius: 12px;
   padding: 4px;
-  height: 52px;  /* 固定高度 */
+  height: 52px;  /* Fixed height */
   display: flex;
   align-items: center;
 }
@@ -815,13 +715,13 @@ main {
 .slider-controls {
   background: #2A2A2A;
   border-radius: 8px;
-  padding: 4px;  /* 减小内边距 */
+  padding: 4px;  /* Reduce padding */
   display: flex;
   align-items: center;
-  gap: 16px;  /* 调整间距 */
+  gap: 16px;  /* Adjust spacing */
   height: 52px;
   min-width: 200px;
-  justify-content: space-between;  /* 两端对齐 */
+  justify-content: space-between;  /* Evenly distribute */
 }
 
 .dark-box {
@@ -831,15 +731,15 @@ main {
   border-radius: 4px;
   flex-shrink: 0;
   display: flex;
-  align-items: center;     /* 垂直居中 */
-  justify-content: center; /* 水平居中 */
+  align-items: center;     /* Vertical center */
+  justify-content: center; /* Horizontal center */
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
 
 .arrow-icon {
-  font-size: 16px;        /* 调整箭头大小 */
-  color: #FFFFFF;         /* 箭头颜色为白色 */
+  font-size: 16px;        /* Adjust arrow size */
+  color: #FFFFFF;         /* Arrow color is white */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -905,33 +805,31 @@ main {
 }
 
 .view-all-wrapper {
-  background: #3c3c3c;
-  border-radius: 12px;
-  padding: 4px;
-  height: 54px;  /* 与箭头框保持相同高度 */
   display: flex;
   align-items: center;
+  height: 52px; /* Match control button container height */
 }
 
 .view-all {
-  display: flex;
-  align-items: center;
-  height: 46px;  /* 与内层框保持相同高度 */
-  padding: 0px 12px;
-  background: #2A2A2A;
-  border-radius: 8px;
   color: #FFFFFF;
   text-decoration: none;
   font-size: 14px;
-  transition: background-color 0.3s ease;
-  white-space: nowrap;  /* 防止文字换行 */
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 16px 24px; /* Adjust padding to make button taller */
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  height: 100%; /* Fill parent container height */
+  display: flex;
+  align-items: center;
 }
 
 .view-all:hover {
-  background: #333333;
+  opacity: 0.8;
+  background: rgba(255, 255, 255, 0.2);
 }
 
-/* 分类网格样式优化 */
+/* Category grid style optimization */
 .categories-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -939,7 +837,7 @@ main {
   width: 100%;
 }
 
-/* 分类卡片样式优化 */
+/* Category card style optimization */
 .category-card {
   background: #212121;
   border-radius: 16px;
@@ -947,7 +845,7 @@ main {
   cursor: pointer;
   position: relative;
   padding: 16px;
-  border: 2px solid rgba(255, 255, 255, 0.15); /* 仅添加描边 */
+  border: 2px solid rgba(255, 255, 255, 0.15); /* Add border */
 }
 
 .category-images {
@@ -973,7 +871,7 @@ main {
   transition: opacity 0.3s ease;
 }
 
-/* 底部图片渐变效果 */
+/* Bottom image gradient effect */
 .image-wrapper.bottom::after {
   content: '';
   position: absolute;
@@ -989,12 +887,12 @@ main {
   pointer-events: none;
 }
 
-/* 确保渐变效果在悬浮时保持 */
+/* Ensure gradient effect remains during hover */
 .category-card:hover .image-wrapper.bottom::after {
   opacity: 1;
 }
 
-/* 图片容器基础样式 */
+/* Basic image container style */
 .image-wrapper {
   position: relative;
   border-radius: 12px;
@@ -1026,7 +924,7 @@ main {
   font-weight: 500;
 }
 
-/* 右下角箭头样式 */
+/* Right bottom arrow style */
 .arrow-icon {
   position: absolute;
   bottom: 16px;
@@ -1047,7 +945,7 @@ main {
   transition: transform 0.3s ease;
 }
 
-/* 悬浮效果 */
+/* Hover effect */
 .category-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
@@ -1061,40 +959,40 @@ main {
   transform: translateX(2px);
 }
 
-/* 确保图片容器正确显示 */
+/* Ensure image container displays correctly */
 .image-wrapper {
   aspect-ratio: 1;
   background: #1A1A1A;
 }
 
-/* 影院卡片容器 */
+/* Cinema card container */
 .cinema-cards {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 24px;
 }
 
-/* 影院卡片样式 */
+/* Cinema card style */
 .cinema-card {
-  background: #1A1A1A; /* 深色背景 */
+  background: #1A1A1A; /* Dark background */
   border-radius: 16px;
   overflow: hidden;
-  border: 2px solid rgba(255, 255, 255, 0.15); /* 添加描边 */
+  border: 2px solid rgba(255, 255, 255, 0.15); /* Add border */
 }
 
-/* 影院图片 */
+/* Cinema image */
 .cinema-card img {
   width: 100%;
   height: 200px;
   object-fit: cover;
 }
 
-/* 影院信息区域 */
+/* Cinema info area */
 .cinema-info {
   padding: 20px;
 }
 
-/* 影院标题 */
+/* Cinema title */
 .cinema-info h3 {
   color: #FFFFFF;
   font-size: 18px;
@@ -1102,29 +1000,29 @@ main {
   margin-bottom: 8px;
 }
 
-/* 影院描述 */
+/* Cinema description */
 .cinema-info p {
   color: rgba(255, 255, 255, 0.6);
   font-size: 14px;
   margin-bottom: 16px;
 }
 
-/* 评分和按钮区域 */
+/* Rating and button area */
 .rating {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-/* 星级评分 */
+/* Star rating */
 .stars {
-  color: #FFD700; /* 金色星星 */
+  color: #FFD700; /* Gold stars */
   font-size: 14px;
 }
 
-/* 查看详情按钮 */
+/* View details button */
 .details-btn {
-  background: #FF3B30; /* 红色按钮 */
+  background: #FF3B30; /* Red button */
   color: white;
   border: none;
   padding: 8px 20px;
@@ -1138,7 +1036,7 @@ main {
   background: #E6352B;
 }
 
-/* 活动卡片样式 */
+/* Event card style */
 .events-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -1164,20 +1062,20 @@ main {
   object-fit: contain;
 }
 
-/* SVG 图标样式 */
+/* SVG icon style */
 .control-btn .svg-icon {
   width: 20px;
   height: 20px;
   color: #FFFFFF;
 }
 
-/* ... 其他样式保持不变 ... */
+/* ... Other styles remain unchanged ... */
 
 .control-btn-wrapper {
   width: 40px;
   height: 40px;
   background: #1A1A1A;
-  border-radius: 4px;  /* 改为小圆角方形 */
+  border-radius: 4px;  /* Change to rounded square */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1196,19 +1094,19 @@ main {
   justify-content: center;
   padding: 0;
   position: relative;
-  border-radius: 4px;  /* 匹配外框的圆角 */
+  border-radius: 4px;  /* Match parent container's rounded corners */
 }
 
 .nav-arrow {
   color: #FFFFFF;
-  font-size: 18px;  /* 调整箭头大小 */
+  font-size: 18px;  /* Adjust arrow size */
   font-weight: bold;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
   height: 100%;
-  user-select: none;  /* 防止文本被选中 */
+  user-select: none;  /* Prevent text selection */
 }
 
 .dark-box {
@@ -1234,37 +1132,37 @@ h2 {
 }
 
 .content-section {
-  padding-top: 120px;  /* 增加与海报墙的距离 */
-  padding-bottom: 80px;  /* 底部间距 */
+  padding-top: 120px;  /* Increase distance from movie wall */
+  padding-bottom: 80px;  /* Bottom spacing */
 }
 
 .section-header {
-  margin-bottom: 40px;  /* 标题与内容的间距 */
+  margin-bottom: 40px;  /* Title to content spacing */
 }
 
 h2 {
   margin: 0;
   padding: 0;
-  font-size: 28px;  /* 可选：调整标题大小 */
+  font-size: 28px;  /* Optional: Adjust title size */
   font-weight: 600;
 }
 
-/* 模块之间的间距 */
+/* Module spacing */
 .section + .section {
-  margin-top: 80px;  /* 增加模块之间的间距 */
+  margin-top: 80px;  /* Increase spacing between modules */
 }
 
-/* 模块基础样式 */
+/* Module base style */
 .module-section {
-  margin-bottom: 100px;  /* 增加模块之间的间距 */
+  margin-bottom: 100px;  /* Increase spacing between modules */
 }
 
-/* 最后一个模块不需要底部间距 */
+/* Last module does not need bottom spacing */
 .module-section:last-child {
   margin-bottom: 0;
 }
 
-/* 添加滑动动画 */
+/* Add slide animation */
 .slide-enter-active,
 .slide-leave-active {
   transition: all 0.5s ease;
@@ -1282,7 +1180,7 @@ h2 {
 
 .categories-container {
   position: relative;
-  min-height: 500px; /* 设置一个最小高度以确保容器高度足够 */
+  min-height: 500px; /* Set a minimum height to ensure container height is sufficient */
 }
 
 .categories-grid {
@@ -1290,22 +1188,22 @@ h2 {
   width: 100%;
 }
 
-/* 内容区域的基础样式 */
+/* Content area base style */
 .content-section {
   padding: 120px 120px;
 }
 
-/* 分类模块的底部间距 */
+/* Category module bottom spacing */
 .category-module {
-  margin-bottom: -60px; /* 确保没有额外的间距 */
+  margin-bottom: -60px; /* Ensure no extra spacing */
 }
 
-/* 影院模块的底部间距 */
+/* Cinema module bottom spacing */
 .cinema-module {
-  margin-top: -60px; /* 向上移动模块 */
+  margin-top: -60px; /* Move module up */
 }
 
-/* Events 模块标题和描述 */
+/* Events module title and description */
 .events-section {
   margin-bottom: 40px;
 }
@@ -1325,7 +1223,7 @@ h2 {
   max-width: 800px;
 }
 
-/* 活动卡片网格布局 */
+/* Event card grid layout */
 .events-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -1333,7 +1231,7 @@ h2 {
   margin-bottom: 24px;
 }
 
-/* 活动卡片样式 */
+/* Event card style */
 .event-card {
   background: rgba(26, 26, 26, 0.6);
   border-radius: 16px;
@@ -1341,14 +1239,14 @@ h2 {
   border: 2px solid rgba(255, 255, 255, 0.15);
 }
 
-/* 图标样式 */
+/* Icon style */
 .event-icon {
   color: #FF3B30;
   font-size: 24px;
   margin-bottom: 16px;
 }
 
-/* 活动标题 */
+/* Event title */
 .event-title {
   color: #FFFFFF;
   font-size: 20px;
@@ -1356,14 +1254,14 @@ h2 {
   margin-bottom: 12px;
 }
 
-/* 活动描述 */
+/* Event description */
 .event-description {
   color: rgba(255, 255, 255, 0.6);
   font-size: 14px;
   line-height: 1.5;
 }
 
-/* 两行卡片布局 */
+/* Two row card layout */
 .events-grid-row {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -1375,12 +1273,12 @@ h2 {
   margin-bottom: 0;
 }
 
-/* Events 模块样式 */
+/* Events module style */
 .events-section {
   padding: 60px 0;
 }
 
-/* 活动卡片网格 */
+/* Event card grid */
 .events-grid-row {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -1388,44 +1286,65 @@ h2 {
   margin-bottom: 24px;
 }
 
-/* 活动卡片 */
+/* Event card */
 .event-card {
-  background: rgba(18, 18, 18, 0.8); /* 更深的背景色 */
+  background: rgba(18, 18, 18, 0.8); /* Darker background color */
   border-radius: 12px;
   padding: 24px;
   display: flex;
-  flex-direction: column; /* 改为垂直布局 */
+  flex-direction: column; /* Change to vertical layout */
   gap: 16px;
 }
 
-/* 图标和标题容器 */
+/* Icon and title container */
 .event-header {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-/* 图标 */
+/* Icon */
 .event-icon {
   width: 24px;
   height: 24px;
   display: flex;
   align-items: center;
-  color: #FF0000; /* 红色图标 */
+  color: #FF0000; /* Red icon */
 }
 
-/* 活动标题 */
+/* Event title */
 .event-title {
   color: #FFFFFF;
   font-size: 16px;
   font-weight: 500;
 }
 
-/* 活动描述 */
+/* Event description */
 .event-description {
   color: rgba(255, 255, 255, 0.6);
   font-size: 14px;
   line-height: 1.5;
   margin-top: 8px;
+}
+
+.find-cinema-btn {
+  background-color: #FF0000;  /* Red background */
+  color: #FFFFFF;  /* White text */
+  border: none;
+  padding: 12px 32px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 24px;
+}
+
+.find-cinema-btn:hover {
+  background-color: #E60000;  /* Slightly darker red on hover */
+}
+
+.find-cinema-btn:active {
+  transform: scale(0.98);  /* Press down effect on click */
 }
 </style>

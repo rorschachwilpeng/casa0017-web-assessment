@@ -1,4 +1,5 @@
 <template>
+<<<<<<< HEAD
   <div class="movie-list-container">
     <!-- 添加导航栏组件 -->
     <TheNavbar />
@@ -13,46 +14,88 @@
         </el-radio-button>
       </el-radio-group>
     </div>
+=======
+  <div class="home">
+    <!-- 导航栏 -->
+    <TheNavbar />
+>>>>>>> update-movie-details-ui
 
-    <!-- Movie Count -->
-    <div class="movie-count">
-      {{ moviesList.length }} films in total
-    </div>
+    <!-- 内容容器 -->
+    <div class="content-wrapper">
+      <div class="app-container">
+        <!-- Category Filter -->
+        <div class="category-filter">
+          <span class="category-label">Category : </span>
+          <div class="category-buttons">
+            <button 
+              v-for="cat in ['All', ...categories]" 
+              :key="cat"
+              :class="['category-btn', { active: selectedCategory === cat }]"
+              @click="handleCategoryChange(cat)"
+            >
+              {{ cat }}
+            </button>
+          </div>
+        </div>
 
-    <!-- Movie List -->
-    <div v-loading="loading" class="movie-list">
-      <div v-for="movie in moviesList" :key="movie.id" class="movie-card" @click="goToMovieDetails(movie.id)">
-        <div class="movie-poster">
-          <img :src="'http://localhost:3007' + movie.poster_url" :alt="movie.name">
+        <!-- Movie Count -->
+        <div class="movie-count">
+          {{ moviesList.length }} films in total
         </div>
-        <div class="movie-info">
-          <h3 class="movie-title">{{ movie.name }}</h3>
-          <div class="movie-meta">
-            <span class="rating">Rating: {{ movie.rating }}%</span>
-            <span class="length">Length: {{ movie.length }}</span>
+
+        <!-- Movie List -->
+        <div v-loading="loading" class="movie-list">
+          <div v-for="movie in moviesList" :key="movie.id" class="movie-card" @click="goToDetails(movie.id)">
+            <div class="movie-poster">
+              <img :src="'http://localhost:3007' + movie.poster_url" :alt="movie.name">
+            </div>
+            <div class="movie-info">
+              <h3 class="movie-title">{{ movie.name }}</h3>
+              <div class="movie-meta">
+                <span class="rating">Rating: {{ movie.rating }}%</span>
+                <span class="length">Length: {{ movie.length }}</span>
+              </div>
+              <div class="movie-director">
+                <strong>Director:</strong> {{ movie.director }}
+              </div>
+              <div class="movie-cast">
+                <strong>Cast:</strong> {{ movie.cast }}
+              </div>
+              <p class="movie-description">{{ movie.description }}</p>
+              <p class="movie-plot" v-if="showFullPlot">{{ movie.plot_summary }}</p>
+            </div>
           </div>
-          <div class="movie-director">
-            <strong>Director:</strong> {{ movie.director }}
-          </div>
-          <div class="movie-cast">
-            <strong>Cast:</strong> {{ movie.cast }}
-          </div>
-          <p class="movie-description">{{ movie.description }}</p>
-          <p class="movie-plot" v-if="showFullPlot">{{ movie.plot_summary }}</p>
         </div>
+        
+        <!-- 将 BookingBanner 移动到这里 -->
+        <BookingBanner />
       </div>
     </div>
+    
+    <!-- 页脚 -->
+    <TheFooter />
   </div>
 </template>
 
 <script>
 import request from '@/utils/request'
 import TheNavbar from '@/components/TheNavbar.vue'
+<<<<<<< HEAD
+=======
+import TheFooter from '@/components/TheFooter.vue'
+import BookingBanner from '@/components/BookingBanner.vue'
+>>>>>>> update-movie-details-ui
 
 export default {
   name: 'MovieList',
   components: {
+<<<<<<< HEAD
     TheNavbar
+=======
+    TheNavbar,
+    TheFooter,
+    BookingBanner
+>>>>>>> update-movie-details-ui
   },
   data() {
     return {
@@ -91,28 +134,84 @@ export default {
       this.fetchMovies()
     },
 
-    goToMovieDetails(movieId) {
-      this.$router.push(`/movie-details/index?id=${movieId}`)
+    goToDetails(movieId) {
+      this.$router.push(`/movie-details/${movieId}`);
     }
   }
 }
 </script>
-
 <style lang="scss" scoped>
+<<<<<<< HEAD
 .movie-list-container {
   position: relative;
   width: 100%;
+=======
+.home {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #0A0A0A;
+  color: #ffffff;
+  position: relative;
+}
+
+.content-wrapper {
+  padding: 80px 120px 40px;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: calc(100vh - 80px);
+  margin-bottom: 60px;
+>>>>>>> update-movie-details-ui
 }
 
 .app-container {
-  padding: 20px;
+  width: 100%;
+  height: 100%;
 }
 
 .category-filter {
+  display: flex;
+  align-items: center;
   margin-bottom: 20px;
-  .category-label {
-    margin-right: 10px;
-    font-weight: bold;
+}
+
+.category-label {
+  color: #FFFFFF;
+  font-size: 16px;
+  margin-right: 16px;
+}
+
+.category-buttons {
+  display: flex;
+  gap: 1px;
+  background: #1A1A1A;
+  padding: 1px;
+  border-radius: 4px;
+}
+
+.category-btn {
+  background: #2A2A2A;
+  border: none;
+  color: #FFFFFF;
+  padding: 8px 24px;
+  cursor: pointer;
+  font-size: 14px;
+  height: 40px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: #3A3A3A;
+  }
+
+  &.active {
+    background: #4B91FF;
+  }
+
+  &:first-child {
+    border-radius: 4px 0 0 4px;
+  }
+
+  &:last-child {
+    border-radius: 0 4px 4px 0;
   }
 }
 
@@ -130,10 +229,17 @@ export default {
 .movie-card {
   display: flex;
   gap: 20px;
-  background: #fff;
+  background: #1f1f1f;
   padding: 20px;
   border-radius: 8px;
-  box-shadow: 0 2px 12px 0 rgba(0,0,0,0.1);
+  box-shadow: 0 2px 12px 0 rgba(0,0,0,0.2);
+  transition: all 0.3s;
+  cursor: pointer;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 16px 0 rgba(255,0,0,0.2);
+  }
 
   .movie-poster {
     flex: 0 0 200px;
@@ -150,12 +256,13 @@ export default {
     .movie-title {
       margin: 0 0 10px;
       font-size: 24px;
-      color: #333;
+      color: #ffffff;
+      font-weight: 600;
     }
 
     .movie-meta {
       margin-bottom: 10px;
-      color: #666;
+      color: rgba(255, 255, 255, 0.6);
 
       .rating, .length {
         margin-right: 20px;
@@ -167,19 +274,19 @@ export default {
       color: #666;
 
       strong {
-        color: #333;
+        color: #ffffff;
       }
     }
 
     .movie-description {
-      color: #666;
-      line-height: 1.5;
+      color: rgba(255, 255, 255, 0.8);
+      line-height: 1.6;
       margin-bottom: 10px;
     }
 
     .movie-plot {
-      color: #666;
-      line-height: 1.5;
+      color: rgba(255, 255, 255, 0.8);
+      line-height: 1.6;
       margin: 0;
       font-style: italic;
     }
@@ -188,7 +295,20 @@ export default {
 
 // Radio button styles
 .el-radio-button__inner {
-  padding: 8px 20px;
+  background: #f0f2f5;
+  color: #595959;
+  border-color: #d9d9d9;
+
+  &:hover {
+    color: #1890ff;
+  }
+
+}
+
+.el-radio-button__orig-radio:checked + .el-radio-button__inner {
+  background-color: #1890ff;
+  border-color: #1890ff;
+  box-shadow: -1px 0 0 0 #1890ff;
 }
 
 .el-radio-button:first-child .el-radio-button__inner {
@@ -199,3 +319,4 @@ export default {
   border-radius: 0 4px 4px 0;
 }
 </style>
+

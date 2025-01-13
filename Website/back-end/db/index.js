@@ -14,7 +14,7 @@ const config = {
   authPluginName: 'mysql_native_password'
 };
 
-// 打印配置信息（不包含密码）
+// Print configuration info (excluding password)
 console.log('Database configuration:', {
   host: config.host,
   port: config.port,
@@ -22,24 +22,24 @@ console.log('Database configuration:', {
   database: config.database
 });
 
-// 验证配置
+// Validate configuration
 if (!config.host || !config.user || !config.password || !config.database) {
   console.error('Missing required database configuration. Please check your .env file.');
   process.exit(1);
 }
 
-// 创建连接池
+// Create connection pool
 const pool = mysql.createPool(config);
 
-// 测试连接
+// Test connection
 pool.getConnection((err, connection) => {
   if (err) {
     console.error('Database connection failed:', err);
     return;
   }
-  console.log('Database connection pool created successfully');
+  console.log('Database connection successful!');
   connection.release();
 });
 
-// 导出 promise 版本的连接池
+// Export promise version of connection pool
 module.exports = pool.promise();
