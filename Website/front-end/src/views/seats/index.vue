@@ -1,12 +1,12 @@
 <template>
   <div class="app-container">
-    <!-- 导航栏 -->
+    <!-- navigation bar -->
     <TheNavbar />
 
-    <!-- 主要内容 -->
+    <!-- main content -->
     <div class="content-section">
       <div class="booking-page">
-        <!-- 电影信息部分 -->
+        <!-- movie information section -->
         <div class="movie-info-section">
           <div class="movie-basic-info">
             <div class="movie-poster">
@@ -21,9 +21,9 @@
             </div>
           </div>
           
-          <!-- 新增的影院和场次信息 -->
+          <!-- new cinema and session information -->
           <div class="session-info">
-            <!-- 电影选择 -->
+            <!-- movie selection -->
             <div class="info-item">
               <span class="label">Movie</span>
               <div class="custom-select" :class="{ 'active': isMovieDropdownOpen }">
@@ -48,13 +48,13 @@
             <div class="info-item">
               <span class="label">Cinema</span>
               <div class="custom-select" :class="{ 'active': isCinemaDropdownOpen }">
-                <!-- 加载状态 -->
+                <!-- loading state -->
                 <div v-if="isLoading" class="loading">Loading cinemas...</div>
                 
-                <!-- 错误信息 -->
+                <!-- error message -->
                 <div v-else-if="errorMessage" class="error">{{ errorMessage }}</div>
                 
-                <!-- 影院选择器 -->
+                <!-- cinema selector -->
                 <template v-else>
                   <div class="selected" @click="toggleDropdown('cinema')">
                     {{ selectedCinemaName }}
@@ -75,7 +75,7 @@
               </div>
             </div>
             
-            <!-- 日期选择 -->
+            <!-- date selection -->
             <div class="info-item">
               <span class="label">Date</span>
               <div class="custom-select" :class="{ 'active': isDateDropdownOpen }">
@@ -97,7 +97,7 @@
               </div>
             </div>
             
-            <!-- 时间选择 -->
+            <!-- time selection -->
             <div class="info-item">
               <span class="label">Time</span>
               <div class="custom-select" :class="{ 'active': isTimeDropdownOpen }">
@@ -121,16 +121,16 @@
           </div>
         </div>
 
-        <!-- 原有的座位选择部分，保持不变 -->
+        <!-- original seat selection section, unchanged -->
         <div class="seat-selection">
           <h1>Seat</h1>
           <div class="seating-container">
-            <!-- 屏幕指示条 -->
+            <!-- screen indicator -->
             <div class="screen-indicator">
               <span>Screen</span>
             </div>
 
-            <!-- 座位布局 -->
+            <!-- seating layout -->
             <div class="seating-layout">
               <div v-for="row in rows" :key="row" class="seat-row">
                 <div v-for="col in 10" :key="col" 
@@ -142,7 +142,7 @@
               </div>
             </div>
 
-            <!-- 座位信息 -->
+            <!-- seat information -->
             <div class="seat-info">
               <div class="info-row">
                 <span class="info-label">TOTAL</span>
@@ -155,7 +155,7 @@
             </div>
           </div>
 
-          <!-- 底部按钮 -->
+          <!-- bottom buttons -->
           <div class="bottom-bar">
             <button class="back-btn">Back</button>
             <button class="proceed-btn" @click="processPayment">Proceed Payment</button>
@@ -164,7 +164,7 @@
       </div>
     </div>
 
-    <!-- 页脚 -->
+    <!-- footer -->
     <TheFooter />
   </div>
 </template>
@@ -173,7 +173,7 @@
 .app-container {
   min-height: 100vh;
   background-color: #111;
-  padding-top: 80px; /* 为固定导航栏留出空间 */
+  padding-top: 80px; /* leave space for fixed navigation bar */
 }
 
 .content-section {
@@ -424,7 +424,7 @@ h1 {
   color: white;
 }
 
-/* 时间选择的特殊样式 */
+/* special style for time selection */
 .time-select {
   appearance: none;
   -webkit-appearance: none;
@@ -435,7 +435,7 @@ h1 {
   background-size: 20px;
 }
 
-/* 修改时间选择下拉框样式 */
+/* modified style for time selection dropdown */
 .time-select {
   appearance: none;
   -webkit-appearance: none;
@@ -446,30 +446,30 @@ h1 {
   background-size: 20px;
 }
 
-/* 下拉列表展开时的样式 */
+/* style for dropdown when expanded */
 .time-select:focus {
   outline: none;
   border-color: #2196f3;
 }
 
-/* 下拉选项样式 */
+/* style for dropdown options */
 .time-select option {
   background-color: #333;
   color: white;
   padding: 8px 12px;
 }
 
-/* 设置下拉列表样式 */
+/* set style for dropdown list */
 select.time-select:focus {
   height: auto;
 }
 
-/* 下拉列表展开时的容器样式 */
+/* style for container when dropdown list is expanded */
 select.time-select:focus option {
   padding: 12px;
 }
 
-/* 自定义滚动条样式 */
+/* custom style for scrollbar */
 select.time-select::-webkit-scrollbar {
   width: 6px;
 }
@@ -488,7 +488,7 @@ select.time-select::-webkit-scrollbar-thumb:hover {
   background: #888;
 }
 
-/* 选项悬停和选中状态 */
+/* hover and selected state for options */
 .time-select option:hover,
 .time-select option:focus {
   background-color: #444;
@@ -500,7 +500,7 @@ select.time-select::-webkit-scrollbar-thumb:hover {
 }
 
 @-moz-document url-prefix() {
-  /* Firefox 特定样式 */
+  /* Firefox specific style */
   .time-select {
     scrollbar-width: thin;
     scrollbar-color: #666 #333;
@@ -516,7 +516,7 @@ select.time-select::-webkit-scrollbar-thumb:hover {
   background-color: #444;
 }
 
-/* 修改选择框样式 */
+/* modified style for select input */
 .select-input {
   padding: 8px 12px;
   background-color: #333;
@@ -602,7 +602,7 @@ select.time-select::-webkit-scrollbar-thumb:hover {
   color: white;
 }
 
-/* 滚动条样式 */
+/* style for scrollbar */
 .options::-webkit-scrollbar {
   width: 8px;
 }
@@ -621,12 +621,12 @@ select.time-select::-webkit-scrollbar-thumb:hover {
   background: #888;
 }
 
-/* 选中状态 */
+/* selected state */
 .custom-select.active .selected {
   border-color: #2196f3;
 }
 
-/* 悬停效果 */
+/* hover effect */
 .selected:hover {
   background-color: #3a3a3a;
 }
@@ -782,7 +782,7 @@ export default {
         { time: '21:00' }
       ]
 
-      // 如果是当天，需要过滤掉已经过去的时间
+      // if today, filter out past times
       if (this.selectedDate === this.availableDates[0].value) {
         const now = new Date()
         const currentHour = now.getHours()
@@ -798,7 +798,7 @@ export default {
           }))
       }
 
-      // 如果不是当天，显示所有时间段
+      // if not today, show all times
       return fixedTimes.map(slot => ({
         value: slot.time,
         label: `${slot.time} (${slot.period})`
@@ -931,10 +931,10 @@ export default {
 
         console.log('Raw response:', response)
 
-        // 清空选中的座位
+        // clear selected seats
         this.selectedSeats = []
         
-        // 使用新的 loadSeats 方法更新座位状态
+        // use new loadSeats method to update seat status
         if (this.currentSessionId) {
           await this.loadSeats(true)
           console.log('Seats updated after reservation')
@@ -945,7 +945,7 @@ export default {
         }
       } catch (error) {
         console.error('Reservation failed:', error)
-        // 发生错误时也更新座位状态
+        // also update seat status when error occurs
         if (this.currentSessionId) {
           await this.loadSeats(true)
         }
@@ -955,13 +955,13 @@ export default {
       this.$router.go(-1)
     },
     toggleDropdown(type) {
-      // 先关闭其他下拉框
+      // first close other dropdowns
       if (type !== 'cinema') this.isCinemaDropdownOpen = false
       if (type !== 'date') this.isDateDropdownOpen = false
       if (type !== 'time') this.isTimeDropdownOpen = false
       if (type !== 'movie') this.isMovieDropdownOpen = false
 
-      // 切换当前下拉框
+      // switch current dropdown
       switch(type) {
         case 'cinema':
           this.isCinemaDropdownOpen = !this.isCinemaDropdownOpen
@@ -1006,14 +1006,14 @@ export default {
           baseURL: 'http://localhost:3007'
         })
 
-        console.log('Raw response:', response)  // 查看原始响应
+        console.log('Raw response:', response)  // view raw response
 
         if (response.data && response.data.status === 0) {
-          // 从 response.data 中提取数据
+          // extract data from response.data
           this.seats = response.data.seats
           this.currentSessionId = response.data.session_id
           
-          console.log('Extracted seats:', this.seats)  // 查看提取的座位数据
+          console.log('Extracted seats:', this.seats)  // view extracted seat data
           
           this.$forceUpdate()
         }
@@ -1041,11 +1041,11 @@ export default {
         if (status === 0 && cinemaData) {
           this.cinemaList = cinemaData
         } else {
-          this.errorMessage = message || '获取影院数据失败'
+          this.errorMessage = message || 'Failed to get cinema data'
         }
       } catch (error) {
-        console.error('加载影院数据失败:', error)
-        this.errorMessage = '加载影院数据失败，请稍后重试'
+        console.error('Failed to load cinema data:', error)
+        this.errorMessage = 'Failed to load cinema data, please try again later'
       } finally {
         this.isLoading = false
       }
@@ -1057,15 +1057,15 @@ export default {
           this.movieList = movieData
         }
       } catch (error) {
-        console.error('加载电影数据失败:', error)
+        console.error('Failed to load movie data:', error)
       }
     },
     selectMovie(movie) {
-      console.log('Selected movie:', movie)  // 调试日志
+      console.log('Selected movie:', movie)  // debug log
       this.selectedMovieId = movie.id
       this.isMovieDropdownOpen = false
       
-      // 更新当前电影信息
+      // update current movie information
       const selectedMovie = this.movieList.find(m => m.id === movie.id)
       if (selectedMovie) {
         this.currentMovie = {
@@ -1073,7 +1073,7 @@ export default {
           poster_url: selectedMovie.poster_url,
           length: selectedMovie.length
         }
-        console.log('Current movie updated:', this.currentMovie)  // 调试日志
+        console.log('Current movie updated:', this.currentMovie)  // debug log
       }
       
       this.checkAndUpdateSession()
@@ -1098,7 +1098,7 @@ export default {
           }
         })
 
-        // ... 处理响应 ...
+        // ... handle response ...
       } catch (error) {
         console.error('Failed to reserve seats:', error)
         this.$message.error(error.message || 'Failed to reserve seats')
@@ -1132,10 +1132,10 @@ export default {
 
           if (sessionResponse.data && sessionResponse.status === 0) {
             this.currentSessionId = sessionResponse.data.session_id
-            // 直接使用返回的座位数据
+            // directly use returned seat data
             this.seats = sessionResponse.data.seats
             console.log('Seats updated:', this.seats.length)
-            this.$forceUpdate()  // 强制更新视图
+            this.$forceUpdate()  // force update view
           }
         } catch (error) {
           console.error('Failed to update session:', error)
