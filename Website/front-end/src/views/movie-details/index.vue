@@ -1,6 +1,5 @@
 <template>
   <div class="movie-detail" v-loading="loading">
-    <!-- 顶部大图部分 -->
     <div v-if="movie" class="hero-section" :style="{ backgroundImage: movie.poster_url ? `url(http://localhost:3007${movie.poster_url})` : '' }">
       <div class="overlay">
         <div class="hero-content">
@@ -20,9 +19,8 @@
 
     <section v-if="movie" class="content-section">
       <div class="content-layout">
-        <!-- 左侧主要内容 -->
         <div class="main-content">
-          <!-- 描述部分 -->
+          <!-- description -->
           <div class="description-section">
             <h3>Description</h3>
             <p>{{ movie.description }}</p>
@@ -44,7 +42,6 @@
             </div>
           </div>
 
-          <!-- 评论部分 -->
           <div class="reviews-section">
             <div class="section-header">
               <h2 class="section-title">Reviews</h2>
@@ -66,7 +63,6 @@
                 <p class="review-text">{{ review.comment }}</p>
               </div>
             </div>
-            <!-- 分页控制 -->
             <div class="pagination-controls">
               <button @click="prevPage"
                       :disabled="currentPage === 0"
@@ -83,7 +79,6 @@
           </div>
         </div>
 
-        <!-- 右侧边栏 -->
         <div class="sidebar">
           <div class="info-container">
             <div class="info-item">
@@ -374,7 +369,7 @@ export default {
 }
 
 .hero-section {
-  height: 70vh; /* 保持原有高度 */
+  height: 70vh;
   background-size: cover;
   background-position: center;
   position: relative;
@@ -388,8 +383,8 @@ export default {
   bottom: 0;
   background: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.8));
   display: flex;
-  align-items: flex-end; /* 内容靠底部 */
-  padding-bottom: 60px; /* 保持原有的底部间距 */
+  align-items: flex-end;
+  padding-bottom: 60px;
 }
 
 .hero-content {
@@ -696,12 +691,12 @@ export default {
 .page-indicator {
   width: 16px;
   height: 2px;
-  background-color: rgba(255, 255, 255, 0.3); /* 默认灰色 */
+  background-color: rgba(255, 255, 255, 0.3);
   transition: all 0.3s ease;
 }
 
 .page-indicator.active {
-  background-color: #ff0000; /* 激活状态为红色 */
+  background-color: #ff0000;
 }
 
 .page-info {
@@ -733,7 +728,7 @@ export default {
 .info-item h4 {
   color: rgba(255, 255, 255, 0.6);
   font-size: 16px;
-  margin-bottom: 12px; /* 标题和内容之间的间距 */
+  margin-bottom: 12px;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -741,15 +736,15 @@ export default {
 }
 
 .person-info {
-  margin-top: 8px; /* 人物信息的上边距 */
+  margin-top: 8px;
 }
 
 .languages-list, .genres-list {
-  margin-top: 8px; /* 标签列表的上边距 */
+  margin-top: 8px;
 }
 
 .ratings-container {
-  margin-top: 8px; /* 评分容器的上边距 */
+  margin-top: 8px;
 }
 
 .tag {
