@@ -118,6 +118,11 @@ export default {
     },
 
     goToDetails(movieId) {
+      if (!movieId) {
+        this.$message.error('电影ID无效')
+        return
+      }
+      console.log('跳转到电影详情页，ID:', movieId)
       this.$router.push(`/movie-details/${movieId}`)
     }
   }

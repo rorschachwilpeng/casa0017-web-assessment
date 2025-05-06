@@ -8,6 +8,12 @@ const request = axios.create({
 // 请求拦截器
 request.interceptors.request.use(
   config => {
+    // 检查URL中是否包含原始参数占位符
+    if (config.url.includes('/:id') || config.url.includes(':id')) {
+      console.error('请求URL包含未替换的参数占位符:', config.url)
+      // 返回被拒绝的Promise，中断请求
+      return Promise.reject(new Error('请求URL包含未替换的参数占位符'))
+    }
     return config
   },
   error => {

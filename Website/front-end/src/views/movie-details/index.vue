@@ -247,7 +247,8 @@ export default {
       return Math.max(1, Math.ceil(this.movieReviews.length / this.reviewsPerPage))
     },
     getVideoUrl() {
-      if (!this.movie.trailer_url) return ''
+      if (!this.movie || !this.movie.trailer_url) return ''
+      if (!this.movie.trailer_url.includes('v=')) return this.movie.trailer_url
       const videoId = this.movie.trailer_url.split('v=')[1]
       return `https://www.youtube.com/embed/${videoId}?autoplay=1`
     }
@@ -262,6 +263,14 @@ export default {
     async fetchMovieDetails() {
       try {
         const movieId = this.$route.params.id
+        console.log('电影ID:', movieId)
+        if (!movieId || movieId === ':id' || movieId === 'undefined') {
+          console.error('无效的电影ID:', movieId)
+          this.$message.error('无效的电影ID')
+          this.loading = false
+          return
+        }
+
         const response = await request({
           url: `/api/movies/${movieId}`,
           method: 'get'
@@ -282,7 +291,13 @@ export default {
     async fetchMovieReviews() {
       try {
         const movieId = this.$route.params.id
-        console.log('Fetching reviews for movie:', movieId)
+        console.log('获取电影评论，ID:', movieId)
+
+        if (!movieId || movieId === ':id' || movieId === 'undefined') {
+          console.error('无效的电影ID:', movieId)
+          this.movieReviews = []
+          return
+        }
 
         const response = await request({
           url: `/api/movies/${movieId}/reviews`,

@@ -86,11 +86,11 @@ export const constantRoutes = [
   },
 
   {
-    path: '/movie-details',
+    path: '/movie-details/:id',
     component: Layout,
     children: [
       {
-        path: 'index',
+        path: '',
         name: 'MovieDetails',
         component: () => import('@/views/movie-details/index'),
         meta: {
