@@ -1,5 +1,6 @@
 # Environment variables
-.env
+# 注释掉.env，允许它被上传到GitHub
+# .env
 
 # Dependencies
 node_modules/
