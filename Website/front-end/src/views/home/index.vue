@@ -11,28 +11,34 @@
           <!-- First grid of posters -->
           <div class="movie-grid">
             <div v-for="row in 4" :key="`row1-${row}`" class="poster-row">
-              <img v-for="col in 6"
-                   :key="`first-${row}-${col}`"
-                   :src="`/images/posters/movie${((row-1)*6 + col) % 20}.jpg`"
-                   :alt="`Movie ${((row-1)*6 + col) % 20}`" />
+              <img
+                v-for="col in 6"
+                :key="`first-${row}-${col}`"
+                :src="`/images/posters/movie${((row-1)*6 + col) % 20}.jpg`"
+                :alt="`Movie ${((row-1)*6 + col) % 20}`"
+              >
             </div>
           </div>
           <!-- Second grid of posters -->
           <div class="movie-grid">
             <div v-for="row in 4" :key="`row2-${row}`" class="poster-row">
-              <img v-for="col in 6"
-                   :key="`second-${row}-${col}`"
-                   :src="`/images/posters/movie${((row-1)*6 + col) % 20}.jpg`"
-                   :alt="`Movie ${((row-1)*6 + col) % 20}`" />
+              <img
+                v-for="col in 6"
+                :key="`second-${row}-${col}`"
+                :src="`/images/posters/movie${((row-1)*6 + col) % 20}.jpg`"
+                :alt="`Movie ${((row-1)*6 + col) % 20}`"
+              >
             </div>
           </div>
           <!-- Third grid of posters (for infinite scroll) -->
           <div class="movie-grid">
             <div v-for="row in 4" :key="`row3-${row}`" class="poster-row">
-              <img v-for="col in 6"
-                   :key="`third-${row}-${col}`"
-                   :src="`/images/posters/movie${((row-1)*6 + col) % 20}.jpg`"
-                   :alt="`Movie ${((row-1)*6 + col) % 20}`" />
+              <img
+                v-for="col in 6"
+                :key="`third-${row}-${col}`"
+                :src="`/images/posters/movie${((row-1)*6 + col) % 20}.jpg`"
+                :alt="`Movie ${((row-1)*6 + col) % 20}`"
+              >
             </div>
           </div>
         </div>
@@ -54,7 +60,7 @@
           <h2>Explore wide variety of categories</h2>
           <div class="header-controls">
             <div class="view-all-wrapper">
-              <a @click="goToMovieList" class="view-all">View All</a>
+              <a class="view-all" @click="goToMovieList">View All</a>
             </div>
           </div>
         </div>
@@ -176,20 +182,20 @@
           <div class="header-controls">
             <div class="controls-wrapper">
               <div class="slider-controls">
-                <div class="dark-box" @click="prevCinemaPage" :class="{ disabled: currentCinemaPage === 0 }">
+                <div class="dark-box" :class="{ disabled: currentCinemaPage === 0 }" @click="prevCinemaPage">
                   <span class="nav-arrow">&#8592;</span>
                 </div>
                 <div class="page-indicator">
-                  <span class="indicator" :class="{ active: currentCinemaPage === 0 }"></span>
-                  <span class="indicator" :class="{ active: currentCinemaPage === 1 }"></span>
+                  <span class="indicator" :class="{ active: currentCinemaPage === 0 }" />
+                  <span class="indicator" :class="{ active: currentCinemaPage === 1 }" />
                 </div>
-                <div class="dark-box" @click="nextCinemaPage" :class="{ disabled: currentCinemaPage === 1 }">
+                <div class="dark-box" :class="{ disabled: currentCinemaPage === 1 }" @click="nextCinemaPage">
                   <span class="nav-arrow">&#8594;</span>
                 </div>
               </div>
             </div>
             <div class="view-all-wrapper">
-              <a @click="goToCinemaSelect" class="view-all">View All</a>
+              <a class="view-all" @click="goToCinemaSelect">View All</a>
             </div>
           </div>
         </div>
@@ -288,7 +294,7 @@
         <div class="events-grid-row">
           <div class="event-card">
             <div class="event-icon">
-              <i class="fas fa-ticket"></i>
+              <i class="fas fa-ticket" />
             </div>
             <div class="event-content">
               <h3 class="event-title">Online booking</h3>
@@ -300,7 +306,7 @@
 
           <div class="event-card">
             <div class="event-icon">
-              <i class="fas fa-heart"></i>
+              <i class="fas fa-heart" />
             </div>
             <div class="event-content">
               <h3 class="event-title">Valentine's Day</h3>
@@ -312,7 +318,7 @@
 
           <div class="event-card">
             <div class="event-icon">
-              <i class="fas fa-users"></i>
+              <i class="fas fa-users" />
             </div>
             <div class="event-content">
               <h3 class="event-title">Family ticket</h3>
@@ -327,7 +333,7 @@
         <div class="events-grid-row">
           <div class="event-card">
             <div class="event-icon">
-              <i class="fas fa-gift"></i>
+              <i class="fas fa-gift" />
             </div>
             <div class="event-content">
               <h3 class="event-title">Prize draw</h3>
@@ -339,7 +345,7 @@
 
           <div class="event-card">
             <div class="event-icon">
-              <i class="fas fa-theater-masks"></i>
+              <i class="fas fa-theater-masks" />
             </div>
             <div class="event-content">
               <h3 class="event-title">Pop-up show</h3>
@@ -351,7 +357,7 @@
 
           <div class="event-card">
             <div class="event-icon">
-              <i class="fas fa-popcorn"></i>
+              <i class="fas fa-popcorn" />
             </div>
             <div class="event-content">
               <h3 class="event-title">Free popcorn</h3>
@@ -373,19 +379,19 @@
 </template>
 
 <script setup>
-import SvgIcon from '@/components/SvgIcon'  // Import SvgIcon component
 import BookingBanner from '@/components/BookingBanner.vue'
-import TheFooter from '@/components/TheFooter.vue'
 import TheNavbar from '@/components/TheNavbar.vue'
+import TheFooter from '@/components/TheFooter.vue'
 </script>
 
 <script>
-import BookingBanner from '@/components/BookingBanner.vue'
-import TheNavbar from '@/components/TheNavbar.vue'
-import TheFooter from '@/components/TheFooter.vue'
-
 export default {
   name: 'Home',
+  components: {
+    BookingBanner,
+    TheNavbar,
+    TheFooter
+  },
   data() {
     return {
       currentCinemaPage: 0,
@@ -436,11 +442,6 @@ export default {
     goToMovieList() {
       this.$router.push({ name: 'MovieList' })
     }
-  },
-  components: {
-    BookingBanner,
-    TheNavbar,
-    TheFooter
   }
 }
 </script>

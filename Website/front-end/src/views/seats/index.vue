@@ -759,7 +759,6 @@ export default {
       selectedMovieId: '',
       isMovieDropdownOpen: false,
       currentSessionId: null,
-      seats: [],
       currentMovie: {
         name: '',
         poster_url: '',
@@ -1080,7 +1079,7 @@ export default {
     },
     async loadMovies() {
       try {
-        const { status, message, movieData } = await request.get('/api/seats/movies')
+        const { status, movieData } = await request.get('/api/seats/movies')
         if (status === 0 && movieData) {
           this.movieList = movieData
         }
@@ -1117,7 +1116,7 @@ export default {
       }
 
       try {
-        const response = await request({
+        await request({
           url: '/api/seats/reserve',
           method: 'post',
           data: {

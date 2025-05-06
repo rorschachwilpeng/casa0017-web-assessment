@@ -8,23 +8,11 @@
       <!-- 添加深灰色背景 -->
       <div class="nav-background" />
       <div class="nav-links">
-        <<<<<<< HEAD
-        <router-link to="/home/index" class="nav-item">Home</router-link>
-        <router-link to="/movie-list/index" class="nav-item">Movies</router-link>
-        <router-link to="/cinema-select/index" class="nav-item">Cinemas</router-link>
-        <router-link to="/seats" class="nav-item">Booking</router-link>
-        <a
-          href="https://github.com/rorschachwilpeng/casa0017-web-assessment"
-          target="_blank"
-          class="nav-item"
-        >About</a>
-        =======
         <router-link to="/home/index" class="nav-link" :class="{ active: currentPath === '/home/index' }">Home</router-link>
         <router-link to="/movie-list/index" class="nav-link" :class="{ active: currentPath === '/movie-list/index' }">Movies</router-link>
         <router-link to="/cinema-select/index" class="nav-link" :class="{ active: currentPath === '/cinema-select/index' }">Cinemas</router-link>
         <router-link to="/seats/index" class="nav-link" :class="{ active: currentPath === '/seats/index' }">Booking</router-link>
         <router-link to="/about/index" class="nav-link" :class="{ active: currentPath === '/about/index' }">About</router-link>
-        >>>>>>> update-movie-details-ui
       </div>
     </div>
     <div class="nav-icons">
