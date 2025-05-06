@@ -1,48 +1,52 @@
 <template>
-    <!-- 导航栏 -->
-    <nav class="navbar">
-      <div class="logo">
-        <img src="@/assets/logo.png" alt="CINEKNIGHT" />
+  <!-- 导航栏 -->
+  <nav class="navbar">
+    <div class="logo">
+      <img src="@/assets/logo.png" alt="CINEKNIGHT">
+    </div>
+    <div class="nav-links-container">
+      <!-- 添加深灰色背景 -->
+      <div class="nav-background" />
+      <div class="nav-links">
+        <<<<<<< HEAD
+        <router-link to="/home/index" class="nav-item">Home</router-link>
+        <router-link to="/movie-list/index" class="nav-item">Movies</router-link>
+        <router-link to="/cinema-select/index" class="nav-item">Cinemas</router-link>
+        <router-link to="/seats" class="nav-item">Booking</router-link>
+        <a
+          href="https://github.com/rorschachwilpeng/casa0017-web-assessment"
+          target="_blank"
+          class="nav-item"
+        >About</a>
+        =======
+        <router-link to="/home/index" class="nav-link" :class="{ active: currentPath === '/home/index' }">Home</router-link>
+        <router-link to="/movie-list/index" class="nav-link" :class="{ active: currentPath === '/movie-list/index' }">Movies</router-link>
+        <router-link to="/cinema-select/index" class="nav-link" :class="{ active: currentPath === '/cinema-select/index' }">Cinemas</router-link>
+        <router-link to="/seats/index" class="nav-link" :class="{ active: currentPath === '/seats/index' }">Booking</router-link>
+        <router-link to="/about/index" class="nav-link" :class="{ active: currentPath === '/about/index' }">About</router-link>
+        >>>>>>> update-movie-details-ui
       </div>
-      <div class="nav-links-container">
-        <!-- 添加深灰色背景 -->
-        <div class="nav-background"></div>
-        <div class="nav-links">
-<<<<<<< HEAD
-          <router-link to="/home/index" class="nav-item">Home</router-link>
-          <router-link to="/movie-list/index" class="nav-item">Movies</router-link>
-          <router-link to="/cinema-select/index" class="nav-item">Cinemas</router-link>
-          <router-link to="/seats" class="nav-item">Booking</router-link>
-          <a href="https://github.com/rorschachwilpeng/casa0017-web-assessment" 
-             target="_blank" 
-             class="nav-item">About</a>
-=======
-          <router-link to="/home/index" class="nav-link" :class="{ active: currentPath === '/home/index' }">Home</router-link>
-          <router-link to="/movie-list/index" class="nav-link" :class="{ active: currentPath === '/movie-list/index' }">Movies</router-link>
-          <router-link to="/cinema-select/index" class="nav-link" :class="{ active: currentPath === '/cinema-select/index' }">Cinemas</router-link>
-          <router-link to="/seats/index" class="nav-link" :class="{ active: currentPath === '/seats/index' }">Booking</router-link>
-          <router-link to="/about/index" class="nav-link" :class="{ active: currentPath === '/about/index' }">About</router-link>
->>>>>>> update-movie-details-ui
+    </div>
+    <div class="nav-icons">
+      <div class="location-container">
+        <button class="icon-btn" @click="getLocation">
+          <svg-icon icon-class="Map Point Wave" />
+        </button>
+        <div v-if="userLocation" class="location-tooltip">
+          <p>Current Location:</p>
+          <p>Latitude: {{ userLocation.latitude.toFixed(4) }}°</p>
+          <p>Longitude: {{ userLocation.longitude.toFixed(4) }}°</p>
         </div>
       </div>
-      <div class="nav-icons">
-        <div class="location-container">
-          <button class="icon-btn" @click="getLocation">
-            <svg-icon icon-class="Map Point Wave" />
-          </button>
-          <div v-if="userLocation" class="location-tooltip">
-            <p>Current Location:</p>
-            <p>Latitude: {{ userLocation.latitude.toFixed(4) }}°</p>
-            <p>Longitude: {{ userLocation.longitude.toFixed(4) }}°</p>
-          </div>
-        </div>
-        <a href="https://github.com/rorschachwilpeng/casa0017-web-assessment" 
-           target="_blank" 
-           class="icon-btn">
-          <svg-icon icon-class="Letter" />
-        </a>
-      </div>
-    </nav>
+      <a
+        href="https://github.com/rorschachwilpeng/casa0017-web-assessment"
+        target="_blank"
+        class="icon-btn"
+      >
+        <svg-icon icon-class="Letter" />
+      </a>
+    </div>
+  </nav>
 
 </template>
 
@@ -55,6 +59,14 @@ export default {
       userLocation: null
     }
   },
+  watch: {
+    '$route'(to) {
+      this.currentPath = to.path
+    }
+  },
+  created() {
+    this.currentPath = this.$route.path
+  },
   methods: {
     getLocation() {
       if (navigator.geolocation) {
@@ -63,29 +75,21 @@ export default {
             this.userLocation = {
               latitude: position.coords.latitude,
               longitude: position.coords.longitude
-            };
+            }
             // 这里可以添加获取位置成功后的操作
-            console.log('位置信息：', this.userLocation);
+            console.log('位置信息：', this.userLocation)
             // 可以触发一个事件通知父组件
-            this.$emit('location-updated', this.userLocation);
+            this.$emit('location-updated', this.userLocation)
           },
           error => {
-            console.error('获取位置失败：', error.message);
+            console.error('获取位置失败：', error.message)
             // 可以添加错误提示
-            alert('无法获取您的位置信息，请检查位置权限设置');
+            alert('无法获取您的位置信息，请检查位置权限设置')
           }
-        );
+        )
       } else {
-        alert('您的浏览器不支持地理位置功能');
+        alert('您的浏览器不支持地理位置功能')
       }
-    }
-  },
-  created() {
-    this.currentPath = this.$route.path
-  },
-  watch: {
-    '$route'(to) {
-      this.currentPath = to.path
     }
   }
 }

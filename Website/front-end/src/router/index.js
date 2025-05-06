@@ -46,10 +46,6 @@ export const constantRoutes = [
       }
     ]
   },
-<<<<<<< HEAD
-
-=======
->>>>>>> update-movie-details-ui
   {
     path: '/home',
     component: Layout,
@@ -90,20 +86,11 @@ export const constantRoutes = [
   },
 
   {
-<<<<<<< HEAD
     path: '/movie-details',
     component: Layout,
     children: [
       {
         path: 'index',
-=======
-    path: '/movie-details/:id',
-    component: Layout,
-    hidden: true,
-    children: [
-      {
-        path: '',
->>>>>>> update-movie-details-ui
         name: 'MovieDetails',
         component: () => import('@/views/movie-details/index'),
         meta: {

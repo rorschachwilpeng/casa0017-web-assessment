@@ -1,20 +1,20 @@
 <template>
   <div class="about-page bg-black">
     <TheNavbar />
-    
+
     <!-- Main content container -->
     <div class="main-container mx-auto px-[100px]">
       <!-- Video section -->
       <section class="video-section py-20">
         <h2 class="text-3xl font-bold text-white mb-12 text-center">Watch Our Video</h2>
         <div class="aspect-w-16 aspect-h-9">
-          <iframe 
-            src="https://www.youtube.com/embed/DSnffi7dldU" 
-            frameborder="0" 
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+          <iframe
+            src="https://www.youtube.com/embed/DSnffi7dldU"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowfullscreen
             class="w-full h-full rounded-lg"
-          ></iframe>
+          />
         </div>
       </section>
 

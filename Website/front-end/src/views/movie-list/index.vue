@@ -1,9 +1,8 @@
 <template>
-<<<<<<< HEAD
   <div class="movie-list-container">
     <!-- 添加导航栏组件 -->
     <TheNavbar />
-    
+
     <!-- Category Filter -->
     <div class="category-filter">
       <span class="category-label">Category : </span>
@@ -14,11 +13,6 @@
         </el-radio-button>
       </el-radio-group>
     </div>
-=======
-  <div class="home">
-    <!-- 导航栏 -->
-    <TheNavbar />
->>>>>>> update-movie-details-ui
 
     <!-- 内容容器 -->
     <div class="content-wrapper">
@@ -27,8 +21,8 @@
         <div class="category-filter">
           <span class="category-label">Category : </span>
           <div class="category-buttons">
-            <button 
-              v-for="cat in ['All', ...categories]" 
+            <button
+              v-for="cat in ['All', ...categories]"
               :key="cat"
               :class="['category-btn', { active: selectedCategory === cat }]"
               @click="handleCategoryChange(cat)"
@@ -62,16 +56,16 @@
                 <strong>Cast:</strong> {{ movie.cast }}
               </div>
               <p class="movie-description">{{ movie.description }}</p>
-              <p class="movie-plot" v-if="showFullPlot">{{ movie.plot_summary }}</p>
+              <p v-if="showFullPlot" class="movie-plot">{{ movie.plot_summary }}</p>
             </div>
           </div>
         </div>
-        
+
         <!-- 将 BookingBanner 移动到这里 -->
         <BookingBanner />
       </div>
     </div>
-    
+
     <!-- 页脚 -->
     <TheFooter />
   </div>
@@ -80,22 +74,11 @@
 <script>
 import request from '@/utils/request'
 import TheNavbar from '@/components/TheNavbar.vue'
-<<<<<<< HEAD
-=======
-import TheFooter from '@/components/TheFooter.vue'
-import BookingBanner from '@/components/BookingBanner.vue'
->>>>>>> update-movie-details-ui
 
 export default {
   name: 'MovieList',
   components: {
-<<<<<<< HEAD
     TheNavbar
-=======
-    TheNavbar,
-    TheFooter,
-    BookingBanner
->>>>>>> update-movie-details-ui
   },
   data() {
     return {
@@ -135,32 +118,15 @@ export default {
     },
 
     goToDetails(movieId) {
-      this.$router.push(`/movie-details/${movieId}`);
+      this.$router.push(`/movie-details/${movieId}`)
     }
   }
 }
 </script>
 <style lang="scss" scoped>
-<<<<<<< HEAD
 .movie-list-container {
   position: relative;
   width: 100%;
-=======
-.home {
-  width: 100%;
-  min-height: 100vh;
-  background-color: #0A0A0A;
-  color: #ffffff;
-  position: relative;
-}
-
-.content-wrapper {
-  padding: 80px 120px 40px;
-  width: 100%;
-  box-sizing: border-box;
-  min-height: calc(100vh - 80px);
-  margin-bottom: 60px;
->>>>>>> update-movie-details-ui
 }
 
 .app-container {

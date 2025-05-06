@@ -46,15 +46,17 @@
         <div class="nav-column connect-column">
           <h4>Connect With Us</h4>
           <div class="social-links">
-            <a href="#"><i class="fab fa-facebook"></i></a>
-            <a href="#"><i class="fab fa-twitter"></i></a>
-            <a href="#"><i class="fab fa-linkedin"></i></a>
+            <a href="#"><i class="fab fa-facebook" /></a>
+            <a href="#"><i class="fab fa-twitter" /></a>
+            <a href="#"><i class="fab fa-linkedin" /></a>
           </div>
           <div class="qr-code">
-            <img src="@/assets/github-qr.png" alt="GitHub QR Code" />
-            <a href="https://github.com/rorschachwilpeng/casa0017-web-assessment" 
-               target="_blank" 
-               class="github-link">
+            <img src="@/assets/github-qr.png" alt="GitHub QR Code">
+            <a
+              href="https://github.com/rorschachwilpeng/casa0017-web-assessment"
+              target="_blank"
+              class="github-link"
+            >
               visit our GitHub
             </a>
           </div>
@@ -190,13 +192,13 @@ export default {
     grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     gap: 30px;
   }
-  
+
   .footer-bottom {
     flex-direction: column;
     gap: 20px;
     text-align: center;
   }
-  
+
   .footer-links {
     flex-wrap: wrap;
     justify-content: center;
@@ -207,7 +209,7 @@ export default {
   .footer-content {
     padding: 0 20px;
   }
-  
+
   .footer-nav {
     grid-template-columns: repeat(2, 1fr);
     gap: 24px;
@@ -260,4 +262,4 @@ export default {
 .github-link:hover {
   color: #FFFFFF;
 }
-</style> 
+</style>

@@ -1,18 +1,17 @@
 <template>
-<<<<<<< HEAD
   <div class="app-container">
     <!-- 添加导航栏组件 -->
     <TheNavbar />
-    
+
     <!-- 顶部电影信息 -->
     <div class="movie-header">
       <!-- 添加电影选择器 -->
       <div class="movie-selector">
         <span class="label">Select Movie:</span>
-        <el-select 
+        <el-select
+          v-model="selectedMovieId"
           style="width: 300px"
-          v-model="selectedMovieId" 
-          placeholder="Please select a movie" 
+          placeholder="Please select a movie"
           @change="handleMovieChange"
         >
           <el-option
@@ -32,7 +31,7 @@
       <div v-if="movieTitle" class="movie-title">
         {{ movieTitle }}
       </div>
-      
+
       <!-- 时间和筛选选项 -->
       <div class="filter-section">
         <div class="time-filter">
@@ -41,7 +40,7 @@
             <el-radio-button label="today">today</el-radio-button>
           </el-radio-group>
         </div>
-        
+
         <div class="other-filters">
           <span class="label">Filter:</span>
           <el-radio-group v-model="selectedFilter" size="small">
@@ -57,10 +56,10 @@
     <div class="main-content">
       <!-- 左侧影院列表 -->
       <div class="cinemas-list">
-        <div 
-          v-for="cinema in sortedCinemas" 
-          :key="cinema.cinema_id" 
-          class="cinema-item" 
+        <div
+          v-for="cinema in sortedCinemas"
+          :key="cinema.cinema_id"
+          class="cinema-item"
           :data-cinema-id="cinema.cinema_id"
           @click="selectCinema(cinema)"
         >
@@ -69,7 +68,7 @@
             <span class="distance">Distance: {{ cinema.distance }}km</span>
             <span class="rating">Rating: {{ cinema.rating }}</span>
           </div>
-          <div class="safety-info" v-if="cinema.safety_score !== undefined">
+          <div v-if="cinema.safety_score !== undefined" class="safety-info">
             <span class="safety-score">Safety Score: {{ cinema.safety_score }}</span>
             <span class="safety-level" :class="cinema.safety_level.toLowerCase().replace(' ', '-')">
               {{ cinema.safety_level }}
@@ -88,302 +87,149 @@
 
       <!-- 右侧地图区域 -->
       <div class="map-container">
-        <div id="map"></div>
-        
-        <!-- 修改后的路线信息控件 -->
+        <div id="map" />
+
+        <!-- 路线信息控件 -->
         <div v-if="routeInfo" class="route-info-control">
           <h4>Route Information</h4>
           <div class="route-modes">
-            <div 
-              v-for="(data, mode) in routeInfo" 
+            <div
+              v-for="(data, mode) in routeInfo"
               :key="mode"
               class="route-mode-item"
               :class="{ active: selectedTransportMode === mode }"
               @click="handleTransportModeChange(mode)"
-=======
-  <div class="home">
-    <!-- Navigation bar -->
-    <TheNavbar />
-
-    <div class="content-section">
-      <!-- Main content -->
-      <div class="app-container">
-        <!-- Movie information header -->
-        <div class="movie-header">
-          <!-- Movie selector -->
-          <div class="movie-selector">
-            <span class="label">Select Movie:</span>
-            <el-select
-              style="width: 300px"
-              v-model="selectedMovieId"
-              placeholder="Please select a movie"
-              @change="handleMovieChange"
->>>>>>> update-movie-details-ui
             >
-              <!-- Movie options -->
-              <el-option
-                v-for="movie in moviesList"
-                :key="movie.id"
-                :label="movie.name"
-                :value="movie.id"
-              >
-                <span style="float: left">{{ movie.name }}</span>
-                <span style="float: right; color: #8492a6; font-size: 13px">
-                  {{ movie.category }}
-                </span>
-              </el-option>
-            </el-select>
-          </div>
-
-          <!-- Movie title display -->
-          <div v-if="movieTitle" class="movie-title">
-            {{ movieTitle }}
-          </div>
-
-          <!-- Filter section -->
-          <div class="filter-section">
-            <!-- Time filter -->
-            <div class="time-filter">
-              <span class="label">Time:</span>
-              <div class="button-group">
-                <!-- Time selection buttons -->
-                <div 
-                  class="button" 
-                  :class="{ active: selectedTime === 'today' }"
-                  @click="selectedTime = 'today'"
-                >
-                  today
-                </div>
-                <div 
-                  class="button" 
-                  :class="{ active: selectedTime === 'tomorrow' }"
-                  @click="selectedTime = 'tomorrow'"
-                >
-                  tomorrow
-                </div>
-                <div class="button" @click="handleDateSelect">
-                  <i class="el-icon-date"></i>
-                  select
-                </div>
+              <div class="mode-header">
+                <i :class="getTransportIcon(mode)" />
+                <span class="mode-name">{{ mode.charAt(0).toUpperCase() + mode.slice(1) }}</span>
               </div>
-            </div>
-
-            <!-- Additional filters -->
-            <div class="other-filters">
-              <span class="label">Filter:</span>
-              <div class="button-group">
-                <!-- Filter options -->
-                <div 
-                  class="button" 
-                  :class="{ active: selectedFilter === 'closest' }"
-                  @click="selectedFilter = 'closest'"
-                >
-                  closest
+              <div class="mode-details">
+                <div class="detail-item">
+                  <i class="el-icon-time" />
+                  <span>{{ data.duration }}</span>
                 </div>
-                <div 
-                  class="button" 
-                  :class="{ active: selectedFilter === 'highest-rated' }"
-                  @click="selectedFilter = 'highest-rated'"
-                >
-                  highest rated
-                </div>
-                <div 
-                  class="button" 
-                  :class="{ active: selectedFilter === 'safest' }"
-                  @click="selectedFilter = 'safest'"
-                >
-                  safest
+                <div class="detail-item">
+                  <i class="el-icon-location-outline" />
+                  <span>{{ data.distance }}</span>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Main content area -->
-        <div class="main-content">
-          <!-- Cinema list -->
-          <div class="cinemas-list">
-            <!-- Individual cinema items -->
-            <div
-              v-for="cinema in sortedCinemas"
-              :key="cinema.cinema_id"
-              class="cinema-item"
-              :data-cinema-id="cinema.cinema_id"
-              @click="selectCinema(cinema)"
-            >
-              <h3>{{ cinema.name }}</h3>
-              <!-- Cinema information -->
-              <div class="cinema-info">
-                <span class="distance">Distance: {{ cinema.distance }}km</span>
-                <span class="rating">Rating: {{ cinema.rating }}</span>
-              </div>
-              <!-- Safety information -->
-              <div class="safety-info" v-if="cinema.safety_score !== undefined">
-                <span class="safety-score">Safety Score: {{ cinema.safety_score }}</span>
-                <span class="safety-level" :class="cinema.safety_level.toLowerCase().replace(' ', '-')">
-                  {{ cinema.safety_level }}
-                </span>
-              </div>
-              <!-- Screening times -->
-              <div class="showtime-info">
-                <span>Recent screenings:</span>
-                <div class="times">
-                  <span v-for="(time, index) in cinema.screenings" :key="index">
-                    {{ time }}
-                  </span>
-                </div>
-              </div>
+        <!-- Map legend -->
+        <div class="map-legend">
+          <h4>Safety Score</h4>
+          <div class="legend-items">
+            <div class="legend-item">
+              <span class="color-box high-safety" />
+              <span>High Safety (80-100)</span>
+            </div>
+            <div class="legend-item">
+              <span class="color-box medium-safety" />
+              <span>Medium Safety (50-79)</span>
+            </div>
+            <div class="legend-item">
+              <span class="color-box low-safety" />
+              <span>Exercise Caution (0-49)</span>
             </div>
           </div>
+        </div>
+        <el-button
+          class="location-button"
+          type="primary"
+          icon="el-icon-location"
+          @click="getCurrentLocation"
+        >
+          Get My Location
+        </el-button>
+      </div>
+    </div>
 
-          <!-- Map container -->
-          <div class="map-container">
-            <div id="map"></div>
+    <!-- 影院详情区域 -->
+    <div v-if="selectedCinema" class="cinema-details">
+      <h2>{{ selectedCinema.name }}</h2>
 
-            <!-- Route information -->
-            <div v-if="routeInfo" class="route-info-control">
-              <h4>Route Information</h4>
-              <!-- Transport mode options -->
-              <div class="route-modes">
-                <div
-                  v-for="(data, mode) in routeInfo"
-                  :key="mode"
-                  class="route-mode-item"
-                  :class="{ active: selectedTransportMode === mode }"
-                  @click="handleTransportModeChange(mode)"
-                >
-                  <div class="mode-header">
-                    <i :class="getTransportIcon(mode)"></i>
-                    <span class="mode-name">{{ mode.charAt(0).toUpperCase() + mode.slice(1) }}</span>
-                  </div>
-                  <div class="mode-details">
-                    <div class="detail-item">
-                      <i class="el-icon-time" />
-                      <span>{{ data.duration }}</span>
-                    </div>
-                    <div class="detail-item">
-                      <i class="el-icon-location-outline"></i>
-                      <span>{{ data.distance }}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+      <!-- Cinema image -->
+      <div class="cinema-images">
+        <img
+          :src="selectedCinema.image_url ? `http://localhost:3007${selectedCinema.image_url}` : ''"
+          :alt="selectedCinema.name"
+          class="cinema-image"
+        >
+      </div>
+
+      <!-- Cinema information -->
+      <div class="info-section">
+        <div v-if="selectedCinema.safety_score !== undefined" class="info-item safety-details">
+          <label>Safety Information:</label>
+          <div class="safety-stats">
+            <div class="safety-score">
+              <span class="label">Safety Score:</span>
+              <span class="value">{{ selectedCinema.safety_score }}</span>
             </div>
-
-            <!-- Map legend -->
-            <div class="map-legend">
-              <h4>Safety Score</h4>
-              <div class="legend-items">
-                <div class="legend-item">
-                  <span class="color-box high-safety"></span>
-                  <span>High Safety (80-100)</span>
-                </div>
-                <div class="legend-item">
-                  <span class="color-box medium-safety"></span>
-                  <span>Medium Safety (50-79)</span>
-                </div>
-                <div class="legend-item">
-                  <span class="color-box low-safety"></span>
-                  <span>Exercise Caution (0-49)</span>
-                </div>
-              </div>
+            <div class="safety-level" :class="selectedCinema.safety_level.toLowerCase().replace(' ', '-')">
+              {{ selectedCinema.safety_level }}
             </div>
-            <el-button
-              class="location-button"
-              type="primary"
-              icon="el-icon-location"
-              @click="getCurrentLocation"
-            >
-              Get My Location
-            </el-button>
+          </div>
+          <div v-if="selectedCinema.nearby_areas" class="nearby-areas">
+            <h4>Nearby Areas Crime Statistics:</h4>
+            <ul>
+              <li v-for="(area, index) in selectedCinema.nearby_areas" :key="index">
+                {{ area.area_name }} ({{ area.distance }}m) - {{ area.crime_count }} incidents
+              </li>
+            </ul>
           </div>
         </div>
 
-        <!-- Selected cinema details -->
-        <div v-if="selectedCinema" class="cinema-details">
-          <h2>{{ selectedCinema.name }}</h2>
-
-          <!-- Cinema image -->
-          <div class="cinema-images">
-            <img
-              :src="selectedCinema.image_url ? `http://localhost:3007${selectedCinema.image_url}` : ''"
-              :alt="selectedCinema.name"
-              class="cinema-image"
-            >
-          </div>
-
-          <!-- Cinema information -->
-          <div class="info-section">
-            <div class="info-item safety-details" v-if="selectedCinema.safety_score !== undefined">
-              <label>Safety Information:</label>
-              <div class="safety-stats">
-                <div class="safety-score">
-                  <span class="label">Safety Score:</span>
-                  <span class="value">{{ selectedCinema.safety_score }}</span>
-                </div>
-                <div class="safety-level" :class="selectedCinema.safety_level.toLowerCase().replace(' ', '-')">
-                  {{ selectedCinema.safety_level }}
-                </div>
-              </div>
-              <div class="nearby-areas" v-if="selectedCinema.nearby_areas">
-                <h4>Nearby Areas Crime Statistics:</h4>
-                <ul>
-                  <li v-for="(area, index) in selectedCinema.nearby_areas" :key="index">
-                    {{ area.area_name }} ({{ area.distance }}m) - {{ area.crime_count }} incidents
-                  </li>
-                </ul>
-              </div>
-            </div>
-
-            <div class="info-item">
-              <label>Comments:</label>
-              <div class="comments">
-                <p v-for="(comment, index) in selectedCinema.comments" :key="index">
-                  {{ comment }}
-                </p>
-              </div>
-            </div>
-
-            <div class="info-item">
-              <label>Location:</label>
-              <p>{{ selectedCinema.location }}</p>
-            </div>
-
-            <div class="info-item">
-              <label>Phone:</label>
-              <p>{{ selectedCinema.phone }}</p>
-            </div>
-
-            <div class="info-item">
-              <label>Email:</label>
-              <p>{{ selectedCinema.email }}</p>
-            </div>
-
-            <div class="info-item">
-              <label>Website:</label>
-              <p>{{ selectedCinema.website }}</p>
-            </div>
-          </div>
-
-          <!-- Route buttons -->
-          <div class="route-buttons">
-            <el-button type="primary" @click="showRoute">Route</el-button>
+        <div class="info-item">
+          <label>Comments:</label>
+          <div class="comments">
+            <p v-for="(comment, index) in selectedCinema.comments" :key="index">
+              {{ comment }}
+            </p>
           </div>
         </div>
 
-        <!-- Cinema selection hint -->
-        <div v-else class="select-cinema-hint">
-          <div class="hint-content">
-            <i class="el-icon-film"></i>
-            <span>Please select a cinema from the list or map to view details</span>
-          </div>
+        <div class="info-item">
+          <label>Location:</label>
+          <p>{{ selectedCinema.location }}</p>
         </div>
 
-        <!-- Booking banner -->
-        <div class="banner-section">
-          <BookingBanner />
+        <div class="info-item">
+          <label>Phone:</label>
+          <p>{{ selectedCinema.phone }}</p>
+        </div>
+
+        <div class="info-item">
+          <label>Email:</label>
+          <p>{{ selectedCinema.email }}</p>
+        </div>
+
+        <div class="info-item">
+          <label>Website:</label>
+          <p>{{ selectedCinema.website }}</p>
         </div>
       </div>
+
+      <!-- Route buttons -->
+      <div class="route-buttons">
+        <el-button type="primary" @click="showRoute">Route</el-button>
+      </div>
+    </div>
+
+    <!-- Cinema selection hint -->
+    <div v-else class="select-cinema-hint">
+      <div class="hint-content">
+        <i class="el-icon-film" />
+        <span>Please select a cinema from the list or map to view details</span>
+      </div>
+    </div>
+
+    <!-- Booking banner -->
+    <div class="banner-section">
+      <BookingBanner />
     </div>
 
     <TheFooter />
@@ -391,11 +237,6 @@
 </template>
 
 <script>
-<<<<<<< HEAD
-import TheNavbar from '@/components/TheNavbar.vue'
-=======
-// External dependencies
->>>>>>> update-movie-details-ui
 import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
 import request from '@/utils/request'
@@ -417,13 +258,9 @@ L.Icon.Default.mergeOptions({
 export default {
   name: 'CinemaSelect',
   components: {
-<<<<<<< HEAD
-    TheNavbar
-=======
     TheNavbar,
     BookingBanner,
     TheFooter
->>>>>>> update-movie-details-ui
   },
   data() {
     return {
@@ -446,22 +283,29 @@ export default {
   },
   computed: {
     sortedCinemas() {
-      if (!this.cinemas.length) return [];
+      if (!this.cinemas.length) return []
 
-      let sorted = [...this.cinemas];
+      let sorted = [...this.cinemas]
 
       if (this.selectedFilter === 'safest') {
         // Sort by safety score
-        sorted = sorted.sort((a, b) => (b.safety_score || 0) - (a.safety_score || 0));
+        sorted = sorted.sort((a, b) => (b.safety_score || 0) - (a.safety_score || 0))
       } else if (this.selectedFilter === 'closest' && this.userLocation) {
         // Sort by distance
-        sorted = sorted.sort((a, b) => parseFloat(a.distance) - parseFloat(b.distance));
+        sorted = sorted.sort((a, b) => parseFloat(a.distance) - parseFloat(b.distance))
       } else {
         // Sort by rating
-        sorted = sorted.sort((a, b) => parseFloat(b.rating) - parseFloat(a.rating));
+        sorted = sorted.sort((a, b) => parseFloat(b.rating) - parseFloat(a.rating))
       }
 
-      return sorted.slice(0, 5); // Return only the top 5 cinemas
+      return sorted.slice(0, 5) // Return only the top 5 cinemas
+    }
+  },
+  watch: {
+    selectedFilter() {
+      if (this.userLocation) {
+        this.updateCinemaDistances()
+      }
     }
   },
   async created() {
@@ -532,7 +376,7 @@ export default {
                 </div>
                 ` : ''}
                 <div class="popup-actions">
-                  <button class="view-details" onclick="document.querySelector('[data-cinema-id=\\"${cinema.cinema_id}\\"]')?.click()">
+                  <button class="view-details" id="view-details-${cinema.cinema_id}">
                     View Details
                   </button>
                 </div>
@@ -543,6 +387,19 @@ export default {
             className: 'custom-popup-container'
           })
           .addTo(this.map)
+
+        // Add event listener for the popup's view details button
+        marker.on('popupopen', () => {
+          setTimeout(() => {
+            const viewDetailsBtn = document.getElementById(`view-details-${cinema.cinema_id}`)
+            if (viewDetailsBtn) {
+              viewDetailsBtn.addEventListener('click', () => {
+                this.selectCinema(cinema)
+                marker.closePopup()
+              })
+            }
+          }, 100) // Small timeout to ensure the popup DOM is ready
+        })
 
         // If safety score exists, add circle to represent safety level
         if (cinema.safety_score !== undefined) {
@@ -567,49 +424,49 @@ export default {
 
     getCurrentLocation() {
       if (!navigator.geolocation) {
-        this.$message.error('Geolocation is not supported by your browser');
-        return;
+        this.$message.error('Geolocation is not supported by your browser')
+        return
       }
 
       this.$message({
         message: 'Getting your location...',
         type: 'info'
-      });
+      })
 
       navigator.geolocation.getCurrentPosition(
         position => {
-          const { latitude, longitude } = position.coords;
-          this.userLocation = { latitude, longitude };
+          const { latitude, longitude } = position.coords
+          this.userLocation = { latitude, longitude }
 
           // Ensure map is initialized
           if (!this.map) {
-            this.$message.error('Map is not initialized');
-            return;
+            this.$message.error('Map is not initialized')
+            return
           }
 
           // Update or add user location marker
           if (this.userMarker) {
-            this.userMarker.setLatLng([latitude, longitude]);
+            this.userMarker.setLatLng([latitude, longitude])
           } else {
             this.userMarker = L.marker([latitude, longitude])
-              .addTo(this.map);
+              .addTo(this.map)
           }
 
           // Center map on user location
-          this.map.setView([latitude, longitude], 13);
+          this.map.setView([latitude, longitude], 13)
 
           // Update distances to all cinemas
-          this.updateCinemaDistances();
+          this.updateCinemaDistances()
 
           this.$message({
             message: 'Location found!',
             type: 'success'
-          });
+          })
         },
         error => {
-          this.$message.error('Unable to get your location: ' + error.message);
+          this.$message.error('Unable to get your location: ' + error.message)
         }
-      );
+      )
     },
 
     updateCinemaDistances() {
@@ -626,33 +483,49 @@ export default {
     },
 
     selectCinema(cinema) {
+      console.log('Cinema selected:', cinema.name)
       this.selectedCinema = cinema
+
+      // Set map view to focus on selected cinema
       if (this.map) {
         this.map.setView([cinema.latitude, cinema.longitude], 15)
       }
+
+      // Add a small delay to ensure the DOM has updated
+      this.$nextTick(() => {
+        // Find the cinema details element
+        const detailsElement = document.querySelector('.cinema-details')
+        if (detailsElement) {
+          // Scroll to the cinema details element
+          detailsElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+          console.log('Scrolled to cinema details')
+        } else {
+          console.warn('Cinema details element not found')
+        }
+      })
     },
 
     // Get movie list
     async fetchMovies() {
-      console.log('=== Starting to fetch movie list ===');
+      console.log('=== Starting to fetch movie list ===')
       try {
         const response = await request({
           url: '/api/movies',
           method: 'get'
         })
-        console.log('Movie list response:', response);
+        console.log('Movie list response:', response)
 
         if (response && response.data) {
           this.moviesList = response.data
-          console.log('Fetched movie list:', this.moviesList);
+          console.log('Fetched movie list:', this.moviesList)
 
           // If there are movie data, default to the first one
           if (this.moviesList.length > 0) {
             this.selectedMovieId = this.moviesList[0].id
-            console.log('Default selected movie ID:', this.selectedMovieId);
+            console.log('Default selected movie ID:', this.selectedMovieId)
             await this.handleMovieChange(this.selectedMovieId)
           } else {
-            console.log('No available movie data');
+            console.log('No available movie data')
           }
         }
       } catch (error) {
@@ -665,19 +538,19 @@ export default {
     async handleMovieChange(movieId) {
       if (!movieId) return
 
-      console.log('=== Movie selection change ===');
-      console.log('Selected movie ID:', movieId);
+      console.log('=== Movie selection change ===')
+      console.log('Selected movie ID:', movieId)
 
       this.movieTitle = this.moviesList.find(m => m.id === movieId)?.name || ''
-      console.log('Movie title:', this.movieTitle);
+      console.log('Movie title:', this.movieTitle)
 
       await this.fetchCinemas(movieId)
     },
 
     // Get cinema information
     async fetchCinemas(movieId) {
-      console.log('=== Starting to fetch cinema information ===');
-      console.log('Requested movie ID:', movieId);
+      console.log('=== Starting to fetch cinema information ===')
+      console.log('Requested movie ID:', movieId)
 
       this.loading = true
       try {
@@ -685,7 +558,7 @@ export default {
           url: `/api/cinemas/movie/${movieId}`,
           method: 'get'
         })
-        console.log('Cinema data response:', response);
+        console.log('Cinema data response:', response)
 
         if (response && response.data) {
           this.cinemas = response.data.map(cinema => ({
@@ -693,7 +566,7 @@ export default {
             distance: '0',
             screenings: cinema.screening_times ? cinema.screening_times.split(',') : []
           }))
-          console.log('Processed cinema data:', this.cinemas);
+          console.log('Processed cinema data:', this.cinemas)
 
           // Ensure map is initialized
           if (!this.map) {
@@ -727,16 +600,16 @@ export default {
       const dLat = this.deg2rad(lat2 - lat1)
       const dLon = this.deg2rad(lon2 - lon1)
       const a =
-        Math.sin(dLat/2) * Math.sin(dLat/2) +
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
         Math.cos(this.deg2rad(lat1)) * Math.cos(this.deg2rad(lat2)) *
-        Math.sin(dLon/2) * Math.sin(dLon/2)
-      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))
+        Math.sin(dLon / 2) * Math.sin(dLon / 2)
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
       const distance = R * c // Distance, in kilometers
       return distance.toFixed(1) // Round to one decimal place
     },
 
     deg2rad(deg) {
-      return deg * (Math.PI/180)
+      return deg * (Math.PI / 180)
     },
 
     getSafetyColor(score) {
@@ -748,8 +621,8 @@ export default {
     // Modify showRoute method
     async showRoute() {
       if (!this.userLocation || !this.selectedCinema) {
-        this.$message.warning('Please get your location first');
-        return;
+        this.$message.warning('Please get your location first')
+        return
       }
 
       try {
@@ -763,10 +636,10 @@ export default {
             lat: Number(this.selectedCinema.latitude),
             lng: Number(this.selectedCinema.longitude)
           }
-        };
+        }
 
-        console.log('\n[Route Frontend] ====== Starting Route Calculation ======');
-        console.log('[Route Frontend] Request data:', JSON.stringify(requestData, null, 2));
+        console.log('\n[Route Frontend] ====== Starting Route Calculation ======')
+        console.log('[Route Frontend] Request data:', JSON.stringify(requestData, null, 2))
 
         // Send route calculation request
         const response = await axios.post('http://localhost:3007/api/routes/calculate', requestData, {
@@ -774,84 +647,83 @@ export default {
             'Content-Type': 'application/json'
           },
           timeout: 10000
-        });
+        })
 
-        console.log('[Route Frontend] Response received:', JSON.stringify(response.data, null, 2));
+        console.log('[Route Frontend] Response received:', JSON.stringify(response.data, null, 2))
 
         if (response.data.status === 0 && response.data.data) {
-          const routeData = response.data.data;
+          const routeData = response.data.data
           console.log('\n[Route Frontend] Route data structure:', {
             availableModes: Object.keys(routeData),
             selectedMode: this.selectedTransportMode,
             hasDrivingRoute: !!routeData.driving,
             drivingPath: routeData.driving?.path ? 'exists' : 'missing'
-          });
+          })
 
-          this.routeInfo = routeData;
-          this.drawRouteOnMap(routeData);
-          this.$message.success('Route calculated successfully');
+          this.routeInfo = routeData
+          this.drawRouteOnMap(routeData)
+          this.$message.success('Route calculated successfully')
         } else {
-          throw new Error('Invalid response format');
+          throw new Error('Invalid response format')
         }
-
       } catch (error) {
-        console.error('\n[Route Frontend] ====== Route Calculation Failed ======');
-        console.error('[Route Frontend] Error type:', error.name);
-        console.error('[Route Frontend] Error message:', error.message);
+        console.error('\n[Route Frontend] ====== Route Calculation Failed ======')
+        console.error('[Route Frontend] Error type:', error.name)
+        console.error('[Route Frontend] Error message:', error.message)
 
         if (error.response) {
-          console.error('[Route Frontend] Response status:', error.response.status);
-          console.error('[Route Frontend] Response data:', error.response.data);
+          console.error('[Route Frontend] Response status:', error.response.status)
+          console.error('[Route Frontend] Response data:', error.response.data)
         } else if (error.request) {
-          console.error('[Route Frontend] No response received');
+          console.error('[Route Frontend] No response received')
         }
 
         this.$message.error(
           error.response?.data?.message ||
           'Failed to calculate route. Please try again.'
-        );
+        )
       }
     },
 
     // Draw route on map
     drawRouteOnMap(routeInfo) {
-      console.log('[Route] Starting to draw route with data:', JSON.stringify(routeInfo, null, 2));
+      console.log('[Route] Starting to draw route with data:', JSON.stringify(routeInfo, null, 2))
 
       // Clear existing routes
       if (this.routePolylines) {
         this.routePolylines.forEach(line => {
           if (line && typeof line.remove === 'function') {
-            line.remove();
+            line.remove()
           }
-        });
+        })
       }
-      this.routePolylines = [];
+      this.routePolylines = []
 
       // Get selected transport mode route
-      const route = routeInfo[this.selectedTransportMode];
+      const route = routeInfo[this.selectedTransportMode]
       console.log('[Route] Selected mode data:', {
         mode: this.selectedTransportMode,
         hasRoute: !!route,
         hasPath: route?.path ? 'yes' : 'no',
         pathType: route?.path ? typeof route.path : 'undefined',
         pathLength: route?.path?.length
-      });
+      })
 
       if (!route || !route.path) {
-        console.error(`[Route] No route found for ${this.selectedTransportMode} mode`);
-        console.error('[Route] Available modes:', Object.keys(routeInfo));
-        return;
+        console.error(`[Route] No route found for ${this.selectedTransportMode} mode`)
+        console.error('[Route] Available modes:', Object.keys(routeInfo))
+        return
       }
 
       // Validate path data
       if (!Array.isArray(route.path)) {
-        console.error('[Route] Path is not an array:', route.path);
-        return;
+        console.error('[Route] Path is not an array:', route.path)
+        return
       }
 
       if (route.path.length === 0) {
-        console.error('[Route] Path array is empty');
-        return;
+        console.error('[Route] Path array is empty')
+        return
       }
 
       // Validate coordinate format
@@ -859,18 +731,18 @@ export default {
         Array.isArray(coord) &&
         coord.length === 2 &&
         typeof coord[0] === 'number' &&
-        typeof coord[1] === 'number';
+        typeof coord[1] === 'number'
 
       if (!route.path.every(isValidCoordinate)) {
         console.error('[Route] Invalid coordinates in path:',
           route.path.find(coord => !isValidCoordinate(coord))
-        );
-        return;
+        )
+        return
       }
 
       try {
         // Use blue color
-        const routeColor = '#409EFF';
+        const routeColor = '#409EFF'
 
         // Create route style
         const routeStyle = {
@@ -879,22 +751,22 @@ export default {
           opacity: 0.8,
           lineCap: 'round',
           lineJoin: 'round'
-        };
+        }
 
-        console.log('[Route] Drawing path with', route.path.length, 'points');
-        console.log('[Route] First point:', route.path[0]);
-        console.log('[Route] Last point:', route.path[route.path.length - 1]);
+        console.log('[Route] Drawing path with', route.path.length, 'points')
+        console.log('[Route] First point:', route.path[0])
+        console.log('[Route] Last point:', route.path[route.path.length - 1])
 
         // Draw main route
-        const polyline = L.polyline(route.path, routeStyle).addTo(this.map);
-        this.routePolylines.push(polyline);
+        const polyline = L.polyline(route.path, routeStyle).addTo(this.map)
+        this.routePolylines.push(polyline)
 
         // Adjust map view to show entire route
-        this.map.fitBounds(polyline.getBounds(), { padding: [50, 50] });
+        this.map.fitBounds(polyline.getBounds(), { padding: [50, 50] })
 
         // Add start and end markers
-        const startPoint = route.path[0];
-        const endPoint = route.path[route.path.length - 1];
+        const startPoint = route.path[0]
+        const endPoint = route.path[route.path.length - 1]
 
         // Create start marker
         const startIcon = L.divIcon({
@@ -907,7 +779,7 @@ export default {
           `,
           iconSize: [40, 40],
           iconAnchor: [20, 20]
-        });
+        })
 
         // Create end marker
         const endIcon = L.divIcon({
@@ -920,52 +792,45 @@ export default {
           `,
           iconSize: [40, 40],
           iconAnchor: [20, 20]
-        });
+        })
 
         // Add start and end markers
-        const startMarker = L.marker(startPoint, { icon: startIcon }).addTo(this.map);
-        const endMarker = L.marker(endPoint, { icon: endIcon }).addTo(this.map);
-        this.routePolylines.push(startMarker, endMarker);
+        const startMarker = L.marker(startPoint, { icon: startIcon }).addTo(this.map)
+        const endMarker = L.marker(endPoint, { icon: endIcon }).addTo(this.map)
+        this.routePolylines.push(startMarker, endMarker)
 
-        console.log('[Route] Route drawn successfully');
+        console.log('[Route] Route drawn successfully')
       } catch (error) {
-        console.error('[Route] Error drawing route:', error);
-        console.error('[Route] Error stack:', error.stack);
-        this.$message.error('Failed to draw route on map');
+        console.error('[Route] Error drawing route:', error)
+        console.error('[Route] Error stack:', error.stack)
+        this.$message.error('Failed to draw route on map')
       }
     },
 
     handleTransportModeChange(mode) {
-      console.log('[Route] Transport mode changed to:', mode);
-      this.selectedTransportMode = mode; // First update selected transport mode
+      console.log('[Route] Transport mode changed to:', mode)
+      this.selectedTransportMode = mode // First update selected transport mode
       if (this.routeInfo && this.routeInfo[mode]) {
-        this.drawRouteOnMap(this.routeInfo);
+        this.drawRouteOnMap(this.routeInfo)
       }
     },
 
     getTransportIcon(mode) {
       switch (mode) {
         case 'driving':
-          return 'el-icon-position';
+          return 'el-icon-position'
         case 'walking':
-          return 'el-icon-user';
+          return 'el-icon-user'
         case 'cycling':
-          return 'el-icon-bicycle';
+          return 'el-icon-bicycle'
         default:
-          return '';
+          return ''
       }
     },
 
     handleDateSelect() {
       // Handle date selection logic
-      console.log('Open date selector');
-    }
-  },
-  watch: {
-    selectedFilter() {
-      if (this.userLocation) {
-        this.updateCinemaDistances()
-      }
+      console.log('Open date selector')
     }
   }
 }
@@ -977,7 +842,6 @@ export default {
   min-height: 100vh;
   background-color: #0A0A0A;
   color: #ffffff;
-<<<<<<< HEAD
   padding: 80px 124px 60px;
   background: linear-gradient(
     to bottom,
@@ -986,28 +850,6 @@ export default {
     rgba(26, 26, 26, 1) 10%,
     rgba(26, 26, 26, 1) 100%
   );
-=======
-}
-
-.content-section {
-  padding: 0px 0px;
-
-  /* Add this container style to maintain consistent content width */
-  .container {
-    padding: 0 124px;  // Use the same left and right padding as app-container
-    margin: 0 auto;
-    width: 100%;
-  }
-}
-
-/* Global styles */
-.app-container {
-  width: 100%;
-  min-height: 100vh;
-  color: #ffffff;
-  padding: 120px 124px 40px; // Reduce bottom padding to 60px
-  background: transparent;
->>>>>>> update-movie-details-ui
 }
 
 .movie-header {
@@ -1083,7 +925,7 @@ export default {
       }
     }
 
-    .time-filter, 
+    .time-filter,
     .other-filters {
       display: flex;
       align-items: center;
@@ -1915,7 +1757,7 @@ export default {
     gap: 12px;
     color: #ffffff;
     font-size: 16px;
-    
+
     i {
       font-size: 24px;
       color: #409EFF;

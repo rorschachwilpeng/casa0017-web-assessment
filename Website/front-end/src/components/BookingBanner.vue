@@ -3,7 +3,7 @@
     <div class="content-wrapper">
       <div class="booking-banner">
         <div class="banner-bg">
-          <img src="@/assets/back.png" alt="Movies Collage" />
+          <img src="@/assets/back.png" alt="Movies Collage">
         </div>
         <div class="booking-content">
           <div class="booking-text">
@@ -66,7 +66,7 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: linear-gradient(90deg, 
+  background: linear-gradient(90deg,
     rgba(0, 0, 0, 0.9) 0%,
     rgba(0, 0, 0, 0.7) 50%,
     rgba(0, 0, 0, 0.4) 100%

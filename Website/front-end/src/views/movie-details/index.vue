@@ -1,15 +1,7 @@
+<!-- eslint-disable -->
 <template>
-<<<<<<< HEAD
-  <div class="movie-detail">
-    <!-- 添加导航栏 -->
-    <TheNavbar />
-    
-    <!-- 顶部大图部分 -->
-    <div class="hero-section" :style="{ backgroundImage: `url(${movie.image})` }">
-=======
-  <div class="movie-detail" v-loading="loading">
+  <div v-loading="loading" class="movie-detail">
     <div v-if="movie" class="hero-section" :style="{ backgroundImage: movie.poster_url ? `url(http://localhost:3007${movie.poster_url})` : '' }">
->>>>>>> update-movie-details-ui
       <div class="overlay">
         <div class="hero-content">
           <h1>{{ movie.name }}</h1>
@@ -17,7 +9,7 @@
           <div class="button-container">
             <button class="preview-btn" @click="playTrailer">
               <svg class="play-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M8 5.14V19.14L19 12.14L8 5.14Z" fill="currentColor"/>
+                <path d="M8 5.14V19.14L19 12.14L8 5.14Z" fill="currentColor" />
               </svg>
               Play Previews
             </button>
@@ -39,11 +31,15 @@
           <div class="cast-section">
             <h2>Cast</h2>
             <div class="cast-list">
-              <div v-for="(actor, index) in castArray" :key="index" class="cast-member">
-                <div class="cast-image-placeholder" v-if="!actorImages[actor]">
-                  <i class="el-icon-user"></i>
+              <div
+                v-for="(actor, index) in castArray"
+                :key="index"
+                class="cast-member"
+              >
+                <div v-if="!actorImages[actor]" class="cast-image-placeholder">
+                  <i class="el-icon-user" />
                 </div>
-                <div class="cast-image" v-else>
+                <div v-else class="cast-image">
                   <img :src="`http://localhost:3007${actorImages[actor]}`" :alt="actor">
                 </div>
                 <span class="actor-name">{{ actor }}</span>
@@ -56,12 +52,20 @@
               <h2 class="section-title">Reviews</h2>
             </div>
             <div class="reviews-list">
-              <div v-for="review in displayedReviews" :key="review.review_id" class="review-card">
+              <div
+                v-for="review in displayedReviews"
+                :key="review.review_id"
+                class="review-card"
+              >
                 <div class="review-header">
                   <h4>{{ review.reviewer_name }}</h4>
                   <div class="review-rating">
                     <div class="stars">
-                      <span v-for="n in 5" :key="n" class="review-star">
+                      <span
+                        v-for="n in 5"
+                        :key="n"
+                        class="review-star"
+                      >
                         <span v-if="getStarType(review.rating, n) === 'full'" class="star-filled">★</span>
                         <span v-else-if="getStarType(review.rating, n) === 'half'" class="star-half">★</span>
                         <span v-else class="star-empty">★</span>
@@ -73,16 +77,20 @@
               </div>
             </div>
             <div class="pagination-controls">
-              <button @click="prevPage"
-                      :disabled="currentPage === 0"
-                      class="nav-btn">
-                <i class="el-icon-arrow-left"></i>
+              <button
+                :disabled="currentPage === 0"
+                class="nav-btn"
+                @click="prevPage"
+              >
+                <i class="el-icon-arrow-left" />
               </button>
               <span class="page-info">{{ currentPage + 1 }} / {{ totalPages }}</span>
-              <button @click="nextPage"
-                      :disabled="currentPage >= totalPages - 1"
-                      class="nav-btn">
-                <i class="el-icon-arrow-right"></i>
+              <button
+                :disabled="currentPage >= totalPages - 1"
+                class="nav-btn"
+                @click="nextPage"
+              >
+                <i class="el-icon-arrow-right" />
               </button>
             </div>
           </div>
@@ -92,50 +100,57 @@
           <div class="info-container">
             <div class="info-item">
               <h4>
-                <i class="el-icon-date"></i>
+                <i class="el-icon-date" />
                 Released Year
               </h4>
               <p>{{ movie.released_year }}</p>
             </div>
             <div class="info-item">
               <h4>
-                <i class="el-icon-film"></i>
+                <i class="el-icon-film" />
                 Director
               </h4>
               <p>{{ movie.director }}</p>
             </div>
             <div class="info-item">
               <h4>
-                <i class="el-icon-time"></i>
+                <i class="el-icon-time" />
                 Length
               </h4>
               <p>{{ movie.length }}</p>
             </div>
             <div class="info-item">
               <h4>
-                <i class="el-icon-chat-dot-square"></i>
+                <i class="el-icon-chat-dot-square" />
                 Available Languages
               </h4>
               <div class="languages-list">
-                <span v-for="lang in languagesList" :key="lang" class="language-tag">
+                <span
+                  v-for="lang in languagesList"
+                  :key="lang"
+                  class="language-tag"
+                >
                   {{ lang }}
                 </span>
               </div>
             </div>
             <div class="info-item">
               <h4>
-                <i class="el-icon-star-on"></i>
+                <i class="el-icon-star-on" />
                 Ratings
               </h4>
               <div class="ratings-container">
                 <div class="rating-item">
                   <span class="rating-label">IMDb</span>
                   <div class="stars">
-                    <span v-for="n in 5" :key="n"
-                          :class="['star',
-                            n <= imdbStars ? 'star-filled' :
-                            n - 0.5 <= imdbStars ? 'star-half' :
-                            'star-empty']">
+                    <span
+                      v-for="n in 5"
+                      :key="n"
+                      :class="['star',
+                               n <= imdbStars ? 'star-filled' :
+                               n - 0.5 <= imdbStars ? 'star-half' :
+                               'star-empty']"
+                    >
                       ★
                     </span>
                   </div>
@@ -143,11 +158,14 @@
                 <div class="rating-item">
                   <span class="rating-label">Streamvibe</span>
                   <div class="stars">
-                    <span v-for="n in 5" :key="n"
-                          :class="['star',
-                            n <= streamvibeStars ? 'star-filled' :
-                            n - 0.5 <= streamvibeStars ? 'star-half' :
-                            'star-empty']">
+                    <span
+                      v-for="n in 5"
+                      :key="n"
+                      :class="['star',
+                               n <= streamvibeStars ? 'star-filled' :
+                               n - 0.5 <= streamvibeStars ? 'star-half' :
+                               'star-empty']"
+                    >
                       ★
                     </span>
                   </div>
@@ -156,7 +174,7 @@
             </div>
             <div class="info-item">
               <h4>
-                <i class="el-icon-menu"></i>
+                <i class="el-icon-menu" />
                 Genres
               </h4>
               <div class="genres-list">
@@ -188,19 +206,13 @@
 </template>
 
 <script>
-import TheNavbar from '@/components/TheNavbar.vue'
-import BookingBanner from '@/components/BookingBanner.vue'
 import TheFooter from '@/components/TheFooter.vue'
-import TheNavbar from '@/components/TheNavbar.vue'
 import request from '@/utils/request'
 
 export default {
   name: 'MovieDetail',
   components: {
-    TheNavbar,
-    BookingBanner,
-    TheFooter,
-    TheNavbar
+    TheFooter
   },
   data() {
     return {
@@ -227,17 +239,17 @@ export default {
       return (this.movie?.rating_streamvibe || 0) / 2
     },
     displayedReviews() {
-      const start = this.currentPage * this.reviewsPerPage;
-      const end = Math.min(start + this.reviewsPerPage, this.movieReviews.length);
-      return this.movieReviews.slice(start, end);
+      const start = this.currentPage * this.reviewsPerPage
+      const end = Math.min(start + this.reviewsPerPage, this.movieReviews.length)
+      return this.movieReviews.slice(start, end)
     },
     totalPages() {
-      return Math.max(1, Math.ceil(this.movieReviews.length / this.reviewsPerPage));
+      return Math.max(1, Math.ceil(this.movieReviews.length / this.reviewsPerPage))
     },
     getVideoUrl() {
-      if (!this.movie.trailer_url) return '';
-      const videoId = this.movie.trailer_url.split('v=')[1];
-      return `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+      if (!this.movie.trailer_url) return ''
+      const videoId = this.movie.trailer_url.split('v=')[1]
+      return `https://www.youtube.com/embed/${videoId}?autoplay=1`
     }
   },
   async created() {
@@ -269,24 +281,24 @@ export default {
 
     async fetchMovieReviews() {
       try {
-        const movieId = this.$route.params.id;
-        console.log('Fetching reviews for movie:', movieId);
+        const movieId = this.$route.params.id
+        console.log('Fetching reviews for movie:', movieId)
 
         const response = await request({
           url: `/api/movies/${movieId}/reviews`,
           method: 'get'
-        });
+        })
 
         if (response.status === 0 && Array.isArray(response.data)) {
           // 使用 Set 去重
-          const uniqueReviewIds = new Set();
+          const uniqueReviewIds = new Set()
           this.movieReviews = response.data
             .filter(review => {
               if (uniqueReviewIds.has(review.review_id)) {
-                return false;
+                return false
               }
-              uniqueReviewIds.add(review.review_id);
-              return true;
+              uniqueReviewIds.add(review.review_id)
+              return true
             })
             .map(review => ({
               review_id: review.review_id,
@@ -294,60 +306,60 @@ export default {
               rating: Number(review.rating),
               comment: review.comment,
               review_date: review.review_date
-            }));
+            }))
 
-          this.currentPage = 0;
-          console.log('Unique reviews count:', this.movieReviews.length);
+          this.currentPage = 0
+          console.log('Unique reviews count:', this.movieReviews.length)
         } else {
-          this.movieReviews = [];
+          this.movieReviews = []
         }
       } catch (error) {
-        console.error('Failed to fetch reviews:', error);
-        this.$message.error('Failed to load reviews');
-        this.movieReviews = [];
+        console.error('Failed to fetch reviews:', error)
+        this.$message.error('Failed to load reviews')
+        this.movieReviews = []
       }
     },
 
     formatDate(dateString) {
-      if (!dateString) return '';
-      const date = new Date(dateString);
+      if (!dateString) return ''
+      const date = new Date(dateString)
       return date.toLocaleString('zh-CN', {
         year: 'numeric',
         month: '2-digit',
         day: '2-digit',
         hour: '2-digit',
         minute: '2-digit'
-      });
+      })
     },
 
     prevPage() {
       if (this.currentPage > 0) {
-        this.currentPage--;
+        this.currentPage--
       }
     },
 
     nextPage() {
       if (this.currentPage < this.totalPages - 1) {
-        this.currentPage++;
+        this.currentPage++
       }
     },
 
     getStarType(rating, position) {
-      const starValue = rating / 2; // 将10分制转换为5星制
+      const starValue = rating / 2 // 将10分制转换为5星制
       if (position <= Math.floor(starValue)) {
-        return 'full';
+        return 'full'
       } else if (position - 0.5 <= starValue) {
-        return 'half';
+        return 'half'
       }
-      return 'empty';
+      return 'empty'
     },
 
     playTrailer() {
-      this.showPreviewModal = true;
+      this.showPreviewModal = true
     },
 
     async fetchActorImages() {
-      if (!this.castArray || this.castArray.length === 0) return;
+      if (!this.castArray || this.castArray.length === 0) return
 
       try {
         const response = await request({
@@ -356,16 +368,16 @@ export default {
           params: {
             names: this.castArray.join(',')
           }
-        });
+        })
 
         if (response.status === 0 && response.data) {
           this.actorImages = response.data.reduce((acc, actor) => {
-            acc[actor.cast_name] = actor.picture;
-            return acc;
-          }, {});
+            acc[actor.cast_name] = actor.picture
+            return acc
+          }, {})
         }
       } catch (error) {
-        console.error('Failed to fetch actor images:', error);
+        console.error('Failed to fetch actor images:', error)
       }
     }
   }
@@ -1150,5 +1162,4 @@ export default {
   object-fit: cover;
 }
 </style>
-
 

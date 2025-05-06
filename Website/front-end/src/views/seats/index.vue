@@ -1,15 +1,14 @@
 <template>
-<<<<<<< HEAD
   <div class="booking-page">
     <!-- 添加导航栏 -->
     <TheNavbar />
-    
+
     <!-- 电影信息部分 -->
     <div class="movie-info-section">
       <div class="movie-basic-info">
         <div class="movie-poster">
-          <img 
-            :src="'http://localhost:3007' + currentMovie.poster_url" 
+          <img
+            :src="'http://localhost:3007' + currentMovie.poster_url"
             :alt="currentMovie.name"
           >
         </div>
@@ -18,7 +17,7 @@
           <p v-if="currentMovie.length">Duration: {{ currentMovie.length }} mins</p>
         </div>
       </div>
-      
+
       <!-- 新增的影院和场次信息 -->
       <div class="session-info">
         <!-- 电影选择 -->
@@ -28,30 +27,13 @@
             <div class="selected" @click="toggleDropdown('movie')">
               {{ selectedMovieId ? getMovieName(selectedMovieId) : 'Select movie' }}
               <span class="arrow">▼</span>
-=======
-  <div class="app-container">
-    <!-- navigation bar -->
-    <TheNavbar />
-
-    <!-- main content -->
-    <div class="content-section">
-      <div class="booking-page">
-        <!-- movie information section -->
-        <div class="movie-info-section">
-          <div class="movie-basic-info">
-            <div class="movie-poster">
-              <img 
-                :src="'http://localhost:3007' + currentMovie.poster_url" 
-                :alt="currentMovie.name"
-              >
->>>>>>> update-movie-details-ui
             </div>
             <div class="movie-details">
               <h2>{{ currentMovie.name || 'Select a Movie' }}</h2>
               <p v-if="currentMovie.length">Duration: {{ currentMovie.length }} mins</p>
             </div>
           </div>
-          
+
           <!-- new cinema and session information -->
           <div class="session-info">
             <!-- movie selection -->
@@ -62,42 +44,46 @@
                   {{ selectedMovieId ? getMovieName(selectedMovieId) : 'Select movie' }}
                   <span class="arrow">▼</span>
                 </div>
-                <div class="options-container" v-if="isMovieDropdownOpen">
+                <div v-if="isMovieDropdownOpen" class="options-container">
                   <div class="options">
-                    <div v-for="movie in movieList" 
-                         :key="movie.id" 
-                         class="option"
-                         :class="{ 'selected': selectedMovieId === movie.id }"
-                         @click="selectMovie(movie)">
+                    <div
+                      v-for="movie in movieList"
+                      :key="movie.id"
+                      class="option"
+                      :class="{ 'selected': selectedMovieId === movie.id }"
+                      @click="selectMovie(movie)"
+                    >
                       {{ movie.name }}
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            
+
             <div class="info-item">
               <span class="label">Cinema</span>
               <div class="custom-select" :class="{ 'active': isCinemaDropdownOpen }">
                 <!-- loading state -->
                 <div v-if="isLoading" class="loading">Loading cinemas...</div>
-                
+
                 <!-- error message -->
                 <div v-else-if="errorMessage" class="error">{{ errorMessage }}</div>
-                
+
                 <!-- cinema selector -->
                 <template v-else>
                   <div class="selected" @click="toggleDropdown('cinema')">
                     {{ selectedCinemaName }}
                     <span class="arrow">▼</span>
                   </div>
-                  <div class="options-container" v-show="isCinemaDropdownOpen">
+                  <div v-show="isCinemaDropdownOpen" class="options-container">
                     <div class="options">
-                      <div v-for="cinema in cinemaList" 
-                           :key="cinema.id" 
-                           class="option"
-                           :class="{ 'selected': selectedCinemaId === cinema.id }"
-                           @click="selectCinema(cinema)">
+                      <div
+                        v-for="cinema in cinemaList"
+                        :key="cinema.id"
+                        class="option"
+                        :class="{ 'selected': selectedCinemaId === cinema.id }"
+                        @click="selectCinema(cinema)"
+                      >
                         {{ cinema.name }}
                       </div>
                     </div>
@@ -105,7 +91,7 @@
                 </template>
               </div>
             </div>
-            
+
             <!-- date selection -->
             <div class="info-item">
               <span class="label">Date</span>
@@ -114,20 +100,22 @@
                   {{ selectedDateLabel || 'Select date' }}
                   <span class="arrow">▼</span>
                 </div>
-                <div class="options-container" v-show="isDateDropdownOpen">
+                <div v-show="isDateDropdownOpen" class="options-container">
                   <div class="options">
-                    <div v-for="date in availableDates" 
-                         :key="date.value" 
-                         class="option"
-                         :class="{ 'selected': selectedDate === date.value }"
-                         @click="selectDate(date)">
+                    <div
+                      v-for="date in availableDates"
+                      :key="date.value"
+                      class="option"
+                      :class="{ 'selected': selectedDate === date.value }"
+                      @click="selectDate(date)"
+                    >
                       {{ date.label }}
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            
+
             <!-- time selection -->
             <div class="info-item">
               <span class="label">Time</span>
@@ -136,13 +124,15 @@
                   {{ selectedTimeLabel || 'Select time' }}
                   <span class="arrow">▼</span>
                 </div>
-                <div class="options-container" v-show="isTimeDropdownOpen">
+                <div v-show="isTimeDropdownOpen" class="options-container">
                   <div class="options">
-                    <div v-for="time in availableTimes" 
-                         :key="time.value" 
-                         class="option"
-                         :class="{ 'selected': selectedTime === time.value }"
-                         @click="selectTime(time)">
+                    <div
+                      v-for="time in availableTimes"
+                      :key="time.value"
+                      class="option"
+                      :class="{ 'selected': selectedTime === time.value }"
+                      @click="selectTime(time)"
+                    >
                       {{ time.label }}
                     </div>
                   </div>
@@ -164,10 +154,13 @@
             <!-- seating layout -->
             <div class="seating-layout">
               <div v-for="row in rows" :key="row" class="seat-row">
-                <div v-for="col in 10" :key="col" 
-                  class="seat" 
+                <div
+                  v-for="col in 10"
+                  :key="col"
+                  class="seat"
                   :class="getSeatClass(row, col)"
-                  @click="toggleSeat(row, col)">
+                  @click="toggleSeat(row, col)"
+                >
                   {{ row }}{{ col }}
                 </div>
               </div>
@@ -730,23 +723,12 @@ select.time-select::-webkit-scrollbar-thumb:hover {
 
 <script>
 import TheNavbar from '@/components/TheNavbar.vue'
-<<<<<<< HEAD
 import request from '@/utils/request'
 
 export default {
   name: 'Seats',
   components: {
     TheNavbar
-=======
-import TheFooter from '@/components/TheFooter.vue'
-import request from '@/utils/request'
-
-export default {
-  name: 'SeatSelection',
-  components: {
-    TheNavbar,
-    TheFooter
->>>>>>> update-movie-details-ui
   },
   data() {
     return {
@@ -795,11 +777,11 @@ export default {
     availableDates() {
       const dates = []
       const today = new Date()
-      
+
       for (let i = 0; i < 4; i++) {
         const date = new Date(today)
         date.setDate(today.getDate() + i)
-        
+
         dates.push({
           value: date.toISOString().split('T')[0],
           label: date.toLocaleDateString('en-US', {
@@ -809,7 +791,7 @@ export default {
           })
         })
       }
-      
+
       return dates
     },
     availableTimes() {
@@ -826,7 +808,7 @@ export default {
       if (this.selectedDate === this.availableDates[0].value) {
         const now = new Date()
         const currentHour = now.getHours()
-        
+
         return fixedTimes
           .filter(slot => {
             const slotHour = parseInt(slot.time.split(':')[0])
@@ -872,6 +854,12 @@ export default {
     this.loadCinemas()
     this.loadMovies()
   },
+  mounted() {
+    document.addEventListener('click', this.handleClickOutside)
+  },
+  beforeDestroy() {
+    document.removeEventListener('click', this.handleClickOutside)
+  },
   methods: {
     async loadSeats(silent = false) {
       if (!this.currentSessionId) {
@@ -882,7 +870,7 @@ export default {
       if (!silent) {
         this.loading = true
       }
-      
+
       try {
         const response = await request({
           url: `/api/seats?session_id=${this.currentSessionId}`,
@@ -890,7 +878,7 @@ export default {
           baseURL: 'http://localhost:3007'
         })
         console.log('Response received:', response.data)
-        
+
         if (response.data && response.status === 0) {
           this.seats = response.data
           console.log('Seats loaded:', this.seats.length)
@@ -904,11 +892,11 @@ export default {
       }
     },
     getSeatClass(row, col) {
-      const seat = this.seats.find(s => 
-        s.seat_row === row && 
+      const seat = this.seats.find(s =>
+        s.seat_row === row &&
         Number(s.seat_col) === Number(col)
       )
-      
+
       return {
         'seat': true,
         'seat-occupied': seat && seat.status === 'occupied',
@@ -920,7 +908,7 @@ export default {
 
       const seatId = `${row}${col}`
       const index = this.selectedSeats.indexOf(seatId)
-      
+
       if (index === -1) {
         this.selectedSeats.push(seatId)
       } else {
@@ -928,8 +916,8 @@ export default {
       }
     },
     isSeatOccupied(row, col) {
-      const seat = this.seats.find(s => 
-        s.seat_row === row && 
+      const seat = this.seats.find(s =>
+        s.seat_row === row &&
         Number(s.seat_col) === Number(col)
       )
       return seat?.status === 'occupied'
@@ -943,20 +931,20 @@ export default {
       try {
         const seatsToUpdate = this.selectedSeats.map(seatId => {
           const [row, col] = [seatId.charAt(0), seatId.slice(1)]
-          const seat = this.seats.find(s => 
-            s.seat_row === row && 
+          const seat = this.seats.find(s =>
+            s.seat_row === row &&
             Number(s.seat_col) === Number(col)
           )
-          
+
           if (!seat) {
             throw new Error(`Seat not found: ${row}${col}`)
           }
-          
+
           return {
             id: seat.id
           }
         })
-        
+
         console.log('Data to be sent:', { seats: seatsToUpdate })
 
         const response = await request({
@@ -973,7 +961,7 @@ export default {
 
         // clear selected seats
         this.selectedSeats = []
-        
+
         // use new loadSeats method to update seat status
         if (this.currentSessionId) {
           await this.loadSeats(true)
@@ -1002,7 +990,7 @@ export default {
       if (type !== 'movie') this.isMovieDropdownOpen = false
 
       // switch current dropdown
-      switch(type) {
+      switch (type) {
         case 'cinema':
           this.isCinemaDropdownOpen = !this.isCinemaDropdownOpen
           break
@@ -1046,15 +1034,15 @@ export default {
           baseURL: 'http://localhost:3007'
         })
 
-        console.log('Raw response:', response)  // view raw response
+        console.log('Raw response:', response) // view raw response
 
         if (response.data && response.data.status === 0) {
           // extract data from response.data
           this.seats = response.data.seats
           this.currentSessionId = response.data.session_id
-          
-          console.log('Extracted seats:', this.seats)  // view extracted seat data
-          
+
+          console.log('Extracted seats:', this.seats) // view extracted seat data
+
           this.$forceUpdate()
         }
       } catch (error) {
@@ -1077,7 +1065,7 @@ export default {
 
       try {
         const { status, message, cinemaData } = await request.get('/api/seats/test-cinemas')
-        
+
         if (status === 0 && cinemaData) {
           this.cinemaList = cinemaData
         } else {
@@ -1101,10 +1089,10 @@ export default {
       }
     },
     selectMovie(movie) {
-      console.log('Selected movie:', movie)  // debug log
+      console.log('Selected movie:', movie) // debug log
       this.selectedMovieId = movie.id
       this.isMovieDropdownOpen = false
-      
+
       // update current movie information
       const selectedMovie = this.movieList.find(m => m.id === movie.id)
       if (selectedMovie) {
@@ -1113,9 +1101,9 @@ export default {
           poster_url: selectedMovie.poster_url,
           length: selectedMovie.length
         }
-        console.log('Current movie updated:', this.currentMovie)  // debug log
+        console.log('Current movie updated:', this.currentMovie) // debug log
       }
-      
+
       this.checkAndUpdateSession()
     },
     getMovieName(id) {
@@ -1175,7 +1163,7 @@ export default {
             // directly use returned seat data
             this.seats = sessionResponse.data.seats
             console.log('Seats updated:', this.seats.length)
-            this.$forceUpdate()  // force update view
+            this.$forceUpdate() // force update view
           }
         } catch (error) {
           console.error('Failed to update session:', error)
@@ -1183,13 +1171,7 @@ export default {
       } else {
         console.log('Not all selections are made yet')
       }
-    },
-  },
-  mounted() {
-    document.addEventListener('click', this.handleClickOutside)
-  },
-  beforeDestroy() {
-    document.removeEventListener('click', this.handleClickOutside)
+    }
   }
 }
 </script>

@@ -87,15 +87,15 @@
         </el-form-item>
 
         <el-form-item label="Cast" prop="cast">
-          <el-input type="textarea" v-model="movieForm.cast" placeholder="Please enter cast members" />
+          <el-input v-model="movieForm.cast" type="textarea" placeholder="Please enter cast members" />
         </el-form-item>
 
         <el-form-item label="Description" prop="description">
-          <el-input type="textarea" v-model="movieForm.description" placeholder="Please enter short description" />
+          <el-input v-model="movieForm.description" type="textarea" placeholder="Please enter short description" />
         </el-form-item>
 
         <el-form-item label="Plot Summary" prop="plot_summary">
-          <el-input type="textarea" v-model="movieForm.plot_summary" placeholder="Please enter detailed plot summary" />
+          <el-input v-model="movieForm.plot_summary" type="textarea" placeholder="Please enter detailed plot summary" />
         </el-form-item>
 
         <el-form-item label="Rating" prop="rating">
@@ -251,7 +251,7 @@ export default {
     },
 
     async submitForm() {
-      this.$refs.movieForm.validate(async (valid) => {
+      this.$refs.movieForm.validate(async(valid) => {
         if (valid) {
           try {
             const isEdit = !!this.movieForm.id
