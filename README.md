@@ -44,19 +44,35 @@
 ```bash
 # Clone the repository
 git clone https://github.com/rorschachwilpeng/casa0017-web-assessment.git
+```
+
+You need to open two terminal windows to run both the front-end and back-end servers simultaneously:
+
+### Terminal 1: Back-end Setup
+```bash
+# Navigate to the back-end directory
+cd casa0017-web-assessment/back-end
 
 # Install dependencies
 npm install
+
+# Start the back-end server
+node app.js
 ```
 
-Go to the frontend directory and run the following command to start the development server:
-``` bash
+### Terminal 2: Front-end Setup
+```bash
+# Navigate to the front-end directory
+cd casa0017-web-assessment/front-end
+
+# Install dependencies
+npm install
+
+# Start the development server
 npm run dev
 ```
-Go to the backend directory and run the following command to start the backend server:
-```
-npm node ./app.js
-```
+
+After running both servers, you can access the application in your browser at the URL provided by the front-end development server.
 
 ## Project Structure
 This project adopts a modern front-end and back-end separation architecture, enabling independent development and deployment, with the front-end built using Vue.js and the back-end powered by Node.js and Express, seamlessly connected via RESTful APIs.
