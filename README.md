@@ -51,7 +51,7 @@ You need to open two terminal windows to run both the front-end and back-end ser
 ### Terminal 1: Back-end Setup
 ```bash
 # Navigate to the back-end directory
-cd casa0017-web-assessment/back-end
+cd Website/back-end
 
 # Install dependencies
 npm install
@@ -63,7 +63,7 @@ node app.js
 ### Terminal 2: Front-end Setup
 ```bash
 # Navigate to the front-end directory
-cd casa0017-web-assessment/front-end
+cd Website/front-end
 
 # Install dependencies
 npm install
