@@ -1,7 +1,8 @@
 <template>
   <div :class="classObj" class="app-wrapper">
     <div v-if="device==='mobile'&&sidebar.opened" class="drawer-bg" @click="handleClickOutside" />
-    <sidebar class="sidebar-container" />
+    <!-- 注释掉侧边栏组件 -->
+    <!-- <sidebar class="sidebar-container" /> -->
     <div class="main-container">
       <div :class="{'fixed-header':fixedHeader}">
         <navbar />
@@ -79,12 +80,12 @@ export default {
     top: 0;
     right: 0;
     z-index: 9;
-    width: calc(100% - #{$sideBarWidth});
+    width: 100%;
     transition: width 0.28s;
   }
 
   .hideSidebar .fixed-header {
-    width: calc(100% - 54px)
+    width: 100%;
   }
 
   .mobile .fixed-header {

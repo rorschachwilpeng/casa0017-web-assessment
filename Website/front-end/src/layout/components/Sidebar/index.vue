@@ -54,3 +54,10 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+/* 完全隐藏侧边栏 */
+.sidebar-container {
+  display: none !important;
+}
+</style>

@@ -378,13 +378,11 @@
   </div>
 </template>
 
-<script setup>
+<script>
 import BookingBanner from '@/components/BookingBanner.vue'
 import TheNavbar from '@/components/TheNavbar.vue'
 import TheFooter from '@/components/TheFooter.vue'
-</script>
 
-<script>
 export default {
   name: 'Home',
   components: {
@@ -418,6 +416,16 @@ export default {
         }
       ]
     }
+  },
+  mounted() {
+    console.log('Home component mounted');
+    console.log('Current route path:', this.$route.path);
+    console.log('Categories:', this.categories);
+    // 检查图片路径
+    const img = new Image();
+    img.onload = () => console.log('测试图片加载成功');
+    img.onerror = () => console.log('测试图片加载失败');
+    img.src = '/images/posters/movie1.jpg';
   },
   methods: {
     prevCinemaPage() {

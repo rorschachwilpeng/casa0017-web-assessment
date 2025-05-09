@@ -8,7 +8,7 @@
       <!-- 添加深灰色背景 -->
       <div class="nav-background" />
       <div class="nav-links">
-        <router-link to="/home/index" class="nav-link" :class="{ active: currentPath === '/home/index' }">Home</router-link>
+        <router-link to="/home" class="nav-link" :class="{ active: currentPath === '/home' || currentPath === '/home/index' }">Home</router-link>
         <router-link to="/movie-list/index" class="nav-link" :class="{ active: currentPath === '/movie-list/index' }">Movies</router-link>
         <router-link to="/cinema-select/index" class="nav-link" :class="{ active: currentPath === '/cinema-select/index' }">Cinemas</router-link>
         <router-link to="/seats/index" class="nav-link" :class="{ active: currentPath === '/seats/index' }">Booking</router-link>
