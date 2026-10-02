@@ -3,7 +3,7 @@ const router = express.Router();
 const axios = require('axios');
 
 // Mapbox API Configuration
-const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1Ijoic2xpbXJvcnNjaGFjaCIsImEiOiJjbTViODhpOTUwYzBkMmpxb3Nvdmx6OGFqIn0.JenG29Zpk1FQLaStd3jOgQ';
+const MAPBOX_ACCESS_TOKEN = process.env.MAPBOX_ACCESS_TOKEN;
 const MAPBOX_API_URL = 'https://api.mapbox.com/directions/v5/mapbox';
 
 // Add router level logging middleware
