@@ -102,3 +102,9 @@ dist
 
 # TernJS port file
 .tern-port
+
+# Keep local secrets out of Git; commit placeholders only.
+.env
+.env.local
+.env.*.local
+!.env.example
