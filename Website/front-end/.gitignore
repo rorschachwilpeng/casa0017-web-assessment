@@ -14,3 +14,9 @@ tests/**/coverage/
 *.ntvs*
 *.njsproj
 *.sln
+
+# Keep local secrets out of Git; commit placeholders only.
+.env
+.env.local
+.env.*.local
+!.env.example
