@@ -1,6 +1,5 @@
 # Environment variables
-# 注释掉.env，允许它被上传到GitHub
-# .env
+.env
 
 # Dependencies
 node_modules/
@@ -16,3 +15,8 @@ npm-debug.log*
 # IDE configuration
 .idea/
 .vscode/ 
+# Keep local secrets out of Git; commit placeholders only.
+.env
+.env.local
+.env.*.local
+!.env.example
